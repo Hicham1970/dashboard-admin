@@ -65,14 +65,7 @@ export default function Contacts(){
                     components={{
                         Toolbar: GridToolbar,
                     }}
-                    componentsProps={{
-    toolbar: { 
-      showQuickFilter: true, // Affiche le champ de recherche rapide
-      printOptions: { disableToolbarButton: true }, // Affiche le bouton d'impression
-                            // ... autres options
-      
-    },
-  }}
+     
                 />
             </Box>
         </Box>
