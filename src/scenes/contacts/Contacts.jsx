@@ -61,9 +61,12 @@ export default function Contacts(){
             >
                 <DataGrid 
                 rows={mockDataContacts}
-                columns={columns}
-                    components={{
-                        Toolbar: GridToolbar,
+                columns = {
+                    columns
+                }
+                components = {
+                        {
+                            Toolbar: GridToolbar,
                     }}
      
                 />
