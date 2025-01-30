@@ -113,9 +113,9 @@ const Dashboard = () => {
         {/* Row 2 */}
         {/* Line Chart */}
         <Box
-          gridColumn="span 6"
+          gridColumn="span 8"
           gridRow="span 2"
-          backgroundColor={colors.primary[5400]}
+          backgroundColor={colors.primary[400]}
         >
           <Box
             mt="20px"
@@ -151,61 +151,125 @@ const Dashboard = () => {
           <Box height="250px" ml="-20px">
             <LineChart isDashboard={true} />
           </Box>
-          {/* Transaction  */}
+        </Box>
+        {/* Transaction  */}
+        <Box
+          gridColumn="span 4"
+          gridRow="span 2"
+          backgroundColor={colors.primary[400]}
+          overflow="auto"
+        >
           <Box
-            gridColumn="span 4"
-            gridRow="span 2"
-            backgroundColor={colors.primary[400]}
-            overflow="auto"
+            display="flex"
+            sx={{ width: "100%" }}
+            justifyContent="center"
+            alignItems="center"
+            borderBottom={`4px s2olid ${colors.primary[500]}`}
+            colors={colors.grey[100]}
+            p="20px"
           >
+            <Typography color={colors.grey[100]} variant="h5" fontWeight="bold">
+              Recent Transactions
+            </Typography>
+          </Box>
+          {mockTransactions.map((transaction, i) => (
             <Box
+              key={`${transaction.txId}-${i}`}
               display="flex"
-              justifyContent="center"
+              justifyContent="space-between"
               alignItems="center"
-              borderBottom={`4px solid ${colors.primary[500]}`}
-              colors={colors.grey[100]}
-              p="20px"
+              p="5px"
+              borderBottom={`2px dashed ${colors.primary[500]}`}
             >
+              <Typography color={colors.greenAccent[500]} variant="h5">
+                {transaction.txId}
+              </Typography>
+
+              <Typography color={colors.grey[100]} variant="h5">
+                {transaction.user}
+              </Typography>
+
+              <Typography color={colors.grey[100]} variant="h5">
+                {transaction.date}
+              </Typography>
+
               <Typography
-                color={colors.grey[100]}
+                backgroundColor={colors.greenAccent[500]}
                 variant="h5"
-                fontWeight="bold"
+                color={colors.grey[100]}
+                borderRadius="4px"
               >
-                Recent Transactions
+                {transaction.cost}
               </Typography>
             </Box>
-            {mockTransactions.map((transaction, i) => (
-              <Box
-                key={`${transaction.txId}-${i}`}
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                p="5px"
-                borderBottom={`2px dashed ${colors.primary[500]}`}
-              >
-                <Typography color={colors.greenAccent[500]} variant="h5">
-                  {transaction.txId}
-                </Typography>
-
-                <Typography Typography color={colors.grey[100]} variant="h5">
-                  {transaction.user}
-                </Typography>
-
-                <Typography
-                  
-                  color={colors.greenAccent[500]}
-                  variant="h5"
-                >
-                  {transaction.date}
-                </Typography>
-
-                <Typography color={colors.greenAccent[200]} variant="h5">
-                  {transaction.cost}
-                </Typography>
-              </Box>
-            ))}
+          ))}
+        </Box>
+        {/* Row 3 Left */}
+        <Box
+          gridColumn="span 4"
+          gridRows="span 1"
+          height = "300px"
+          backgroundColor={colors.primary[400]}
+          p="30px"
+        >
+          <Typography variant="h5" fontWeight="bold" sx={{p:"30px 30px 0 30px"}}>
+            Campaign
+          </Typography>
+          <Box
+            display="flex"
+            justifyContent="center"
+            flexDirection="column"
+                      alignItems="center"
+                      
+            
+          >
+            <ProgressCircles size="125" />
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              sx={{ mt: "15px" }}
+              color={colors.greenAccent[500]}
+            >
+              $48,252 revenue generated
+            </Typography>
+            <Typography variant="h5" fontWeight="600">
+              Includes extra misc expenditures and costs
+            </Typography>
           </Box>
         </Box>
+        {/* Row 3 Middle */}
+          <Box
+          gridColumn="span 4"
+                  gridRows="span 1"
+                  height = "300px"
+  backgroundColor={colors.primary[400]}
+>
+  <Typography variant="h5" fontWeight="bold" sx={{ mt: "15px" }}>
+    Sales Quantity
+  </Typography>
+  <Box
+    height="40%"
+    mt="-20px"
+    backgroundColor={colors.primary[400]}
+  >
+    <BarChart isDashboard={true} />
+  </Box>
+</Box>
+{/* Row 3 Right */}
+<Box
+  gridColumn="span 4"
+                  gridRows="span 1"
+                  height="300px"
+  backgroundColor={colors.primary[400]}
+  p="30px"
+>
+  <Typography variant="h5" fontWeight="bold" sx={{ mb: "15px" }}>
+    Geography Based Traffic
+  </Typography>
+  <Box height="200px">
+    <PieChart isDashboard={true} colorScale="nivo" />
+  </Box>
+</Box>
       </Box>
     </Box>
   );
