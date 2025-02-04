@@ -18,7 +18,7 @@ import TimeLineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import useMode from "../../theme";
-
+import ValeursInitial from "../valeursInitial";
 /**
  * Creates a menu item with a title, link, icon, and selected state
  * that can be used in the sidebar
@@ -240,8 +240,8 @@ const SideBar = () => {
               setSelected={setSelected}
             />
             <Item
-              title="Geography Chart"
-              to="/geography"
+              title="Initial Draft Survey"
+              to = "/valeursInitial"
               icon={<MapOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}

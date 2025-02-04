@@ -248,11 +248,11 @@ const Dashboard = () => {
     Sales Quantity
   </Typography>
   <Box
-    height="40%"
-    mt="-20px"
+    height=" 100%"
+    mt="-2px"
     backgroundColor={colors.primary[400]}
   >
-    <BarChart isDashboard={true} />
+    <BarChart isDashboard={true} sx={{height: "inherit"}} />
   </Box>
 </Box>
 {/* Row 3 Right */}

@@ -49,11 +49,8 @@ export default function LineChart({ isDashboard = false }) {
                     fill: colors.primary[500],
                 },
             }}
-            colors={isDashboard ? {
-                datum:"color"
-            } : {
-                scheme: "nivo"
-            }}    
+colors={isDashboard ? ["#68d8bd", "#6870fa"] : ["#ff0000", "#00ff00"]} // Hardcoded colors for testing
+
         margin = {
             {
                 top: 50,

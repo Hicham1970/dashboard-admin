@@ -13,7 +13,7 @@ import UserForm from "./scenes/form/Form";
 import Line from "./scenes/line/Line";
 import Pie from "./scenes/pie/Pie";
 import Faq from "./scenes/faq/Faq";
-import Geography from "./scenes/geography";
+import ValeursInitial from "./scenes/valeursInitial";
 import Calendar from "./scenes/calendar/Calendar";
 
 function App() {
@@ -38,7 +38,7 @@ function App() {
               <Route path="/faq" element={<Faq />} />
               <Route path="/line" element={<Line />} />
               <Route path="/pie" element={<Pie />} />
-              <Route path="/geography" element={<Geography />} /> 
+              <Route path="/valeursInitial" element={<ValeursInitial />} /> 
             </Routes>
           </main>
         </div>
