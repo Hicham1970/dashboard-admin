@@ -36,9 +36,9 @@ export default function ValeursInitial() {
   const [valeursInitial, setValeursInitial] = useState({
     lbp: '',
     keelCorrection: '',
-    distanceFore: '',
-    distanceAft: '',
-    distanceMid: '',
+    foreDistance: '',
+    aftDistance: '',
+    midDistance: '',
     forePort: '',
     foreStbd: '',
     meanFore: '',
@@ -57,6 +57,29 @@ export default function ValeursInitial() {
     meanOfMean: '',
     quarterMean: '',
     meanForeAft: '',
+    density:'',
+    draftSup: '',
+    draftInf: '',
+    displacementSup: '',
+    displacementInf: '',
+    displacement: '',
+    tpcSup:'',
+    tpcInf: '',
+    tpc: '',
+    lcfSup: '',
+    lcfInf: '',
+    lcf: '',
+    mtcSup: '',
+    mtcInf: '',
+    mtc: '',
+    quarter: '',
+    quarterPlus50: '',
+    quarterMinus50: '',
+    firstTrimcorrection: '',
+    secondTrimcorrection: '',
+    displacementDstyCorrected: '',
+    displacementTrimCorrected:'',
+
   });
 
   // Valide Number:
@@ -71,9 +94,9 @@ export default function ValeursInitial() {
       .number()
       .required("Required"),
     keelCorrection: Yup.number().required("Required"),
-    distanceFore: Yup.number().required("Required"),
-    distanceAft: Yup.number().required("Required"),
-    distanceMid: Yup.number().required("Required"),
+    aftDistance: Yup.number().required("Required"),
+    foreDistance: Yup.number().required("Required"),
+    midDistance: Yup.number().required("Required"),
     forePort: Yup.number().required("Required"),
     foreStbd: Yup.number().required("Required"),
     meanFore: Yup.number().required("Required"),
@@ -92,16 +115,37 @@ export default function ValeursInitial() {
     meanOfMean: Yup.number().required("Required"),
     quarterMean: Yup.number().required("Required"),
     meanForeAft: Yup.number().required("Required"),
-
+    density: Yup.number().required("Required"),
+    draftSup: Yup.number().required("Required"),
+    draftInf: Yup.number().required("Required"),
+    displacementSup: Yup.number().required("Required"),
+    displacementInf: Yup.number().required("Required"),
+    displacement: Yup.number().required("Required"),
+    tpcSup: Yup.number().required("Required"),
+    tpcInf: Yup.number().required("Required"),
+    tpc: Yup.number().required("Required"),
+    lcfSup: Yup.number().required("Required"),
+    lcfInf: Yup.number().required("Required"),
+    lcf: Yup.number().required("Required"),
+    mtcPlus50: Yup.number().required("Required"),
+    mtcMinus50: Yup.number().required("Required"),
+    mtc: Yup.number().required("Required"),
+    quarter: Yup.number().required("Required"),
+    quarterPlus50: Yup.number().required("Required"),
+    quarterMinus50: Yup.number().required("Required"),
+    firstTrimcorrection: Yup.number().required("Required"),
+    secondTrimcorrection: Yup.number().required("Required"),
+    displacementDstyCorrected: Yup.number().required("Required"),
+    displacementTrimCorrected: Yup.number().required("Required"),
   });
 
   // Define initialValues and userValidationSchema
   const initialValues = {
     lbp: '',
     keelCorrection: '',
-    distanceFore: '',
-    distanceAft: '',
-    distanceMid: '',
+    foreDistance: '',
+    aftDistance: '',
+    midDistance: '',
     forePort: '',
     foreStbd: '',
     meanFore: '',
@@ -120,6 +164,28 @@ export default function ValeursInitial() {
     meanOfMean: '',
     quarterMean: '',
     meanForeAft: '',
+    density:'',
+    draftSup: '',
+    draftInf: '',
+    displacementSup: '',
+    displacementInf: '',
+    displacement: '',
+    tpcSup:'',
+    tpcInf: '',
+    tpc: '',
+    lcfSup: '',
+    lcfInf: '',
+    lcf: '',
+    mtcPlus50: '',
+    mtcMinus50: '',
+    mtc: '',
+    quarter: '',
+    quarterPlus50: '',
+    quarterMinus50: '',
+    firstTrimcorrection: '',
+    secondTrimcorrection: '',
+    displacementDstyCorrected: '',
+    displacementTrimCorrected:'',
   };
   const userValidationSchema = valeursInitialValidationSchema; // Rename for consistency
 
@@ -600,8 +666,8 @@ export default function ValeursInitial() {
               />
               <TextField
                 fullWidth
-                disabled
-                variant="outlined"
+                
+                variant="filled"
                 type="number"
                 label="Displ Inf"
                 onBlur={handleBlur}
@@ -614,8 +680,8 @@ export default function ValeursInitial() {
               />
               <TextField
                 fullWidth
-                disabled
-                variant="outlined"
+                
+                variant="filled"
                 type="number"
                 label="TPC Inf"
                 onBlur={handleBlur}
@@ -629,8 +695,8 @@ export default function ValeursInitial() {
               />
               <TextField
                 fullWidth
-                disabled
-                variant="outlined"
+                
+                variant="filled"
                 type="number"
                 label="LCF Inf"
                 onBlur={handleBlur}
@@ -807,8 +873,8 @@ export default function ValeursInitial() {
               />
               <TextField
                 fullWidth
-                disabled
-                variant="outlined"
+                
+                variant="filled"
                 type="number"
                 label="Displ Sup"
                 onBlur={handleBlur}
@@ -821,8 +887,8 @@ export default function ValeursInitial() {
               />
               <TextField
                 fullWidth
-                disabled
-                variant="outlined"
+                
+                variant="filled"
                 type="number"
                 label="TPC Sup"
                 onBlur={handleBlur}
@@ -836,15 +902,15 @@ export default function ValeursInitial() {
               />
               <TextField
                 fullWidth
-                disabled
-                variant="outlined"
+                
+                variant="filled"
                 type="number"
                 label="LCF Sup"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.lcfSup}
                 name="lcfSup"
-                error={!!touched.lcfSup && !!errors.lcfsup}
+                error={!!touched.lcfSup && !! errors.lcfSup}
                 helperText={touched.lcfSup && errors.lcfSup}
                 sx={{ flexColumn: "span 1", width:"200px" }}
               />
@@ -882,8 +948,77 @@ export default function ValeursInitial() {
                 sx={{ flexColumn: "span 1", width:"130px" }}
               />
               </Box>
+              
             </Box>  
-
+            {/* Ligne 9 */}
+            <Box
+              mt="20px"
+               display="flex"
+              gap="10px"
+              
+              sx={{
+                "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
+              }}
+            >
+              <TextField
+                fullWidth
+                disabled
+                variant="outlined"
+                type="number"
+                label="F T C "
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.firstTrimcorrection}
+                name="firstTrimcorrection"
+                error={!!touched.firstTrimcorrection && !!errors.firstTrimcorrection}
+                helperText={touched.firstTrimcorrection && errors.firstTrimcorrection}
+                sx={{ gridColumn: "span 4" }}
+              />
+              <TextField
+                fullWidth
+                disabled
+                variant="outlined"
+                type="number"
+                label="S T C"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.secondTrimcorrection}
+                name="secondTrimcorrection"
+                error={!!touched.secondTrimcorrection && !!errors.secondTrimcorrection}
+                helperText={touched.secondTrimcorrection && errors.secondTrimcorrection}
+                sx={{ flexColumn: "span 2" }}
+              />
+              <TextField
+                fullWidth
+                disabled
+                variant="outlined"
+                type="number"
+                label="Disp Corr Trim"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.displacementTrimCorrected}
+                name="displacementTrimCorrected"
+                error={!!touched.displacementTrimCorrected && !! errors.displacementTrimCorrected}
+                helperText={touched.displacementTrimCorrected && errors.displacementTrimCorrected}
+                sx={{ flexColumn: "span 2" }}
+                
+              />
+              <TextField
+                fullWidth
+                disabled
+                variant="outlined"
+                type="number"
+                label="Disp Corr Dsty"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.displacementDstyCorrected}
+                name="displacementDstyCorrected"
+                error={!!touched.displacementDstyCorrected && !!errors.displacementDstyCorrected}
+                helperText={touched.displacementDstyCorrected && errors.displacementDstyCorrected}
+                sx={{ gridColumn: "span 4" }}
+              />
+            </Box>
+            {/* Ligne 10   */}
 
 
             <Box display="flex" justifyContent="center" alignItems={'center'} mt="20px">
