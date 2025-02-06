@@ -1,32 +1,19 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
-import { styled } from '@mui/material/styles';
-import Container from '@mui/material/Container';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button';
-import { SelectChangeEvent } from '@mui/material/Select';
-import NumbersIcon from '@mui/icons-material/Numbers';
-import { tokens } from '../theme'; 
 import { useTheme } from '@mui/material/styles';
 import {
-  Formik
+  Formik, Form, errors, touched, handleBlur, handleChange, handleSubmit,
 } from "formik";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import * as Yup from "yup";
 import Header from './Header';
 import StorageIcon from '@mui/icons-material/Storage';
-import Icon from '@mui/material/Icon';
 import CalculateIcon from '@mui/icons-material/Calculate';
-
+import { tokens } from './../theme';
 
 
 export default function ValeursInitial() {
@@ -34,20 +21,20 @@ export default function ValeursInitial() {
   const colors = tokens(theme.palette.mode);
   const isNonMobile = useMediaQuery("(min-width: 600px)");
   const [valeursInitial, setValeursInitial] = useState({
-    lbp: '',
-    keelCorrection: '',
-    foreDistance: '',
-    aftDistance: '',
-    midDistance: '',
-    forePort: '',
-    foreStbd: '',
+    lbp: 0,
+    keelCorrection: 0,
+    foreDistance: 0,
+    aftDistance: 0,
+    midDistance: 0,
+    forePort: 0,
+    foreStbd: 0,
     meanFore: '',
-    aftPort: '',
-    aftStbd: '',
+    aftPort: 0,
+    aftStbd: 0,
     meanAft: '',
     midPort: '',
-    midStbd: '',
-    meanMid: '',
+    midStbd: 0,
+    meanMid: 0,
     trim: '',
     lbm: '',
     foreCorrected: '',
@@ -57,13 +44,13 @@ export default function ValeursInitial() {
     meanOfMean: '',
     quarterMean: '',
     meanForeAft: '',
-    density:'',
+    density: 1.025,
     draftSup: '',
     draftInf: '',
     displacementSup: '',
     displacementInf: '',
     displacement: '',
-    tpcSup:'',
+    tpcSup: '',
     tpcInf: '',
     tpc: '',
     lcfSup: '',
@@ -75,21 +62,21 @@ export default function ValeursInitial() {
     quarter: '',
     quarterPlus50: '',
     quarterMinus50: '',
-    firstTrimcorrection: '',
-    secondTrimcorrection: '',
+    firstTrimCorrection: '',
+    secondTrimCorrection: '',
     displacementDstyCorrected: '',
-    displacementTrimCorrected:'',
+    displacementTrimCorrected: '',
 
   });
 
+
+
+
   // Valide Number:
-  // numberRegexEp: This regex validates a number with an optional decimal point followed by 1 or 2 decimal places.
-  // ^\d+ means the string must start with one or more digits.
-  // (\.\d{1,2})? means the string can optionally contain a decimal point followed by 1 or 2 digits.
-  const numberRegexEp= /^\d+(\.\d{1,2})?$/;
+  const numberRegexEp = /^\d+(\.\d{1,2})?$/;
 
   // Validation schema
-  const valeursInitialValidationSchema = Yup.object().shape({
+  const validationSchema = Yup.object().shape({
     lbp: Yup
       .number()
       .required("Required"),
@@ -99,126 +86,104 @@ export default function ValeursInitial() {
     midDistance: Yup.number().required("Required"),
     forePort: Yup.number().required("Required"),
     foreStbd: Yup.number().required("Required"),
-    meanFore: Yup.number().required("Required"),
     aftPort: Yup.number().required("Required"),
     aftStbd: Yup.number().required("Required"),
-    meanAft: Yup.number().required("Required"),
     midPort: Yup.number().required("Required"),
     midStbd: Yup.number().required("Required"),
-    meanMid: Yup.number().required("Required"),
-    trim: Yup.number().required("Required"),
-    lbm: Yup.number().required("Required"),
-    foreCorrected: Yup.number().required("Required"),
-    aftCorrected: Yup.number().required("Required"),
-    midCorrected: Yup.number().required("Required"),
-    trimCorrected: Yup.number().required("Required"),
-    meanOfMean: Yup.number().required("Required"),
-    quarterMean: Yup.number().required("Required"),
-    meanForeAft: Yup.number().required("Required"),
     density: Yup.number().required("Required"),
-    draftSup: Yup.number().required("Required"),
     draftInf: Yup.number().required("Required"),
-    displacementSup: Yup.number().required("Required"),
     displacementInf: Yup.number().required("Required"),
-    displacement: Yup.number().required("Required"),
-    tpcSup: Yup.number().required("Required"),
     tpcInf: Yup.number().required("Required"),
-    tpc: Yup.number().required("Required"),
-    lcfSup: Yup.number().required("Required"),
     lcfInf: Yup.number().required("Required"),
-    lcf: Yup.number().required("Required"),
     mtcPlus50: Yup.number().required("Required"),
     mtcMinus50: Yup.number().required("Required"),
-    mtc: Yup.number().required("Required"),
-    quarter: Yup.number().required("Required"),
-    quarterPlus50: Yup.number().required("Required"),
-    quarterMinus50: Yup.number().required("Required"),
-    firstTrimcorrection: Yup.number().required("Required"),
-    secondTrimcorrection: Yup.number().required("Required"),
-    displacementDstyCorrected: Yup.number().required("Required"),
-    displacementTrimCorrected: Yup.number().required("Required"),
+    draftSup: Yup.number().required("Required"),
+    displacementSup: Yup.number().required("Required"),
+    tpcSup: Yup.number().required("Required"),
+    lcfSup: Yup.number().required("Required"),
   });
 
-  // Define initialValues and userValidationSchema
-  const initialValues = {
-    lbp: '',
-    keelCorrection: '',
-    foreDistance: '',
-    aftDistance: '',
-    midDistance: '',
-    forePort: '',
-    foreStbd: '',
-    meanFore: '',
-    aftPort: '',
-    aftStbd: '',
-    meanAft: '',
-    midPort: '',
-    midStbd: '',
-    meanMid: '',
-    trim: '',
-    lbm: '',
-    foreCorrected: '',
-    aftCorrected: '',
-    midCorrected: '',
-    trimCorrected: '',
-    meanOfMean: '',
-    quarterMean: '',
-    meanForeAft: '',
-    density:'',
-    draftSup: '',
-    draftInf: '',
-    displacementSup: '',
-    displacementInf: '',
-    displacement: '',
-    tpcSup:'',
-    tpcInf: '',
-    tpc: '',
-    lcfSup: '',
-    lcfInf: '',
-    lcf: '',
-    mtcPlus50: '',
-    mtcMinus50: '',
-    mtc: '',
-    quarter: '',
-    quarterPlus50: '',
-    quarterMinus50: '',
-    firstTrimcorrection: '',
-    secondTrimcorrection: '',
-    displacementDstyCorrected: '',
-    displacementTrimCorrected:'',
-  };
-  const userValidationSchema = valeursInitialValidationSchema; // Rename for consistency
 
-  /**Assigner un rôle au btnCalc */
-  const calculateValues = () => {
-    // Calculation logic...
-  }
 
-  /**HandleChanges */
-  const handleChange = (e) => {
+  //  Exemple simplifié:
+  const calculateMeanFore = useCallback(() => {
+    const { forePort, foreStbd } = valeursInitial; // Use Formik's "values"
+    console.log("Calculating meanFore with:", forePort, foreStbd);
+    return ((Number(forePort) || 0) + (Number(foreStbd) || 0)) / 2;
+  }, [valeursInitial]);
+
+  const meanFore = useMemo(() => calculateMeanFore(), [calculateMeanFore]);
+
+
+  const calculateMeanAft = useCallback(() => {
+    const { aftPort, aftStbd } = valeursInitial;
+    return ((Number(aftPort) || 0) + (Number(aftStbd) || 0)) / 2;
+  }, [valeursInitial]);
+  console.log('MeanAft:', calculateMeanAft())
+
+  const calculateMeanMid = useCallback(() => {
+    const { midPort, midStbd } = valeursInitial;
+    return ((Number(midPort) || 0) + (Number(midStbd) || 0)) / 2;
+  }, [valeursInitial]);
+  console.log('MeanMid:', calculateMeanMid())
+
+
+  const calculateTrim = useCallback(() => {
+    return (calculateMeanAft() || 0) - (calculateMeanFore() || 0);
+  }, [calculateMeanAft, calculateMeanFore]);
+
+  useEffect(() => {
+    setValeursInitial((prev) => ({
+      ...prev,
+      meanFore: calculateMeanFore(),
+      meanAft: calculateMeanAft(),
+      meanMid: calculateMeanMid(),
+      trim: calculateTrim(),
+    }));
+  }, [calculateMeanFore, calculateMeanAft, calculateMeanMid, calculateTrim]);
+
+
+
+  const handleChange = (e, setFieldValue) => { // Add setFieldValue
     const { name, value } = e.target;
-    setValeursInitial({ ...valeursInitial, [name]: value });
-  }
+    setFieldValue(name, value); // Use setFieldValue to update Formik state
+  };
+
+  const meanAft = useMemo(() => calculateMeanAft(), [calculateMeanAft]);
+  const meanMid = useMemo(() => calculateMeanMid(), [calculateMeanMid]);
 
   const handleFormSubmit = (values) => {
-    console.log('Form values:', values);
-    alert('Form values submitted:', values);
-  }
+    console.log('Form valeursInitial:', values);
+    // Perform calculations with the submitted values
+    const calculatedValues = {
+      ...values,
+      meanFore: calculateMeanFore(),
+      meanAft: calculateMeanAft(),
+      meanMid: calculateMeanMid(),
+      trim: calculateTrim()
+      // ... any other calculations you need
+    }
+    alert('Form valeursInitial submitted:', calculatedValues); // Show calculated values
+  };
 
   return (
     <Box m="20px">
       <Header title="NEW CALCULATION" subtitle="Create a New draft survey" />
       <Formik
-        onSubmit={handleFormSubmit}
-        initialValues={initialValues}
-        validationSchema={userValidationSchema}
+        onSubmit={(values) => {
+          console.log(values); // Accès à values dans onSubmit
+        }}
+        initialValues={valeursInitial}
+        validationSchema={validationSchema}
       >
         {({
-          values, 
-          errors, 
-          touched, 
-          handleBlur, 
-          handleChange, 
+          values,
+          errors,
+          valeursInitial,
+          setFieldValue,
+          touched,
+          handleBlur,
+          handleChange,
           handleSubmit
         }) => (
           <form onSubmit={handleSubmit}>
@@ -228,10 +193,10 @@ export default function ValeursInitial() {
               alignItems="center"
               flexDirection="row"
               mx="auto"
-              gap="20px"  
+              gap="20px"
 
               sx={{
-                width:"500px",
+                width: "500px",
               }}
             >
               <TextField
@@ -240,12 +205,12 @@ export default function ValeursInitial() {
                 type="number"
                 label="Lbp"
                 onBlur={handleBlur}
-                onChange={handleChange}
+                onChange={handleChange} // Pass setFieldValue
                 value={values.lbp}
                 name="lbp"
                 error={!!touched.lbp && !!errors.lbp}
                 helperText={touched.lbp && errors.lbp}
-                sx={{ flexGrow : "1" }}
+                sx={{ flexGrow: "1" }}
               />
               <TextField
                 fullWidth
@@ -262,7 +227,7 @@ export default function ValeursInitial() {
               />
               <TextField
                 fullWidth
-                
+
                 variant="filled"
                 type="number"
                 label="Density"
@@ -271,7 +236,7 @@ export default function ValeursInitial() {
                 value={values.density}
                 name="density"
                 error={!!touched.density && !!errors.density}
-                helperText={touched.density && errors.density }
+                helperText={touched.density && errors.density}
                 sx={{ gridColumn: "span 1" }}
               />
               <TextField
@@ -282,14 +247,14 @@ export default function ValeursInitial() {
                 label="Trim"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.trim}
+                value={calculateTrim()}
                 name="trim"
                 error={!!touched.trim && !!errors.trim}
                 helperText={touched.trim && errors.trim}
                 sx={{ gridColumn: "span 1" }}
               />
-              
-              
+
+
               <TextField
                 fullWidth
                 disabled
@@ -304,7 +269,7 @@ export default function ValeursInitial() {
                 helperText={touched.lbm && errors.lbm}
                 sx={{ gridColumn: "span 1" }}
               />
-              
+
             </Box >
             <Box
               sx={{
@@ -317,9 +282,9 @@ export default function ValeursInitial() {
             {/* Ligne2 */}
             <Box
               mt="40px"
-               display="flex"
+              display="flex"
               gap="30px"
-              
+
               sx={{
                 "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
               }}
@@ -362,7 +327,7 @@ export default function ValeursInitial() {
                 error={!!touched.foreDistance && !!errors.foreDistance}
                 helperText={touched.foreDistance && errors.foreDistance}
                 sx={{ flexColumn: "span 2" }}
-                
+
               />
               <TextField
                 fullWidth
@@ -372,20 +337,22 @@ export default function ValeursInitial() {
                 label="Mean Fore"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.meanFore}
+                value={
+                  calculateMeanFore()
+                }
                 name="meanFore"
                 error={!!touched.meanFore && !!errors.meanFore}
                 helperText={touched.meanFore && errors.meanFore}
                 sx={{ gridColumn: "span 4" }}
               />
             </Box>
-            
+
             {/* Ligne3 */}
             <Box
               mt="10px"
-               display="flex"
+              display="flex"
               gap="30px"
-              
+
               sx={{
                 "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
               }}
@@ -396,7 +363,7 @@ export default function ValeursInitial() {
                 type="number"
                 label="Aft Port"
                 onBlur={handleBlur}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e, setFieldValue)}
                 value={values.aftPort}
                 name="aftPort"
                 error={!!touched.aftPort && !!errors.aftPort}
@@ -409,7 +376,7 @@ export default function ValeursInitial() {
                 type="number"
                 label="Aft Stbd"
                 onBlur={handleBlur}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e, setFieldValue)}
                 value={values.aftStbd}
                 name="aftStbd"
                 error={!!touched.aftStbd && !!errors.aftStbd}
@@ -422,13 +389,13 @@ export default function ValeursInitial() {
                 type="number"
                 label="Aft Distance"
                 onBlur={handleBlur}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e, setFieldValue)}
                 value={values.aftDistance}
                 name="aftDistance"
                 error={!!touched.aftDistance && !!errors.aftDistance}
                 helperText={touched.aftDistance && errors.aftDistance}
                 sx={{ flexColumn: "span 2" }}
-                
+
               />
               <TextField
                 fullWidth
@@ -437,8 +404,8 @@ export default function ValeursInitial() {
                 type="number"
                 label="Mean Aft"
                 onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.meanAft}
+                onChange={(e) => handleChange(e, setFieldValue)}
+                value={meanAft}
                 name="meanAft"
                 error={!!touched.meanAft && !!errors.meanAft}
                 helperText={touched.meanAft && errors.meanAft}
@@ -448,9 +415,9 @@ export default function ValeursInitial() {
             {/* Ligne4 */}
             <Box
               mt="10px"
-               display="flex"
+              display="flex"
               gap="30px"
-              
+
               sx={{
                 "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
               }}
@@ -461,7 +428,7 @@ export default function ValeursInitial() {
                 type="number"
                 label="Mid Port"
                 onBlur={handleBlur}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e, setFieldValue)}
                 value={values.midPort}
                 name="midPort"
                 error={!!touched.midPort && !!errors.midPort}
@@ -474,7 +441,7 @@ export default function ValeursInitial() {
                 type="number"
                 label="Mid Stbd"
                 onBlur={handleBlur}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e, setFieldValue)}
                 value={values.midStbd}
                 name="midStbd"
                 error={!!touched.midStbd && !!errors.midStbd}
@@ -487,13 +454,13 @@ export default function ValeursInitial() {
                 type="number"
                 label="Mid Distance"
                 onBlur={handleBlur}
-                onChange={handleChange}
+                onChange={(e) => handleChange(e, setFieldValue)}
                 value={values.midDistance}
                 name="midDistance"
                 error={!!touched.midDistance && !!errors.midDistance}
                 helperText={touched.midDistance && errors.midDistance}
                 sx={{ flexColumn: "span 2" }}
-                
+
               />
               <TextField
                 fullWidth
@@ -502,8 +469,8 @@ export default function ValeursInitial() {
                 type="number"
                 label="Mean Mid"
                 onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.meanMid}
+                onChange={(e) => handleChange(e, setFieldValue)}
+                value={meanMid}
                 name="meanMid"
                 error={!!touched.meanMid && !!errors.meanMid}
                 helperText={touched.meanMid && errors.meanMid}
@@ -513,9 +480,9 @@ export default function ValeursInitial() {
             {/* Ligne5 */}
             <Box
               mt="20px"
-               display="flex"
+              display="flex"
               gap="50px"
-              
+
               sx={{
                 "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
               }}
@@ -527,13 +494,13 @@ export default function ValeursInitial() {
                 type="number"
                 label="Fore Corrected"
                 onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.foreCorrected}
+                onChange={(e) => handleChange(e, setFieldValue)}
+                value={setValeursInitial.foreCorrected}
                 name="foreCorrected"
                 error={!!touched.foreCorrected && !!errors.foreCorrected}
                 helperText={touched.foreCorrected && errors.foreCorrected}
                 sx={{ gridColumn: "span 4" }}
-                />
+              />
               <TextField
                 fullWidth
                 disabled
@@ -542,12 +509,12 @@ export default function ValeursInitial() {
                 label="Aft Corrected"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.aftCorrected}
+                value={setValeursInitial.aftCorrected}
                 name="aftCorrected"
                 error={!!touched.aftCorrected && !!errors.aftCorrected}
                 helperText={touched.aftCorrected && errors.aftCorrected}
                 sx={{ flexColumn: "span 2" }}
-                
+
               />
               <TextField
                 fullWidth
@@ -557,19 +524,19 @@ export default function ValeursInitial() {
                 label="Mid Corrected"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.midCorrected}
+                value={setValeursInitial.midCorrected}
                 name="midCorrected"
                 error={!!touched.midCorrected && !!errors.midCorrected}
                 helperText={touched.midCorrected && errors.midCorrected}
-                 />
+              />
             </Box>
-            
+
             {/* Ligne6 */}
             <Box
               mt="20px"
-               display="flex"
+              display="flex"
               gap="100px"
-              
+
               sx={{
                 "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
               }}
@@ -582,7 +549,7 @@ export default function ValeursInitial() {
                 label="Trim Corrected"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.trimCorrected}
+                value={setValeursInitial.trimCorrected}
                 name="trimCorrected"
                 error={!!touched.midPort && !!errors.midPort}
                 helperText={touched.midPort && errors.midPort}
@@ -596,7 +563,7 @@ export default function ValeursInitial() {
                 label="Mean F/A"
                 onBlur={handleBlur}
                 onChange={handleChange}
-            value={values.meanForeAft}
+                value={setValeursInitial.meanForeAft}
                 name="meanForeAft"
                 error={!!touched.meanForeAft && !!errors.meanForeAft}
                 helperText={touched.meanForeAft && errors.meanForeAft}
@@ -610,12 +577,12 @@ export default function ValeursInitial() {
                 label="Mean Of Mean"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.meanOfMean}
+                value={setValeursInitial.meanOfMean}
                 name="meanOfMean"
                 error={!!touched.meanOfMean && !!errors.meanOfMean}
                 helperText={touched.meanOfMean && errors.meanOfMean}
                 sx={{ flexColumn: "span 2" }}
-                
+
               />
               <TextField
                 fullWidth
@@ -625,7 +592,7 @@ export default function ValeursInitial() {
                 label="quarterMean"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.quarterMean}
+                value={setValeursInitial.quarterMean}
                 name="quarterMean"
                 error={!!touched.quarterMean && !!errors.quarterMean}
                 helperText={touched.quarterMean && errors.quarterMean}
@@ -639,13 +606,13 @@ export default function ValeursInitial() {
                 margin: "20px 0",
               }}
             ></Box>
-             {/* Ligne 7  */}
-             
+            {/* Ligne 7  */}
+
             <Box
               mt="60px"
-               display="flex"
+              display="flex"
               gap="10px"
-              
+
               sx={{
                 "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
               }}
@@ -658,97 +625,97 @@ export default function ValeursInitial() {
                 label="Draft Inf"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.draftInf}
+                value={setValeursInitial.draftInf}
                 name="draftInf"
                 error={!!touched.draftInf && !!errors.draftInf}
                 helperText={touched.draftInf && errors.draftInf}
-                sx={{ flexColumn: "span 1", width :"200px" }}
+                sx={{ flexColumn: "span 1", width: "200px" }}
               />
               <TextField
                 fullWidth
-                
+
                 variant="filled"
                 type="number"
                 label="Displ Inf"
                 onBlur={handleBlur}
                 onChange={handleChange}
-            value={values.displacementInf}
+                value={values.displacementInf || 0}
                 name="displacementInf"
                 error={!!touched.displacementInf && !!errors.displacementInf}
                 helperText={touched.displacementInf && errors.displacementInf}
-                sx={{ flexColumn: "span 1", width :"200px" }}
+                sx={{ flexColumn: "span 1", width: "200px" }}
               />
               <TextField
                 fullWidth
-                
+
                 variant="filled"
                 type="number"
                 label="TPC Inf"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.tpcInf}
+                value={values.tpcInf || 0}
                 name="tpcInf"
                 error={!!touched.tpcInf && !!errors.tpcInf}
                 helperText={touched.tpcInf && errors.tpcInf}
-                sx={{ flexColumn: "span 1", width:"200px" }}
-                
+                sx={{ flexColumn: "span 1", width: "200px" }}
+
               />
               <TextField
                 fullWidth
-                
+
                 variant="filled"
                 type="number"
                 label="LCF Inf"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.lcfInf}
+                value={values.lcfInf || 0}
                 name="lcfInf"
                 error={!!touched.lcfInf && !!errors.lcfInf}
                 helperText={touched.lcfInf && errors.lcfInf}
-                sx={{ flexColumn: "span 1", width:"200px" }}
+                sx={{ flexColumn: "span 1", width: "200px" }}
               />
-              
+
               <Box
-              sx={{ display:"flex", justifyContent:"center", alignItems:"center", mx:"40px"}}
+                sx={{ display: "flex", justifyContent: "center", alignItems: "center", mx: "40px" }}
               >
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Quarter +50"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.quarterPlus50}
-                name="quarter50Inf"
-                error={!!touched.quarterPlus50 && !!errors.quarterPlus50}
-                helperText={touched.quarterPlus50 && errors.quarterPlus50}
-                sx={{ flexColumn: "span 1", width:"130px", mx:"40px" }}
-              />
-              
-              <TextField
-                fullWidth
-                
-                variant="filled"
-                type="number"
-                label="MTC +50"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.mtcPlus50}
-                name="mtcPlus50"
-                error={!!touched.mtcPlus50 && !!errors.mtcPlus50}
-                helperText={touched.mtcPlus50 && errors.mtcPlus50}
-                sx={{ flexColumn: "span 1", width:"130px" }}
-              />
+                <TextField
+                  fullWidth
+                  disabled
+                  variant="outlined"
+                  type="number"
+                  label="Quarter +50"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.quarterPlus50 || 0}
+                  name="quarter50Inf"
+                  error={!!touched.quarterPlus50 && !!errors.quarterPlus50}
+                  helperText={touched.quarterPlus50 && errors.quarterPlus50}
+                  sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
+                />
+
+                <TextField
+                  fullWidth
+
+                  variant="filled"
+                  type="number"
+                  label="MTC +50"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.mtcPlus50 || 0}
+                  name="mtcPlus50"
+                  error={!!touched.mtcPlus50 && !!errors.mtcPlus50}
+                  helperText={touched.mtcPlus50 && errors.mtcPlus50}
+                  sx={{ flexColumn: "span 1", width: "130px" }}
+                />
               </Box>
             </Box>
             {/* Ligne 7  */}
-             
+
             <Box
               mt="10px"
-               display="flex"
+              display="flex"
               gap="10px"
-              
+
               sx={{
                 "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
               }}
@@ -761,11 +728,11 @@ export default function ValeursInitial() {
                 label="QuarterMean"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.quarterMean}
+                value={values.quarterMean || 0}
                 name="quarterMean"
                 error={!!touched.quarterMean && !!errors.quarterMean}
                 helperText={touched.quarterMean && errors.quarterMean}
-                sx={{ flexColumn: "span 1", width :"200px" }}
+                sx={{ flexColumn: "span 1", width: "200px" }}
               />
               <TextField
                 fullWidth
@@ -775,11 +742,11 @@ export default function ValeursInitial() {
                 label="Displ"
                 onBlur={handleBlur}
                 onChange={handleChange}
-            value={values.displacement}
+                value={values.displacement || 0}
                 name="displacement"
                 error={!!touched.displacement && !!errors.displacement}
                 helperText={touched.displacement && errors.displacement}
-                sx={{ flexColumn: "span 1", width :"200px" }}
+                sx={{ flexColumn: "span 1", width: "200px" }}
               />
               <TextField
                 fullWidth
@@ -789,12 +756,12 @@ export default function ValeursInitial() {
                 label="TPC"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.tpc}
+                value={values.tpc || 0}
                 name="tpc"
                 error={!!touched.tpc && !!errors.tpc}
                 helperText={touched.tpc && errors.tpc}
-                sx={{ flexColumn: "span 1", width:"200px" }}
-                
+                sx={{ flexColumn: "span 1", width: "200px" }}
+
               />
               <TextField
                 fullWidth
@@ -804,55 +771,55 @@ export default function ValeursInitial() {
                 label="LCF"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.lcf}
+                value={values.lcf || 0}
                 name="lcf"
                 error={!!touched.lcf && !!errors.lcf}
                 helperText={touched.lcf && errors.lcf}
-                sx={{ flexColumn: "span 1", width:"200px" }}
+                sx={{ flexColumn: "span 1", width: "200px" }}
               />
-              
+
               <Box
-              sx={{ display:"flex", justifyContent:"center", alignItems:"center", mx:"40px"}}
+                sx={{ display: "flex", justifyContent: "center", alignItems: "center", mx: "40px" }}
               >
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Quarter"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.quarter}
-                name="quarter"
-                error={!!touched.quarter && !!errors.quarter}
-                helperText={touched.quarter && errors.quarter}
-                sx={{ flexColumn: "span 1", width:"130px", mx:"40px" }}
-              />
-              
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Delta MTC"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.mtc}
-                name="mtc"
-                error={!!touched.mtc && !!errors.mtc}
-                helperText={touched.mtc && errors.mtc}
-                sx={{ flexColumn: "span 1", width:"130px" }}
-              />
+                <TextField
+                  fullWidth
+                  disabled
+                  variant="outlined"
+                  type="number"
+                  label="Quarter"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.quarter || 0}
+                  name="quarter"
+                  error={!!touched.quarter && !!errors.quarter}
+                  helperText={touched.quarter && errors.quarter}
+                  sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
+                />
+
+                <TextField
+                  fullWidth
+                  disabled
+                  variant="outlined"
+                  type="number"
+                  label="Delta MTC"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.mtc || 0}
+                  name="mtc"
+                  error={!!touched.mtc && !!errors.mtc}
+                  helperText={touched.mtc && errors.mtc}
+                  sx={{ flexColumn: "span 1", width: "130px" }}
+                />
               </Box>
             </Box>
-            
+
             {/* Ligne 8  */}
-             
+
             <Box
               mt="10px"
-               display="flex"
+              display="flex"
               gap="10px"
-              
+
               sx={{
                 "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
               }}
@@ -865,97 +832,97 @@ export default function ValeursInitial() {
                 label="Draft Sup"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.draftSup}
+                value={values.draftSup || 0}
                 name="draftSup"
                 error={!!touched.draftSup && !!errors.draftSup}
                 helperText={touched.draftSup && errors.draftSup}
-                sx={{ flexColumn: "span 1", width :"200px" }}
+                sx={{ flexColumn: "span 1", width: "200px" }}
               />
               <TextField
                 fullWidth
-                
+
                 variant="filled"
                 type="number"
                 label="Displ Sup"
                 onBlur={handleBlur}
                 onChange={handleChange}
-            value={values.displacementSup}
+                value={values.displacementSup || 0}
                 name="displacementSup"
                 error={!!touched.displacementSup && !!errors.displacementSup}
-                helperText={touched.displacementSup  && errors.displacementSup}
-                sx={{ flexColumn: "span 1", width :"200px" }}
+                helperText={touched.displacementSup && errors.displacementSup}
+                sx={{ flexColumn: "span 1", width: "200px" }}
               />
               <TextField
                 fullWidth
-                
+
                 variant="filled"
                 type="number"
                 label="TPC Sup"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.tpcSup}
+                value={values.tpcSup || 0}
                 name="tpcSup"
-                error={!!touched.tpcSup  && !!errors.tpcSup}
+                error={!!touched.tpcSup && !!errors.tpcSup}
                 helperText={touched.tpcSup && errors.tpcSup}
-                sx={{ flexColumn: "span 1", width:"200px" }}
-                
+                sx={{ flexColumn: "span 1", width: "200px" }}
+
               />
               <TextField
                 fullWidth
-                
+
                 variant="filled"
                 type="number"
                 label="LCF Sup"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.lcfSup}
+                value={values.lcfSup || 0}
                 name="lcfSup"
-                error={!!touched.lcfSup && !! errors.lcfSup}
+                error={!!touched.lcfSup && !!errors.lcfSup}
                 helperText={touched.lcfSup && errors.lcfSup}
-                sx={{ flexColumn: "span 1", width:"200px" }}
+                sx={{ flexColumn: "span 1", width: "200px" }}
               />
-              
+
               <Box
-              sx={{ display:"flex", justifyContent:"center", alignItems:"center", mx:"40px"}}
+                sx={{ display: "flex", justifyContent: "center", alignItems: "center", mx: "40px" }}
               >
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Quarter -50"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.quarterMinus50}
-                name="quarterMinus50"
-                error={!!touched.quarterMinus50 && !!errors.quarterMinus50}
-                helperText={touched.quarterMinus50 && errors.quarterMinus50}
-                sx={{ flexColumn: "span 1", width:"130px", mx:"40px" }}
-              />
-              
-              <TextField
-                fullWidth
-                
-                variant="filled"
-                type="number"
-                label="MTC-50"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.mtcMinus50}
-                name="mtcMinus50"
-                error={!!touched.mtcMinus50 && !!errors.mtcMinus50}
-                helperText={touched.mtcMinus50 && errors.mtcMinus50}
-                sx={{ flexColumn: "span 1", width:"130px" }}
-              />
+                <TextField
+                  fullWidth
+                  disabled
+                  variant="outlined"
+                  type="number"
+                  label="Quarter -50"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.quarterMinus50 || 0}
+                  name="quarterMinus50"
+                  error={!!touched.quarterMinus50 && !!errors.quarterMinus50}
+                  helperText={touched.quarterMinus50 && errors.quarterMinus50}
+                  sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
+                />
+
+                <TextField
+                  fullWidth
+
+                  variant="filled"
+                  type="number"
+                  label="MTC-50"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.mtcMinus50 || 0}
+                  name="mtcMinus50"
+                  error={!!touched.mtcMinus50 && !!errors.mtcMinus50}
+                  helperText={touched.mtcMinus50 && errors.mtcMinus50}
+                  sx={{ flexColumn: "span 1", width: "130px" }}
+                />
               </Box>
-              
-            </Box>  
+
+            </Box>
             {/* Ligne 9 */}
             <Box
               mt="20px"
-               display="flex"
+              display="flex"
               gap="10px"
-              
+
               sx={{
                 "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
               }}
@@ -968,7 +935,7 @@ export default function ValeursInitial() {
                 label="F T C "
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.firstTrimcorrection}
+                value={values.firstTrimcorrection || 0}
                 name="firstTrimcorrection"
                 error={!!touched.firstTrimcorrection && !!errors.firstTrimcorrection}
                 helperText={touched.firstTrimcorrection && errors.firstTrimcorrection}
@@ -982,7 +949,7 @@ export default function ValeursInitial() {
                 label="S T C"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.secondTrimcorrection}
+                value={values.secondTrimcorrection || 0}
                 name="secondTrimcorrection"
                 error={!!touched.secondTrimcorrection && !!errors.secondTrimcorrection}
                 helperText={touched.secondTrimcorrection && errors.secondTrimcorrection}
@@ -996,12 +963,12 @@ export default function ValeursInitial() {
                 label="Disp Corr Trim"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.displacementTrimCorrected}
+                value={values.displacementTrimCorrected || 0}
                 name="displacementTrimCorrected"
-                error={!!touched.displacementTrimCorrected && !! errors.displacementTrimCorrected}
+                error={!!touched.displacementTrimCorrected && !!errors.displacementTrimCorrected}
                 helperText={touched.displacementTrimCorrected && errors.displacementTrimCorrected}
                 sx={{ flexColumn: "span 2" }}
-                
+
               />
               <TextField
                 fullWidth
@@ -1011,7 +978,7 @@ export default function ValeursInitial() {
                 label="Disp Corr Dsty"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.displacementDstyCorrected}
+                value={values.displacementDstyCorrected || 0}
                 name="displacementDstyCorrected"
                 error={!!touched.displacementDstyCorrected && !!errors.displacementDstyCorrected}
                 helperText={touched.displacementDstyCorrected && errors.displacementDstyCorrected}
@@ -1037,13 +1004,14 @@ export default function ValeursInitial() {
                 <StorageIcon sx={{ ml: "10px" }} />
               </Button>
               <Button
-                type="submit"
+                type="button"
                 variant="contained"
-                
+                onClick={calculateMeanFore}
+
                 sx={{
                   mx: "60px",
                   color: colors.primary[800],
-                  backgroundColor : 
+                  backgroundColor:
                     colors.redAccent[300],
                   fontWeight: "bold",
                   fontSize: "1.2rem",
@@ -1054,10 +1022,9 @@ export default function ValeursInitial() {
                 <CalculateIcon sx={{ ml: "10px" }} />
               </Button>
             </Box>
-          </form>   
-        )}            
+          </form>
+        )}
       </Formik>
     </Box>
   )
 }
- 
