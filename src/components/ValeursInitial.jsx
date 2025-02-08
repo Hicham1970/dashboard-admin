@@ -61,7 +61,7 @@ export default function ValeursInitial() {
   const [mtcPlus50, setMtcPlus50] = useState();
   const [quarterPlus50, setQuarterPlus50] = useState();
 
-  //  Exemple simplifié:
+  //  Fonctions de la logique 
   const calculateMeanFore = useCallback(() => {
     console.log("Calculating meanFore with:", forePort, foreStbd);
     const meanFore = ((Number(forePort) || 0) + (Number(foreStbd) || 0)) / 2;
@@ -152,12 +152,12 @@ export default function ValeursInitial() {
       foreCorrected =
         Number(meanForeValue) -
         ((Number(trimValue) * Number(foreDistanceValue)) / Number(lbmValue)) *
-          (Number(trimValue) > 0 ? 1 : -1);
+        (Number(trimValue) > 0 ? 1 : -1);
     } else if (foreDistance > 0) {
       foreCorrected =
         Number(meanForeValue) +
         ((Number(trimValue) * Number(foreDistanceValue)) / Number(lbmValue)) *
-          (Number(trimValue) > 0 ? 1 : -1);
+        (Number(trimValue) > 0 ? 1 : -1);
     } else if (foreDistance === 0) {
       foreCorrected = meanForeValue;
     }
@@ -207,7 +207,7 @@ export default function ValeursInitial() {
         Number(meanMidValue) -
         ((Number(trimValue) * Number(midDistanceValue)) / Number(lbmValue)) *
         (Number(trimValue) > 0 ? 1 : -1);
-    } else if (midDistance > 0){
+    } else if (midDistance > 0) {
       midCorrected =
         Number(meanMidValue) +
         ((Number(trimValue) * Number(midDistanceValue)) / Number(lbmValue)) *
@@ -218,6 +218,87 @@ export default function ValeursInitial() {
     console.log("midCorrected:", midCorrected);
     setMidCorrected(midCorrected.toFixed(2));
   }, [midDistance, lbm, meanMid, trim, lbp]);
+
+
+  const calculateTrimCorrected = useCallback(() => {
+    let trimCorrected = 0;
+    const foreCorrectedValue = foreCorrected;
+    const aftCorrectedValue = aftCorrected;
+
+    trimCorrected = Number(aftCorrectedValue) - Number(foreCorrectedValue);
+    setTrimCorrected(trimCorrected.toFixed(2));
+    console.log("trimCorrected:", trimCorrected);
+
+  }, [foreCorrected, aftCorrected])
+
+
+  const calculateMeanForeAft = useCallback(() => {
+    console.log("The meanForeAft was calculated with :", foreCorrected, aftCorrected);
+
+    let meanForeAft = 0;
+    const foreCorrectedValue = foreCorrected;
+    const aftCorrectedValue = aftCorrected;
+
+    meanForeAft = (Number(foreCorrectedValue) + Number(aftCorrectedValue)) / 2;
+    setMeanForeAft(meanForeAft.toFixed(2));
+
+  }, [foreCorrected, aftCorrected])
+
+  const calculateMeanOfMean = useCallback(() => {
+    console.log("The meanOfMean was calculated with :", meanForeAft, midCorrected);
+
+    let meanOfMean = 0;
+    const midCorrectedValue = midCorrected;
+    const meanForeAftValue = meanForeAft;
+
+    meanOfMean = (Number(midCorrectedValue) + Number(meanForeAftValue)) / 2;
+    setMeanOfMean(meanOfMean.toFixed(2));
+
+  }, [midCorrected, meanForeAft])
+
+  const calculateQuarterMean = useCallback(() => {
+    console.log("The quarterMean was calculated with :", meanOfMean, midCorrected);
+
+    let quarterMean = 0;
+    const midCorrectedValue = midCorrected;
+    const meanOfMeanValue = meanOfMean;
+
+    quarterMean = (Number(midCorrectedValue) + Number(meanOfMeanValue)) / 2;
+    setQuarterMean(quarterMean.toFixed(2));
+
+  }, [midCorrected, meanOfMean])
+
+  //  Calcul du displacement
+
+  const calculateDisplacement = useCallback(() => {
+    let displacement = 0;
+    const displacementSupValue = displacementSup;
+    const displacementInfValue = displacementInf;
+    const draftSupValue = draftSup;
+    const draftInfValue = draftInf;
+    const quarterMeanValue = quarterMean;
+
+    console.log("displacementInfValue:", displacementInfValue);
+    console.log("displacementSupValue:", displacementSupValue);
+    console.log("draftInfValue:", draftInfValue);
+    console.log("draftSupValue:", draftSupValue);
+    console.log("quarterMeanValue:", quarterMeanValue);
+
+
+
+    displacement = Number(displacementInfValue) +
+    ((Number(displacementSupValue) - Number(displacementInfValue)) / (Number(draftSupValue) - Number(draftInfValue))) *
+      (Number(draftSupValue ) - Number(quarterMeanValue));
+    
+    setDisplacement(displacement);
+    console.log(displacement)
+
+
+  }, [quarterMean, displacementSup, displacementInf, draftSup, draftInf])
+
+
+
+
 
   const handleChange = (e, setFieldValue) => {
     // Add setFieldValue
@@ -235,8 +316,20 @@ export default function ValeursInitial() {
     calculateForeCorrected();
     calculateAftCorrected();
     calculateMidCorrected();
-  }, [forePort, foreStbd, aftPort, aftStbd, midPort, midStbd, calculateMeanFore, calculateMeanAft, calculateMeanMid, calculateTrim, calculateLbm, calculateForeCorrected, calculateAftCorrected, calculateMidCorrected]);
-   
+    calculateMeanForeAft();
+    calculateTrimCorrected();
+    calculateMeanOfMean();
+    calculateQuarterMean();
+    calculateDisplacement();
+
+  }, [forePort, foreStbd, aftPort, aftStbd, midPort,
+     midStbd, calculateMeanFore, calculateMeanAft, 
+     calculateMeanMid, calculateTrim, calculateLbm, 
+     calculateForeCorrected, calculateAftCorrected, 
+     calculateMidCorrected, calculateMeanForeAft, 
+     calculateTrimCorrected, calculateMeanOfMean, 
+     calculateQuarterMean, calculateDisplacement, draftInf, draftSup]);
+
   return (
     <Box m="20px">
       <Header title="NEW CALCULATION" subtitle="Create a New draft survey" />
@@ -260,7 +353,7 @@ export default function ValeursInitial() {
             value={lbp}
             onChange={(e) => setLbp(e.target.value)}
             name="lbp"
-            sx={{ flexGrow: "1" }}
+            sx={{ flexGrow: "2" }}
           />
           <TextField
             fullWidth
@@ -281,14 +374,14 @@ export default function ValeursInitial() {
             value={density}
             name="density"
             sx={{
-              gridColumn: "span 1",  
+              gridColumn: "span 1",
             }}
           />
           <TextField
             fullWidth
             variant="filled"
             type="number"
-            placeholder="Trim"
+            label="Trim"
             onChange={(e) => setTrim(e.target.value)}
             value={trim}
             name="trim"
@@ -306,10 +399,10 @@ export default function ValeursInitial() {
             fullWidth
             variant="filled"
             type="number"
-            placeholder ="lbm"
+            label="lbm"
             onChange={(e) => setLbm(e.target.value)}
             value={lbm}
-            name="lbm"                
+            name="lbm"
             sx={{
               gridColumn: "span 1",
               color: colors.grey[500],
@@ -373,7 +466,7 @@ export default function ValeursInitial() {
             disabled
             variant="outlined"
             type="number"
-            placeholder="Mean Fore"
+            label="Mean Fore"
             onChange={() => calculateMeanFore()}
             value={meanFore}
             name="meanFore"
@@ -417,18 +510,24 @@ export default function ValeursInitial() {
             onChange={(e) => setAftDistance(e.target.value)}
             value={aftDistance}
             name="aftDistance"
-            sx={{ flexColumn: "span 2" }}
+            sx={{
+              flexColumn: "span 2",
+              textAlign: 'right'
+            }}
           />
           <TextField
             fullWidth
             disabled
             variant="outlined"
             type="number"
-            placeholder="Mean Aft"
+            label="Mean Aft"
             onChange={(e) => setMeanAft(e.target.value)}
             value={meanAft}
             name="meanAft"
-            sx={{ gridColumn: "span 4" }}
+            style={{ textAlign: 'right' }}
+            sx={{
+              gridColumn: "span 1"
+            }}
           />
         </Box>
         {/* Ligne4 */}
@@ -475,7 +574,7 @@ export default function ValeursInitial() {
             disabled
             variant="outlined"
             type="number"
-            placeholder="Mean Mid"
+            label="Mean Mid"
             onChange={(e) => setMeanMid(e.target.value)}
             value={meanMid}
             name="meanMid"
@@ -496,7 +595,7 @@ export default function ValeursInitial() {
             disabled
             variant="outlined"
             type="number"
-            placeholder="Fore Corrected"
+            label="Fore Corrected"
             onChange={(e) => setForeCorrected(e.target.value)}
             value={foreCorrected}
             name="foreCorrected"
@@ -505,25 +604,7 @@ export default function ValeursInitial() {
               color: colors.grey[500],
               backgroundColor: colors.greenAccent[700],
               fontWeight: "bold",
-              fontSize: "1.2rem",
-            borderRadius: "10px", 
-             }}
-          />
-          <TextField
-            fullWidth
-            disabled
-            variant="outlined"
-            type="number"
-            placeholder="Aft Corrected"
-            onChange={(e) => setAftCorrected(e.target.value)}
-            value={aftCorrected}
-            name="aftCorrected"
-            sx={{
-              flexColumn: "span 4",
-              color: colors.grey[500],
-              backgroundColor: colors.greenAccent[700],
-              fontWeight: "bold",
-              fontSize: "1.2rem",
+              fontSize: "2.2rem",
               borderRadius: "10px",
             }}
           />
@@ -532,18 +613,37 @@ export default function ValeursInitial() {
             disabled
             variant="outlined"
             type="number"
-            placeholder="Mid Corrected"
+            label="Aft Corrected"
+            onChange={(e) => setAftCorrected(e.target.value)}
+            value={aftCorrected}
+            name="aftCorrected"
+            sx={{
+              flexColumn: "span 4",
+              color: colors.grey[500],
+              backgroundColor: colors.greenAccent[700],
+              fontWeight: "bold",
+              fontSize: "2.2rem",
+              borderRadius: "10px",
+            }}
+          />
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            label="Mid Corrected"
             onChange={(e) => setMidCorrected(e.target.value)}
             value={midCorrected}
             name="midCorrected"
-            sx={{ flexColumn: "span 4",
-             color: colors.grey[500],
-               backgroundColor: colors.greenAccent[700],
-               fontWeight: "bold",
-               fontSize: "1.2rem",
-               borderRadius: "10px",
-            
-             }}
+            sx={{
+              flexColumn: "span 4",
+              color: colors.grey[500],
+              backgroundColor: colors.greenAccent[700],
+              fontWeight: "bold",
+              fontSize: "2.2rem",
+              borderRadius: "10px",
+
+            }}
           />
         </Box>
         {/* Ligne6 */}
@@ -560,7 +660,7 @@ export default function ValeursInitial() {
             disabled
             variant="outlined"
             type="number"
-            label="Trim Corrected"
+            label="TrimCor"
             onChange={(e) => setTrimCorrected(e.target.value)}
             value={trimCorrected}
             name="trimCorrected"
@@ -624,7 +724,7 @@ export default function ValeursInitial() {
             type="number"
             label="Draft Inf"
             onChange={(e) => setDraftInf(e.target.value)}
-            value={draftInf}
+            value={Number(quarterMean) - 0.1}
             name="draftInf"
             sx={{ flexColumn: "span 1", width: "200px" }}
           />
@@ -674,8 +774,8 @@ export default function ValeursInitial() {
               type="number"
               label="Quarter +50"
               onChange={(e) => setQuarterPlus50(e.target.value)}
-              value={quarterPlus50}
-              name="quarter50Inf"
+              value={Number(quarterMean) + 0.5}
+              name="quarter50Sup"
               sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
             />
 
@@ -719,7 +819,7 @@ export default function ValeursInitial() {
             type="number"
             label="Displacement"
             onChange={(e) => setDisplacement(e.target.value)}
-            value={displacement}
+            value={Number(displacement).toFixed(2)}
             name="displacement"
             sx={{ flexColumn: "span 1", width: "200px" }}
           />
@@ -760,8 +860,8 @@ export default function ValeursInitial() {
               variant="outlined"
               type="number"
               label="Quarter"
-              onChange={(e) => setQuarter}
-              value={quarter}
+              onChange={(e) => setQuarter(e.target.value)}
+              value={Number(quarterMean) + 0}
               name="quarter"
               sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
             />
@@ -773,7 +873,7 @@ export default function ValeursInitial() {
               type="number"
               label="Delta MTC"
               onChange={(e) => setMtc(e.target.value)}
-              value={mtc}
+              value={Number(mtcPlus50) - Number(mtcMinus50)}
               name="mtc"
               sx={{ flexColumn: "span 1", width: "130px" }}
             />
@@ -796,8 +896,8 @@ export default function ValeursInitial() {
             variant="outlined"
             type="number"
             label="Draft Sup"
-            onChange={(e) => setDraftSup}
-            value={draftSup}
+            onChange={(e) => setDraftSup(e.target.value)}
+            value={Number(quarterMean) + 0.1}
             name="draftSup"
             sx={{ flexColumn: "span 1", width: "200px" }}
           />
@@ -847,7 +947,7 @@ export default function ValeursInitial() {
               type="number"
               label="Quarter -50"
               onChange={(e) => setQuarterMinus50(e.target.value)}
-              value={quarterMinus50}
+              value={Number(quarterMean) - 0.5}
               name="quarterMinus50"
               sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
             />
