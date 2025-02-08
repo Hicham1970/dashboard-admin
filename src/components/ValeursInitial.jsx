@@ -1,1030 +1,963 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import { useTheme } from '@mui/material/styles';
-import {
-  Formik, Form, errors, touched, handleBlur, handleChange, handleSubmit,
-} from "formik";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import * as Yup from "yup";
-import Header from './Header';
-import StorageIcon from '@mui/icons-material/Storage';
-import CalculateIcon from '@mui/icons-material/Calculate';
-import { tokens } from './../theme';
-
+import Header from "./Header";
+import StorageIcon from "@mui/icons-material/Storage";
+import CalculateIcon from "@mui/icons-material/Calculate";
+import { tokens } from "./../theme";
 
 export default function ValeursInitial() {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const isNonMobile = useMediaQuery("(min-width: 600px)");
-  const [valeursInitial, setValeursInitial] = useState({
-    lbp: 0,
-    keelCorrection: 0,
-    foreDistance: 0,
-    aftDistance: 0,
-    midDistance: 0,
-    forePort: 0,
-    foreStbd: 0,
-    meanFore: '',
-    aftPort: 0,
-    aftStbd: 0,
-    meanAft: '',
-    midPort: '',
-    midStbd: 0,
-    meanMid: 0,
-    trim: '',
-    lbm: '',
-    foreCorrected: '',
-    aftCorrected: '',
-    midCorrected: '',
-    trimCorrected: '',
-    meanOfMean: '',
-    quarterMean: '',
-    meanForeAft: '',
-    density: 1.025,
-    draftSup: '',
-    draftInf: '',
-    displacementSup: '',
-    displacementInf: '',
-    displacement: '',
-    tpcSup: '',
-    tpcInf: '',
-    tpc: '',
-    lcfSup: '',
-    lcfInf: '',
-    lcf: '',
-    mtcSup: '',
-    mtcInf: '',
-    mtc: '',
-    quarter: '',
-    quarterPlus50: '',
-    quarterMinus50: '',
-    firstTrimCorrection: '',
-    secondTrimCorrection: '',
-    displacementDstyCorrected: '',
-    displacementTrimCorrected: '',
-
-  });
-
-
-
-
-  // Valide Number:
-  const numberRegexEp = /^\d+(\.\d{1,2})?$/;
-
-  // Validation schema
-  const validationSchema = Yup.object().shape({
-    lbp: Yup
-      .number()
-      .required("Required"),
-    keelCorrection: Yup.number().required("Required"),
-    aftDistance: Yup.number().required("Required"),
-    foreDistance: Yup.number().required("Required"),
-    midDistance: Yup.number().required("Required"),
-    forePort: Yup.number().required("Required"),
-    foreStbd: Yup.number().required("Required"),
-    aftPort: Yup.number().required("Required"),
-    aftStbd: Yup.number().required("Required"),
-    midPort: Yup.number().required("Required"),
-    midStbd: Yup.number().required("Required"),
-    density: Yup.number().required("Required"),
-    draftInf: Yup.number().required("Required"),
-    displacementInf: Yup.number().required("Required"),
-    tpcInf: Yup.number().required("Required"),
-    lcfInf: Yup.number().required("Required"),
-    mtcPlus50: Yup.number().required("Required"),
-    mtcMinus50: Yup.number().required("Required"),
-    draftSup: Yup.number().required("Required"),
-    displacementSup: Yup.number().required("Required"),
-    tpcSup: Yup.number().required("Required"),
-    lcfSup: Yup.number().required("Required"),
-  });
-
-
+  const [lbp, setLbp] = useState();
+  const [keelCorrection, setKeelCorrection] = useState();
+  const [foreDistance, setForeDistance] = useState();
+  const [aftDistance, setAftDistance] = useState();
+  const [midDistance, setMidDistance] = useState();
+  const [forePort, setForePort] = useState();
+  const [foreStbd, setForeStbd] = useState();
+  const [meanFore, setMeanFore] = useState();
+  const [aftPort, setAftPort] = useState();
+  const [aftStbd, setAftStbd] = useState();
+  const [meanAft, setMeanAft] = useState();
+  const [midPort, setMidPort] = useState();
+  const [midStbd, setMidStbd] = useState();
+  const [meanMid, setMeanMid] = useState();
+  const [trim, setTrim] = useState();
+  const [lbm, setLbm] = useState();
+  const [foreCorrected, setForeCorrected] = useState();
+  const [aftCorrected, setAftCorrected] = useState();
+  const [midCorrected, setMidCorrected] = useState();
+  const [trimCorrected, setTrimCorrected] = useState();
+  const [meanOfMean, setMeanOfMean] = useState();
+  const [quarterMean, setQuarterMean] = useState();
+  const [meanForeAft, setMeanForeAft] = useState();
+  const [density, setDensity] = useState();
+  const [draftSup, setDraftSup] = useState();
+  const [draftInf, setDraftInf] = useState();
+  const [displacementSup, setDisplacementSup] = useState();
+  const [displacementInf, setDisplacementInf] = useState();
+  const [displacement, setDisplacement] = useState();
+  const [tpc, setTpc] = useState();
+  const [lcf, setLcf] = useState();
+  const [quarter, setQuarter] = useState();
+  const [mtc, setMtc] = useState();
+  const [tpcSup, setTpcSup] = useState();
+  const [tpcInf, setTpcInf] = useState();
+  const [lcfSup, setLcfSup] = useState();
+  const [lcfInf, setLcfInf] = useState();
+  const [quarterMinus50, setQuarterMinus50] = useState();
+  const [mtcMinus50, setMtcMinus50] = useState();
+  const [firstTrimCorrection, setFirstTrimCorrection] = useState();
+  const [secondTrimCorrection, setSecondTrimCorrection] = useState();
+  const [displacementTrimCorrected, setDisplacementTrimCorrected] = useState();
+  const [displacementDstyCorrected, setDisplacementDstyCorrected] = useState();
+  const [mtcPlus50, setMtcPlus50] = useState();
+  const [quarterPlus50, setQuarterPlus50] = useState();
 
   //  Exemple simplifié:
   const calculateMeanFore = useCallback(() => {
-    const { forePort, foreStbd } = valeursInitial; // Use Formik's "values"
     console.log("Calculating meanFore with:", forePort, foreStbd);
-    return ((Number(forePort) || 0) + (Number(foreStbd) || 0)) / 2;
-  }, [valeursInitial]);
-
-  const meanFore = useMemo(() => calculateMeanFore(), [calculateMeanFore]);
-
+    const meanFore = ((Number(forePort) || 0) + (Number(foreStbd) || 0)) / 2;
+    console.log("Calculated meanFore:", meanFore);
+    setMeanFore(meanFore.toFixed(2));
+  }, [forePort, foreStbd]);
 
   const calculateMeanAft = useCallback(() => {
-    const { aftPort, aftStbd } = valeursInitial;
-    return ((Number(aftPort) || 0) + (Number(aftStbd) || 0)) / 2;
-  }, [valeursInitial]);
-  console.log('MeanAft:', calculateMeanAft())
+    console.log("Calculating meanAft with:", aftPort, aftStbd);
+    const meanAft = ((Number(aftPort) || 0) + (Number(aftStbd) || 0)) / 2;
+    console.log("Calculated meanAft:", meanAft);
+    setMeanAft(meanAft.toFixed(2));
+  }, [aftPort, aftStbd]);
 
   const calculateMeanMid = useCallback(() => {
-    const { midPort, midStbd } = valeursInitial;
-    return ((Number(midPort) || 0) + (Number(midStbd) || 0)) / 2;
-  }, [valeursInitial]);
-  console.log('MeanMid:', calculateMeanMid())
-
+    console.log("Calculating meanMid with:", midPort, midStbd);
+    const meanMid = ((Number(midPort) || 0) + (Number(midStbd) || 0)) / 2;
+    console.log("Calculated meanMid:", meanMid);
+    setMeanMid(meanMid.toFixed(2));
+  }, [midPort, midStbd]);
 
   const calculateTrim = useCallback(() => {
-    return (calculateMeanAft() || 0) - (calculateMeanFore() || 0);
-  }, [calculateMeanAft, calculateMeanFore]);
+    console.log("Calculate trim with:", meanAft, meanFore);
+    const trim = Number(meanAft) - Number(meanFore);
+    setTrim(trim.toFixed(2));
+    console.log(trim);
+  }, [meanAft, meanFore]);
 
-  useEffect(() => {
-    setValeursInitial((prev) => ({
-      ...prev,
-      meanFore: calculateMeanFore(),
-      meanAft: calculateMeanAft(),
-      meanMid: calculateMeanMid(),
-      trim: calculateTrim(),
-    }));
-  }, [calculateMeanFore, calculateMeanAft, calculateMeanMid, calculateTrim]);
+  const calculateLbm = useCallback(() => {
+    // Ensure lbp, foreDistance, and aftDistance have valid numeric values
+    const lbpValue = Number(lbp) || 0;
+    const foreDistanceValue = Number(foreDistance) || 0;
+    const aftDistanceValue = Number(aftDistance) || 0;
 
+    let lbm = lbpValue;
 
+    // Calcul du LBM en fonction des types de distance
+    if (foreDistanceValue < 0 && aftDistanceValue > 0) {
+      // LBM = LBP - Distance Avant - Distance Arrière
+      lbm = lbpValue - foreDistanceValue - aftDistanceValue;
+    } else if (foreDistanceValue > 0 && aftDistanceValue < 0) {
+      // LBM = LBP + Distance Avant + Distance Arrière
+      lbm = lbpValue + foreDistanceValue + aftDistanceValue;
+    } else if (foreDistanceValue < 0 && aftDistanceValue < 0) {
+      // LBM = LBP - Distance Avant - Distance Arrière
+      lbm = lbpValue - foreDistanceValue - aftDistanceValue;
+    } else if (foreDistanceValue > 0 && aftDistanceValue > 0) {
+      // LBM = LBP + Distance Avant - Distance Arrière
+      lbm = lbpValue + foreDistanceValue - aftDistanceValue;
+    } else if (foreDistanceValue === 0 && aftDistanceValue < 0) {
+      // LBM = LBP - Distance Arrière
+      lbm = lbpValue - aftDistanceValue;
+    } else if (foreDistanceValue === 0 && aftDistanceValue > 0) {
+      // LBM = LBP - Distance Arrière
+      lbm = lbpValue - aftDistanceValue;
+    } else if (foreDistanceValue < 0 && aftDistanceValue === 0) {
+      // LBM = LBP - Distance Avant
+      lbm = lbpValue - foreDistanceValue;
+    } else if (foreDistanceValue > 0 && aftDistanceValue === 0) {
+      // LBM = LBP + Distance Avant
+      lbm = lbpValue + foreDistanceValue;
+    } else if (foreDistanceValue === 0 && aftDistanceValue === 0) {
+      // LBM = LBP
+      lbm = lbpValue;
+    }
 
-  const handleChange = (e, setFieldValue) => { // Add setFieldValue
+    console.log(
+      "Calculating LBM with:",
+      foreDistanceValue,
+      aftDistanceValue,
+      lbpValue
+    );
+    console.log("LBM:", lbm);
+    setLbm(lbm.toFixed(2), "m"); // Convert lbm to meters
+  }, [foreDistance, aftDistance, lbp]);
+
+  const calculateForeCorrected = useCallback(() => {
+    console.log("Calculating foreCorrected with:", forePort, foreStbd, lbp);
+    // Calcul des drafts Corrigés:
+    let foreCorrected = 0;
+
+    const trimValue = trim;
+    const lbmValue = lbm;
+    const foreDistanceValue = foreDistance;
+    const meanForeValue = meanFore;
+
+    if (foreDistance < 0) {
+      foreCorrected =
+        Number(meanForeValue) -
+        ((Number(trimValue) * Number(foreDistanceValue)) / Number(lbmValue)) *
+          (Number(trimValue) > 0 ? 1 : -1);
+    } else if (foreDistance > 0) {
+      foreCorrected =
+        Number(meanForeValue) +
+        ((Number(trimValue) * Number(foreDistanceValue)) / Number(lbmValue)) *
+          (Number(trimValue) > 0 ? 1 : -1);
+    } else if (foreDistance === 0) {
+      foreCorrected = meanForeValue;
+    }
+    console.log("foreCorrected:", foreCorrected);
+    setForeCorrected(foreCorrected.toFixed(2));
+  }, [foreDistance, lbm, meanFore, trim, lbp, forePort, foreStbd]);
+
+  const calculateAftCorrected = useCallback(() => {
+    console.log("Calculating foreCorrected with:", aftPort, aftStbd, lbp);
+    // Calcul des drafts Corrigés:
+    let aftCorrected = 0;
+
+    const trimValue = trim;
+    const lbmValue = lbm;
+    const aftDistanceValue = aftDistance;
+    const meanAftValue = meanAft;
+
+    if (aftDistance < 0) {
+      aftCorrected =
+        Number(meanAftValue) -
+        ((Number(trimValue) * Number(aftDistanceValue)) / Number(lbmValue)) *
+        (Number(trimValue) > 0 ? 1 : -1);
+    } else if (aftDistance > 0) {
+      aftCorrected =
+        Number(meanAftValue) +
+        ((Number(trimValue) * Number(aftDistanceValue)) / Number(lbmValue)) *
+        (Number(trimValue) > 0 ? 1 : -1);
+    } else if (aftDistance === 0) {
+      aftCorrected = meanAftValue;
+    }
+    console.log("foreCorrected:", aftCorrected);
+    setAftCorrected(aftCorrected.toFixed(2));
+  }, [aftDistance, lbm, meanAft, trim, lbp, aftPort, aftStbd]);
+
+  const calculateMidCorrected = useCallback(() => {
+    console.log("Calculating MidCorrected with:", meanMid, lbm, lbp, midDistance, trim);
+    // Calcul des drafts Corrigés:
+    let midCorrected = 0;
+
+    const trimValue = trim;
+    const lbmValue = lbm;
+    const midDistanceValue = midDistance;
+    const meanMidValue = meanMid;
+
+    if (midDistance < 0) {
+      midCorrected =
+        Number(meanMidValue) -
+        ((Number(trimValue) * Number(midDistanceValue)) / Number(lbmValue)) *
+        (Number(trimValue) > 0 ? 1 : -1);
+    } else if (midDistance > 0){
+      midCorrected =
+        Number(meanMidValue) +
+        ((Number(trimValue) * Number(midDistanceValue)) / Number(lbmValue)) *
+        (Number(trimValue) > 0 ? 1 : -1);
+    } else if (midDistance === 0) {
+      midCorrected = meanMidValue;
+    }
+    console.log("midCorrected:", midCorrected);
+    setMidCorrected(midCorrected.toFixed(2));
+  }, [midDistance, lbm, meanMid, trim, lbp]);
+
+  const handleChange = (e, setFieldValue) => {
+    // Add setFieldValue
     const { name, value } = e.target;
     setFieldValue(name, value); // Use setFieldValue to update Formik state
   };
 
-  const meanAft = useMemo(() => calculateMeanAft(), [calculateMeanAft]);
-  const meanMid = useMemo(() => calculateMeanMid(), [calculateMeanMid]);
 
-  const handleFormSubmit = (values) => {
-    console.log('Form valeursInitial:', values);
-    // Perform calculations with the submitted values
-    const calculatedValues = {
-      ...values,
-      meanFore: calculateMeanFore(),
-      meanAft: calculateMeanAft(),
-      meanMid: calculateMeanMid(),
-      trim: calculateTrim()
-      // ... any other calculations you need
-    }
-    alert('Form valeursInitial submitted:', calculatedValues); // Show calculated values
-  };
-
+  useEffect(() => {
+    calculateMeanFore();
+    calculateMeanAft();
+    calculateMeanMid();
+    calculateTrim();
+    calculateLbm();
+    calculateForeCorrected();
+    calculateAftCorrected();
+    calculateMidCorrected();
+  }, [forePort, foreStbd, aftPort, aftStbd, midPort, midStbd, calculateMeanFore, calculateMeanAft, calculateMeanMid, calculateTrim, calculateLbm, calculateForeCorrected, calculateAftCorrected, calculateMidCorrected]);
+   
   return (
     <Box m="20px">
       <Header title="NEW CALCULATION" subtitle="Create a New draft survey" />
-      <Formik
-        onSubmit={(values) => {
-          console.log(values); // Accès à values dans onSubmit
-        }}
-        initialValues={valeursInitial}
-        validationSchema={validationSchema}
-      >
-        {({
-          values,
-          errors,
-          valeursInitial,
-          setFieldValue,
-          touched,
-          handleBlur,
-          handleChange,
-          handleSubmit
-        }) => (
-          <form onSubmit={handleSubmit}>
-            <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              flexDirection="row"
-              mx="auto"
-              gap="20px"
+      <form>
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          flexDirection="row"
+          mx="auto"
+          gap="20px"
+          sx={{
+            width: "500px",
+          }}
+        >
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="Lbp"
+            value={lbp}
+            onChange={(e) => setLbp(e.target.value)}
+            name="lbp"
+            sx={{ flexGrow: "1" }}
+          />
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="Keel Correction"
+            value={keelCorrection}
+            onChange={(e) => setKeelCorrection(e.target.value)}
+            name="keelCorrection"
+            sx={{ gridColumn: "span 1" }}
+          />
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="Density"
+            onChange={(e) => setDensity(e.target.value)}
+            value={density}
+            name="density"
+            sx={{
+              gridColumn: "span 1",  
+            }}
+          />
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            placeholder="Trim"
+            onChange={(e) => setTrim(e.target.value)}
+            value={trim}
+            name="trim"
+            sx={{
+              flexColumn: "span 1",
+              color: colors.grey[500],
+              backgroundColor: colors.redAccent[700],
+              fontWeight: "bold",
+              fontSize: "1.2rem",
+              borderRadius: "10px",
+            }}
+          />
 
-              sx={{
-                width: "500px",
-              }}
-            >
-              <TextField
-                fullWidth
-                variant="filled"
-                type="number"
-                label="Lbp"
-                onBlur={handleBlur}
-                onChange={handleChange} // Pass setFieldValue
-                value={values.lbp}
-                name="lbp"
-                error={!!touched.lbp && !!errors.lbp}
-                helperText={touched.lbp && errors.lbp}
-                sx={{ flexGrow: "1" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="number"
-                label="Keel Correction"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.keelCorrection}
-                name="keelCorrection"
-                error={!!touched.keelCorrection && !!errors.keelCorrection}
-                helperText={touched.keelCorrection && errors.keelCorrection}
-                sx={{ gridColumn: "span 1" }}
-              />
-              <TextField
-                fullWidth
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            placeholder ="lbm"
+            onChange={(e) => setLbm(e.target.value)}
+            value={lbm}
+            name="lbm"                
+            sx={{
+              gridColumn: "span 1",
+              color: colors.grey[500],
+              backgroundColor: colors.redAccent[700],
+              fontWeight: "bold",
+              fontSize: "1.2rem",
+              borderRadius: "10px"
+            }}
+          />
+        </Box>
+        {/* Ligne2 */}
+        <Box
+          sx={{
+            borderBottom: "4px solid",
+            borderColor: colors.blueAccent[100],
+            margin: "20px 0",
+          }}
+        ></Box>
 
-                variant="filled"
-                type="number"
-                label="Density"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.density}
-                name="density"
-                error={!!touched.density && !!errors.density}
-                helperText={touched.density && errors.density}
-                sx={{ gridColumn: "span 1" }}
-              />
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Trim"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={calculateTrim()}
-                name="trim"
-                error={!!touched.trim && !!errors.trim}
-                helperText={touched.trim && errors.trim}
-                sx={{ gridColumn: "span 1" }}
-              />
+        {/* Ligne2 */}
+        <Box
+          mt="40px"
+          display="flex"
+          gap="30px"
+          sx={{
+            "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
+          }}
+        >
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="Fore Port"
+            onChange={(e) => setForePort(e.target.value)}
+            value={forePort}
+            name="forePort"
+            sx={{ gridColumn: "span 4" }}
+          />
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="fore Stbd"
+            onChange={(e) => setForeStbd(e.target.value)}
+            value={foreStbd}
+            name="foreStbd"
+            sx={{ flexColumn: "span 2" }}
+          />
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="fore Distance"
+            onChange={(e) => setForeDistance(e.target.value)}
+            value={foreDistance}
+            name="foreDistance"
+            sx={{ flexColumn: "span 2" }}
+          />
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            placeholder="Mean Fore"
+            onChange={() => calculateMeanFore()}
+            value={meanFore}
+            name="meanFore"
+            sx={{ gridColumn: "span 4" }}
+          />
+        </Box>
+        {/* Ligne3 */}
+        <Box
+          mt="10px"
+          display="flex"
+          gap="30px"
+          sx={{
+            "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
+          }}
+        >
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="Aft Port"
+            onChange={(e) => setAftPort(e.target.value)}
+            value={aftPort}
+            name="aftPort"
+            sx={{ gridColumn: "span 4" }}
+          />
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="Aft Stbd"
+            onChange={(e) => setAftStbd(e.target.value)}
+            value={aftStbd}
+            name="aftStbd"
+            sx={{ flexColumn: "span 2" }}
+          />
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="Aft Distance"
+            onChange={(e) => setAftDistance(e.target.value)}
+            value={aftDistance}
+            name="aftDistance"
+            sx={{ flexColumn: "span 2" }}
+          />
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            placeholder="Mean Aft"
+            onChange={(e) => setMeanAft(e.target.value)}
+            value={meanAft}
+            name="meanAft"
+            sx={{ gridColumn: "span 4" }}
+          />
+        </Box>
+        {/* Ligne4 */}
+        <Box
+          mt="10px"
+          display="flex"
+          gap="30px"
+          sx={{
+            "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
+          }}
+        >
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="Mid Port"
+            onChange={(e) => setMidPort(e.target.value)}
+            value={midPort}
+            name="midPort"
+            sx={{ gridColumn: "span 4" }}
+          />
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="Mid Stbd"
+            onChange={(e) => setMidStbd(e.target.value)}
+            value={midStbd}
+            name="midStbd"
+            sx={{ flexColumn: "span 2" }}
+          />
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="Mid Distance"
+            onChange={(e) => setMidDistance(e.target.value)}
+            value={midDistance}
+            name="midDistance"
+            sx={{ flexColumn: "span 2" }}
+          />
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            placeholder="Mean Mid"
+            onChange={(e) => setMeanMid(e.target.value)}
+            value={meanMid}
+            name="meanMid"
+            sx={{ gridColumn: "span 4" }}
+          />
+        </Box>
+        {/* Ligne5 */}
+        <Box
+          mt="20px"
+          display="flex"
+          gap="50px"
+          sx={{
+            "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
+          }}
+        >
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            placeholder="Fore Corrected"
+            onChange={(e) => setForeCorrected(e.target.value)}
+            value={foreCorrected}
+            name="foreCorrected"
+            sx={{
+              gridColumn: "span 4",
+              color: colors.grey[500],
+              backgroundColor: colors.greenAccent[700],
+              fontWeight: "bold",
+              fontSize: "1.2rem",
+            borderRadius: "10px", 
+             }}
+          />
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            placeholder="Aft Corrected"
+            onChange={(e) => setAftCorrected(e.target.value)}
+            value={aftCorrected}
+            name="aftCorrected"
+            sx={{
+              flexColumn: "span 4",
+              color: colors.grey[500],
+              backgroundColor: colors.greenAccent[700],
+              fontWeight: "bold",
+              fontSize: "1.2rem",
+              borderRadius: "10px",
+            }}
+          />
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            placeholder="Mid Corrected"
+            onChange={(e) => setMidCorrected(e.target.value)}
+            value={midCorrected}
+            name="midCorrected"
+            sx={{ flexColumn: "span 4",
+             color: colors.grey[500],
+               backgroundColor: colors.greenAccent[700],
+               fontWeight: "bold",
+               fontSize: "1.2rem",
+               borderRadius: "10px",
+            
+             }}
+          />
+        </Box>
+        {/* Ligne6 */}
+        <Box
+          mt="20px"
+          display="flex"
+          gap="100px"
+          sx={{
+            "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
+          }}
+        >
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            label="Trim Corrected"
+            onChange={(e) => setTrimCorrected(e.target.value)}
+            value={trimCorrected}
+            name="trimCorrected"
+            sx={{ gridColumn: "span 4" }}
+          />
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            label="Mean F/A"
+            onChange={(e) => setMeanForeAft(e.target.value)}
+            value={meanForeAft}
+            name="meanForeAft"
+            sx={{ flexColumn: "span 2" }}
+          />
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            label="Mean Of Mean"
+            onChange={(e) => setMeanOfMean(e.target.value)}
+            value={meanOfMean}
+            name="meanOfMean"
+            sx={{ flexColumn: "span 2" }}
+          />
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            label="quarterMean"
+            onChange={(e) => setQuarterMean(e.target.value)}
+            value={quarterMean}
+            name="quarterMean"
+            sx={{ gridColumn: "span 4" }}
+          />
+        </Box>
+        <Box
+          sx={{
+            borderBottom: "6px solid",
+            borderColor: colors.greenAccent[100],
+            margin: "20px 0",
+          }}
+        ></Box>
+        {/* Ligne 7  */}
 
+        <Box
+          mt="60px"
+          display="flex"
+          gap="10px"
+          sx={{
+            "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
+          }}
+        >
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            label="Draft Inf"
+            onChange={(e) => setDraftInf(e.target.value)}
+            value={draftInf}
+            name="draftInf"
+            sx={{ flexColumn: "span 1", width: "200px" }}
+          />
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="Dis Inf"
+            onChange={(e) => setDisplacementInf(e.target.value)}
+            value={displacementInf}
+            name="displacementInf"
+            sx={{ flexColumn: "span 1", width: "200px" }}
+          />
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="TPC Inf"
+            onChange={(e) => setTpcInf(e.target.value)}
+            value={tpcInf}
+            name="tpcInf"
+            sx={{ flexColumn: "span 1", width: "200px" }}
+          />
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="LCF Inf"
+            onChange={(e) => setLcfInf(e.target.value)}
+            value={lcfInf}
+            name="lcfInf"
+            sx={{ flexColumn: "span 1", width: "200px" }}
+          />
 
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="lbm"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.lbm}
-                name="lbm"
-                error={!!touched.lbm && !!errors.lbm}
-                helperText={touched.lbm && errors.lbm}
-                sx={{ gridColumn: "span 1" }}
-              />
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mx: "40px",
+            }}
+          >
+            <TextField
+              fullWidth
+              disabled
+              variant="outlined"
+              type="number"
+              label="Quarter +50"
+              onChange={(e) => setQuarterPlus50(e.target.value)}
+              value={quarterPlus50}
+              name="quarter50Inf"
+              sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
+            />
 
-            </Box >
-            <Box
-              sx={{
-                borderBottom: "4px solid",
-                borderColor: colors.blueAccent[100],
-                margin: "20px 0",
-              }}
-            ></Box>
+            <TextField
+              fullWidth
+              variant="filled"
+              type="number"
+              label="MTC +50"
+              onChange={(e) => setMtcPlus50(e.target.value)}
+              value={mtcPlus50}
+              name="mtcPlus50"
+              sx={{ flexColumn: "span 1", width: "130px" }}
+            />
+          </Box>
+        </Box>
+        {/* Ligne 8  */}
 
-            {/* Ligne2 */}
-            <Box
-              mt="40px"
-              display="flex"
-              gap="30px"
+        <Box
+          mt="10px"
+          display="flex"
+          gap="10px"
+          sx={{
+            "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
+          }}
+        >
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            label="QuarterMean"
+            onChange={(e) => setQuarterMean(e.target.value)}
+            value={quarterMean}
+            name="quarterMean"
+            sx={{ flexColumn: "span 1", width: "200px" }}
+          />
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            label="Displacement"
+            onChange={(e) => setDisplacement(e.target.value)}
+            value={displacement}
+            name="displacement"
+            sx={{ flexColumn: "span 1", width: "200px" }}
+          />
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            label="TPC"
+            onChange={(e) => setTpc(e.target.value)}
+            value={tpc}
+            name="tpc"
+            sx={{ flexColumn: "span 1", width: "200px" }}
+          />
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            label="LCF"
+            onChange={(e) => setLcf(e.target.value)}
+            value={lcf}
+            name="lcf"
+            sx={{ flexColumn: "span 1", width: "200px" }}
+          />
 
-              sx={{
-                "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
-              }}
-            >
-              <TextField
-                fullWidth
-                variant="filled"
-                type="number"
-                label="Fore Port"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.forePort}
-                name="forePort"
-                error={!!touched.forePort && !!errors.forePort}
-                helperText={touched.forePort && errors.forePort}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="number"
-                label="fore Stbd"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.foreStbd}
-                name="foreStbd"
-                error={!!touched.foreStbd && !!errors.foreStbd}
-                helperText={touched.foreStbd && errors.foreStbd}
-                sx={{ flexColumn: "span 2" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="number"
-                label="fore Distance"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.foreDistance}
-                name="foreDistance"
-                error={!!touched.foreDistance && !!errors.foreDistance}
-                helperText={touched.foreDistance && errors.foreDistance}
-                sx={{ flexColumn: "span 2" }}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mx: "40px",
+            }}
+          >
+            <TextField
+              fullWidth
+              disabled
+              variant="outlined"
+              type="number"
+              label="Quarter"
+              onChange={(e) => setQuarter}
+              value={quarter}
+              name="quarter"
+              sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
+            />
 
-              />
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Mean Fore"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={
-                  calculateMeanFore()
-                }
-                name="meanFore"
-                error={!!touched.meanFore && !!errors.meanFore}
-                helperText={touched.meanFore && errors.meanFore}
-                sx={{ gridColumn: "span 4" }}
-              />
-            </Box>
+            <TextField
+              fullWidth
+              disabled
+              variant="outlined"
+              type="number"
+              label="Delta MTC"
+              onChange={(e) => setMtc(e.target.value)}
+              value={mtc}
+              name="mtc"
+              sx={{ flexColumn: "span 1", width: "130px" }}
+            />
+          </Box>
+        </Box>
 
-            {/* Ligne3 */}
-            <Box
-              mt="10px"
-              display="flex"
-              gap="30px"
+        {/* Ligne 9  */}
 
-              sx={{
-                "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
-              }}
-            >
-              <TextField
-                fullWidth
-                variant="filled"
-                type="number"
-                label="Aft Port"
-                onBlur={handleBlur}
-                onChange={(e) => handleChange(e, setFieldValue)}
-                value={values.aftPort}
-                name="aftPort"
-                error={!!touched.aftPort && !!errors.aftPort}
-                helperText={touched.aftPort && errors.aftPort}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="number"
-                label="Aft Stbd"
-                onBlur={handleBlur}
-                onChange={(e) => handleChange(e, setFieldValue)}
-                value={values.aftStbd}
-                name="aftStbd"
-                error={!!touched.aftStbd && !!errors.aftStbd}
-                helperText={touched.aftStbd && errors.aftStbd}
-                sx={{ flexColumn: "span 2" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="number"
-                label="Aft Distance"
-                onBlur={handleBlur}
-                onChange={(e) => handleChange(e, setFieldValue)}
-                value={values.aftDistance}
-                name="aftDistance"
-                error={!!touched.aftDistance && !!errors.aftDistance}
-                helperText={touched.aftDistance && errors.aftDistance}
-                sx={{ flexColumn: "span 2" }}
+        <Box
+          mt="10px"
+          display="flex"
+          gap="10px"
+          sx={{
+            "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
+          }}
+        >
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            label="Draft Sup"
+            onChange={(e) => setDraftSup}
+            value={draftSup}
+            name="draftSup"
+            sx={{ flexColumn: "span 1", width: "200px" }}
+          />
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="Dis Sup"
+            onChange={(e) => setDisplacementSup(e.target.value)}
+            value={displacementSup}
+            name="displacementSup"
+            sx={{ flexColumn: "span 1", width: "200px" }}
+          />
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="TPC Sup"
+            onChange={(e) => setTpcSup(e.target.value)}
+            value={tpcSup}
+            name="tpcSup"
+            sx={{ flexColumn: "span 1", width: "200px" }}
+          />
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="LCF Sup"
+            onChange={(e) => setLcfSup(e.target.value)}
+            value={lcfSup}
+            name="lcfSup"
+            sx={{ flexColumn: "span 1", width: "200px" }}
+          />
 
-              />
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Mean Aft"
-                onBlur={handleBlur}
-                onChange={(e) => handleChange(e, setFieldValue)}
-                value={meanAft}
-                name="meanAft"
-                error={!!touched.meanAft && !!errors.meanAft}
-                helperText={touched.meanAft && errors.meanAft}
-                sx={{ gridColumn: "span 4" }}
-              />
-            </Box>
-            {/* Ligne4 */}
-            <Box
-              mt="10px"
-              display="flex"
-              gap="30px"
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mx: "40px",
+            }}
+          >
+            <TextField
+              fullWidth
+              disabled
+              variant="outlined"
+              type="number"
+              label="Quarter -50"
+              onChange={(e) => setQuarterMinus50(e.target.value)}
+              value={quarterMinus50}
+              name="quarterMinus50"
+              sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
+            />
 
-              sx={{
-                "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
-              }}
-            >
-              <TextField
-                fullWidth
-                variant="filled"
-                type="number"
-                label="Mid Port"
-                onBlur={handleBlur}
-                onChange={(e) => handleChange(e, setFieldValue)}
-                value={values.midPort}
-                name="midPort"
-                error={!!touched.midPort && !!errors.midPort}
-                helperText={touched.midPort && errors.midPort}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="number"
-                label="Mid Stbd"
-                onBlur={handleBlur}
-                onChange={(e) => handleChange(e, setFieldValue)}
-                value={values.midStbd}
-                name="midStbd"
-                error={!!touched.midStbd && !!errors.midStbd}
-                helperText={touched.midStbd && errors.midStbd}
-                sx={{ flexColumn: "span 2" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="number"
-                label="Mid Distance"
-                onBlur={handleBlur}
-                onChange={(e) => handleChange(e, setFieldValue)}
-                value={values.midDistance}
-                name="midDistance"
-                error={!!touched.midDistance && !!errors.midDistance}
-                helperText={touched.midDistance && errors.midDistance}
-                sx={{ flexColumn: "span 2" }}
+            <TextField
+              fullWidth
+              variant="filled"
+              type="number"
+              label="MTC-50"
+              onChange={(e) => setMtcMinus50(e.target.value)}
+              value={mtcMinus50}
+              name="mtcMinus50"
+              sx={{ flexColumn: "span 1", width: "130px" }}
+            />
+          </Box>
+        </Box>
+        {/* Ligne 10 */}
+        <Box
+          mt="20px"
+          display="flex"
+          gap="10px"
+          sx={{
+            "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
+          }}
+        >
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            label="F T C "
+            onChange={(e) => setFirstTrimCorrection(e.target.value)}
+            value={firstTrimCorrection}
+            name="firstTrimCorrection"
+            sx={{ gridColumn: "span 4" }}
+          />
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            label="S T C"
+            onChange={(e) => setSecondTrimCorrection(e.target.value)}
+            value={secondTrimCorrection}
+            name="secondTrimCorrection"
+            sx={{ flexColumn: "span 2" }}
+          />
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            label="Dis Corr Trim"
+            onChange={(e) => setDisplacementTrimCorrected(e.target.value)}
+            value={displacementTrimCorrected}
+            name="displacementTrimCorrected"
+            sx={{ flexColumn: "span 2" }}
+          />
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            label="Dis Corr Dsty"
+            onChange={(e) => setDisplacementDstyCorrected(e.target.value)}
+            value={displacementDstyCorrected}
+            name="displacementDstyCorrected"
+            sx={{ gridColumn: "span 4" }}
+          />
+        </Box>
 
-              />
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Mean Mid"
-                onBlur={handleBlur}
-                onChange={(e) => handleChange(e, setFieldValue)}
-                value={meanMid}
-                name="meanMid"
-                error={!!touched.meanMid && !!errors.meanMid}
-                helperText={touched.meanMid && errors.meanMid}
-                sx={{ gridColumn: "span 4" }}
-              />
-            </Box>
-            {/* Ligne5 */}
-            <Box
-              mt="20px"
-              display="flex"
-              gap="50px"
-
-              sx={{
-                "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
-              }}
-            >
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Fore Corrected"
-                onBlur={handleBlur}
-                onChange={(e) => handleChange(e, setFieldValue)}
-                value={setValeursInitial.foreCorrected}
-                name="foreCorrected"
-                error={!!touched.foreCorrected && !!errors.foreCorrected}
-                helperText={touched.foreCorrected && errors.foreCorrected}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Aft Corrected"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={setValeursInitial.aftCorrected}
-                name="aftCorrected"
-                error={!!touched.aftCorrected && !!errors.aftCorrected}
-                helperText={touched.aftCorrected && errors.aftCorrected}
-                sx={{ flexColumn: "span 2" }}
-
-              />
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Mid Corrected"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={setValeursInitial.midCorrected}
-                name="midCorrected"
-                error={!!touched.midCorrected && !!errors.midCorrected}
-                helperText={touched.midCorrected && errors.midCorrected}
-              />
-            </Box>
-
-            {/* Ligne6 */}
-            <Box
-              mt="20px"
-              display="flex"
-              gap="100px"
-
-              sx={{
-                "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
-              }}
-            >
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Trim Corrected"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={setValeursInitial.trimCorrected}
-                name="trimCorrected"
-                error={!!touched.midPort && !!errors.midPort}
-                helperText={touched.midPort && errors.midPort}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Mean F/A"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={setValeursInitial.meanForeAft}
-                name="meanForeAft"
-                error={!!touched.meanForeAft && !!errors.meanForeAft}
-                helperText={touched.meanForeAft && errors.meanForeAft}
-                sx={{ flexColumn: "span 2" }}
-              />
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Mean Of Mean"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={setValeursInitial.meanOfMean}
-                name="meanOfMean"
-                error={!!touched.meanOfMean && !!errors.meanOfMean}
-                helperText={touched.meanOfMean && errors.meanOfMean}
-                sx={{ flexColumn: "span 2" }}
-
-              />
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="quarterMean"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={setValeursInitial.quarterMean}
-                name="quarterMean"
-                error={!!touched.quarterMean && !!errors.quarterMean}
-                helperText={touched.quarterMean && errors.quarterMean}
-                sx={{ gridColumn: "span 4" }}
-              />
-            </Box>
-            <Box
-              sx={{
-                borderBottom: "6px solid",
-                borderColor: colors.greenAccent[100],
-                margin: "20px 0",
-              }}
-            ></Box>
-            {/* Ligne 7  */}
-
-            <Box
-              mt="60px"
-              display="flex"
-              gap="10px"
-
-              sx={{
-                "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
-              }}
-            >
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Draft Inf"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={setValeursInitial.draftInf}
-                name="draftInf"
-                error={!!touched.draftInf && !!errors.draftInf}
-                helperText={touched.draftInf && errors.draftInf}
-                sx={{ flexColumn: "span 1", width: "200px" }}
-              />
-              <TextField
-                fullWidth
-
-                variant="filled"
-                type="number"
-                label="Displ Inf"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.displacementInf || 0}
-                name="displacementInf"
-                error={!!touched.displacementInf && !!errors.displacementInf}
-                helperText={touched.displacementInf && errors.displacementInf}
-                sx={{ flexColumn: "span 1", width: "200px" }}
-              />
-              <TextField
-                fullWidth
-
-                variant="filled"
-                type="number"
-                label="TPC Inf"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.tpcInf || 0}
-                name="tpcInf"
-                error={!!touched.tpcInf && !!errors.tpcInf}
-                helperText={touched.tpcInf && errors.tpcInf}
-                sx={{ flexColumn: "span 1", width: "200px" }}
-
-              />
-              <TextField
-                fullWidth
-
-                variant="filled"
-                type="number"
-                label="LCF Inf"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.lcfInf || 0}
-                name="lcfInf"
-                error={!!touched.lcfInf && !!errors.lcfInf}
-                helperText={touched.lcfInf && errors.lcfInf}
-                sx={{ flexColumn: "span 1", width: "200px" }}
-              />
-
-              <Box
-                sx={{ display: "flex", justifyContent: "center", alignItems: "center", mx: "40px" }}
-              >
-                <TextField
-                  fullWidth
-                  disabled
-                  variant="outlined"
-                  type="number"
-                  label="Quarter +50"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.quarterPlus50 || 0}
-                  name="quarter50Inf"
-                  error={!!touched.quarterPlus50 && !!errors.quarterPlus50}
-                  helperText={touched.quarterPlus50 && errors.quarterPlus50}
-                  sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
-                />
-
-                <TextField
-                  fullWidth
-
-                  variant="filled"
-                  type="number"
-                  label="MTC +50"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.mtcPlus50 || 0}
-                  name="mtcPlus50"
-                  error={!!touched.mtcPlus50 && !!errors.mtcPlus50}
-                  helperText={touched.mtcPlus50 && errors.mtcPlus50}
-                  sx={{ flexColumn: "span 1", width: "130px" }}
-                />
-              </Box>
-            </Box>
-            {/* Ligne 7  */}
-
-            <Box
-              mt="10px"
-              display="flex"
-              gap="10px"
-
-              sx={{
-                "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
-              }}
-            >
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="QuarterMean"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.quarterMean || 0}
-                name="quarterMean"
-                error={!!touched.quarterMean && !!errors.quarterMean}
-                helperText={touched.quarterMean && errors.quarterMean}
-                sx={{ flexColumn: "span 1", width: "200px" }}
-              />
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Displ"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.displacement || 0}
-                name="displacement"
-                error={!!touched.displacement && !!errors.displacement}
-                helperText={touched.displacement && errors.displacement}
-                sx={{ flexColumn: "span 1", width: "200px" }}
-              />
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="TPC"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.tpc || 0}
-                name="tpc"
-                error={!!touched.tpc && !!errors.tpc}
-                helperText={touched.tpc && errors.tpc}
-                sx={{ flexColumn: "span 1", width: "200px" }}
-
-              />
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="LCF"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.lcf || 0}
-                name="lcf"
-                error={!!touched.lcf && !!errors.lcf}
-                helperText={touched.lcf && errors.lcf}
-                sx={{ flexColumn: "span 1", width: "200px" }}
-              />
-
-              <Box
-                sx={{ display: "flex", justifyContent: "center", alignItems: "center", mx: "40px" }}
-              >
-                <TextField
-                  fullWidth
-                  disabled
-                  variant="outlined"
-                  type="number"
-                  label="Quarter"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.quarter || 0}
-                  name="quarter"
-                  error={!!touched.quarter && !!errors.quarter}
-                  helperText={touched.quarter && errors.quarter}
-                  sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
-                />
-
-                <TextField
-                  fullWidth
-                  disabled
-                  variant="outlined"
-                  type="number"
-                  label="Delta MTC"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.mtc || 0}
-                  name="mtc"
-                  error={!!touched.mtc && !!errors.mtc}
-                  helperText={touched.mtc && errors.mtc}
-                  sx={{ flexColumn: "span 1", width: "130px" }}
-                />
-              </Box>
-            </Box>
-
-            {/* Ligne 8  */}
-
-            <Box
-              mt="10px"
-              display="flex"
-              gap="10px"
-
-              sx={{
-                "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
-              }}
-            >
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Draft Sup"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.draftSup || 0}
-                name="draftSup"
-                error={!!touched.draftSup && !!errors.draftSup}
-                helperText={touched.draftSup && errors.draftSup}
-                sx={{ flexColumn: "span 1", width: "200px" }}
-              />
-              <TextField
-                fullWidth
-
-                variant="filled"
-                type="number"
-                label="Displ Sup"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.displacementSup || 0}
-                name="displacementSup"
-                error={!!touched.displacementSup && !!errors.displacementSup}
-                helperText={touched.displacementSup && errors.displacementSup}
-                sx={{ flexColumn: "span 1", width: "200px" }}
-              />
-              <TextField
-                fullWidth
-
-                variant="filled"
-                type="number"
-                label="TPC Sup"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.tpcSup || 0}
-                name="tpcSup"
-                error={!!touched.tpcSup && !!errors.tpcSup}
-                helperText={touched.tpcSup && errors.tpcSup}
-                sx={{ flexColumn: "span 1", width: "200px" }}
-
-              />
-              <TextField
-                fullWidth
-
-                variant="filled"
-                type="number"
-                label="LCF Sup"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.lcfSup || 0}
-                name="lcfSup"
-                error={!!touched.lcfSup && !!errors.lcfSup}
-                helperText={touched.lcfSup && errors.lcfSup}
-                sx={{ flexColumn: "span 1", width: "200px" }}
-              />
-
-              <Box
-                sx={{ display: "flex", justifyContent: "center", alignItems: "center", mx: "40px" }}
-              >
-                <TextField
-                  fullWidth
-                  disabled
-                  variant="outlined"
-                  type="number"
-                  label="Quarter -50"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.quarterMinus50 || 0}
-                  name="quarterMinus50"
-                  error={!!touched.quarterMinus50 && !!errors.quarterMinus50}
-                  helperText={touched.quarterMinus50 && errors.quarterMinus50}
-                  sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
-                />
-
-                <TextField
-                  fullWidth
-
-                  variant="filled"
-                  type="number"
-                  label="MTC-50"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.mtcMinus50 || 0}
-                  name="mtcMinus50"
-                  error={!!touched.mtcMinus50 && !!errors.mtcMinus50}
-                  helperText={touched.mtcMinus50 && errors.mtcMinus50}
-                  sx={{ flexColumn: "span 1", width: "130px" }}
-                />
-              </Box>
-
-            </Box>
-            {/* Ligne 9 */}
-            <Box
-              mt="20px"
-              display="flex"
-              gap="10px"
-
-              sx={{
-                "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
-              }}
-            >
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="F T C "
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.firstTrimcorrection || 0}
-                name="firstTrimcorrection"
-                error={!!touched.firstTrimcorrection && !!errors.firstTrimcorrection}
-                helperText={touched.firstTrimcorrection && errors.firstTrimcorrection}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="S T C"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.secondTrimcorrection || 0}
-                name="secondTrimcorrection"
-                error={!!touched.secondTrimcorrection && !!errors.secondTrimcorrection}
-                helperText={touched.secondTrimcorrection && errors.secondTrimcorrection}
-                sx={{ flexColumn: "span 2" }}
-              />
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Disp Corr Trim"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.displacementTrimCorrected || 0}
-                name="displacementTrimCorrected"
-                error={!!touched.displacementTrimCorrected && !!errors.displacementTrimCorrected}
-                helperText={touched.displacementTrimCorrected && errors.displacementTrimCorrected}
-                sx={{ flexColumn: "span 2" }}
-
-              />
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Disp Corr Dsty"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.displacementDstyCorrected || 0}
-                name="displacementDstyCorrected"
-                error={!!touched.displacementDstyCorrected && !!errors.displacementDstyCorrected}
-                helperText={touched.displacementDstyCorrected && errors.displacementDstyCorrected}
-                sx={{ gridColumn: "span 4" }}
-              />
-            </Box>
-            {/* Ligne 10   */}
-
-
-            <Box display="flex" justifyContent="center" alignItems={'center'} mt="20px">
-              <Button
-                type="submit"
-                variant="contained"
-                color="secondary"
-                sx={{
-                  color: colors.primary[400],
-                  fontWeight: "bold",
-                  fontSize: "1.2rem",
-                  borderRadius: "10px",
-                }}
-              >
-                To Database
-                <StorageIcon sx={{ ml: "10px" }} />
-              </Button>
-              <Button
-                type="button"
-                variant="contained"
-                onClick={calculateMeanFore}
-
-                sx={{
-                  mx: "60px",
-                  color: colors.primary[800],
-                  backgroundColor:
-                    colors.redAccent[300],
-                  fontWeight: "bold",
-                  fontSize: "1.2rem",
-                  borderRadius: "10px",
-                }}
-              >
-                Calculate
-                <CalculateIcon sx={{ ml: "10px" }} />
-              </Button>
-            </Box>
-          </form>
-        )}
-      </Formik>
+        {/* Ligne 10   */}
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems={"center"}
+          mt="20px"
+        >
+          <Button
+            type="submit"
+            variant="contained"
+            color="secondary"
+            sx={{
+              color: colors.primary[400],
+              fontWeight: "bold",
+              fontSize: "1.2rem",
+              borderRadius: "10px",
+            }}
+          >
+            To Database
+            <StorageIcon sx={{ ml: "10px" }} />
+          </Button>
+          <Button
+            type="button"
+            variant="contained"
+            onClick={calculateMeanFore}
+            sx={{
+              mx: "60px",
+              color: colors.primary[800],
+              backgroundColor: colors.redAccent[300],
+              fontWeight: "bold",
+              fontSize: "1.2rem",
+              borderRadius: "10px",
+            }}
+          >
+            Calculate
+            <CalculateIcon sx={{ ml: "10px" }} />
+          </Button>
+        </Box>
+      </form>
     </Box>
-  )
+  );
 }
