@@ -269,8 +269,6 @@ export default function ValeursInitial() {
   }, [midCorrected, meanOfMean])
 
   
-  
-
   //  Calcul du displacement
 
   const calculateDisplacement = useCallback(() => {
@@ -349,16 +347,6 @@ const calculateLcf = useCallback(() => {
   const draftInfValue = draftInf;
   const quarterMeanValue = quarterMean;
 
-  console.log("lcfInfValue:", lcfInfValue);
-  console.log("lcfSupValue:", lcfSupValue);
-  console.log("draftInf:", draftInf);
-  console.log("draftSup:", draftSup);
-  console.log("draftInfValue:", draftInfValue);
-  console.log("draftSupValue:", draftSupValue);
-  console.log("quarterMeanValue:", quarterMeanValue);
-
-
-
   lcf  = Number(lcfInfValue) +
   ((Number(lcfSupValue) - Number(lcfInfValue)) / (Number(draftSupValue) - Number(draftInfValue))) *
     (Number(draftSupValue ) - Number(quarterMeanValue));
@@ -368,6 +356,75 @@ const calculateLcf = useCallback(() => {
 
 
 }, [quarterMean, lcfSup, lcfInf])
+
+
+// Calcul du displacement Corrigé:
+
+const calculateFirstTrimCorrection = useCallback(() => {
+  let firstTrimCorrection = 0;
+  const trimCorrectedValue = trimCorrected;
+  
+  const tpcValue = tpc;
+  const lcfValue = lcf;
+  const lbpValue = lbp;
+
+  firstTrimCorrection = 
+  (Number(trimCorrectedValue)*
+  100 * Number(tpcValue)*Number(lcfValue))/Number(lbpValue);
+
+  setFirstTrimCorrection(firstTrimCorrection.toFixed(2));
+  console.log("firstTrimCorrection :", firstTrimCorrection)
+
+}, [trimCorrected, tpc, lcf, lbp])
+
+
+const calculateSecondTrimCorrection = useCallback(() => {
+  let secondTrimCorrection = 0;
+  const trimCorrectedValue = trimCorrected;
+  const mtcPlus50Value = mtcPlus50; 
+  const mtcMinus50Value = mtcMinus50; 
+
+  const mtcValue = mtcPlus50Value - mtcMinus50Value;
+  const lbpValue = lbp;
+
+  secondTrimCorrection = 
+  (Number(trimCorrectedValue)*
+  Number(trimCorrectedValue) * Number(mtcValue) * 50)/Number(lbpValue);
+
+  setSecondTrimCorrection(secondTrimCorrection.toFixed(2));
+  console.log("secondTrimCorrection :", secondTrimCorrection)
+
+}, [trimCorrected, mtcPlus50, mtcMinus50, lbp])
+
+const calculateDisplacementTrimCorrected= useCallback(() => {
+  let displacementTrimCorrected = 0;
+  const displacementValue = displacement; 
+  const firstTrimCorrectionValue = firstTrimCorrection;
+  const secondTrimCorrectionValue = secondTrimCorrection;
+
+  displacementTrimCorrected = 
+  Number(displacementValue)+
+  Number(firstTrimCorrectionValue) + Number(secondTrimCorrectionValue) ;
+
+  setDisplacementTrimCorrected(displacementTrimCorrected.toFixed(2));
+  console.log("displacementTrimCorrected:", displacementTrimCorrected)
+
+}, [displacement, firstTrimCorrection, secondTrimCorrection])
+
+const calculateDisplacementDstyCorrected = useCallback(() => {
+  let displacementDstyCorrected = 0;
+  const densityValue = density;
+  const displacementTrimCorrectedValue = displacementTrimCorrected;
+
+  displacementDstyCorrected = 
+  (Number(displacementTrimCorrectedValue) * Number(densityValue)) / 1.025 ;
+
+  setDisplacementDstyCorrected(displacementDstyCorrected.toFixed(2));
+  console.log("displacementDstyCorrected:", displacementDstyCorrected)
+
+
+}, [ density,displacementTrimCorrected])
+
 
 
 
@@ -395,6 +452,10 @@ const calculateLcf = useCallback(() => {
     calculateDisplacement();
     calculateTpc(); 
     calculateLcf();
+    calculateFirstTrimCorrection();
+    calculateSecondTrimCorrection();
+    calculateDisplacementTrimCorrected();
+    calculateDisplacementDstyCorrected();
 
   }, [forePort, foreStbd, aftPort, aftStbd, midPort,
      midStbd, calculateMeanFore, calculateMeanAft, 
@@ -404,7 +465,11 @@ const calculateLcf = useCallback(() => {
      calculateTrimCorrected, calculateMeanOfMean, 
      calculateQuarterMean, calculateDisplacement, draftInf, draftSup,
      tpcSup, tpcInf, displacementSup, displacementInf,
-    lcfSup, lcfInf, calculateTpc, calculateLcf]);
+    lcfSup, lcfInf, calculateTpc, calculateLcf,
+    calculateFirstTrimCorrection,
+    calculateSecondTrimCorrection,mtc,trimCorrected, lbp, 
+    calculateDisplacementTrimCorrected,
+    calculateDisplacementDstyCorrected]);
 
   return (
     <Box m="20px">
@@ -462,12 +527,12 @@ const calculateLcf = useCallback(() => {
             value={trim}
             name="trim"
             sx={{
-              flexColumn: "span 1",
+              flexColumn: "span 2",
               color: colors.grey[500],
-              backgroundColor: colors.redAccent[700],
+              backgroundColor: colors.greenAccent[600],
               fontWeight: "bold",
               fontSize: "1.2rem",
-              borderRadius: "10px",
+              borderRadius: "14px",
             }}
           />
 
@@ -480,12 +545,12 @@ const calculateLcf = useCallback(() => {
             value={lbm}
             name="lbm"
             sx={{
-              gridColumn: "span 1",
+              gridColumn: "span 2",
               color: colors.grey[500],
-              backgroundColor: colors.redAccent[700],
+              backgroundColor: colors.greenAccent[600],
               fontWeight: "bold",
               fontSize: "1.2rem",
-              borderRadius: "10px"
+              borderRadius: "14px"
             }}
           />
         </Box>
@@ -773,14 +838,24 @@ const calculateLcf = useCallback(() => {
             onChange={(e) => setQuarterMean(e.target.value)}
             value={quarterMean}
             name="quarterMean"
-            sx={{ gridColumn: "span 4" }}
+            sx={{ gridColumn: "span 4",
+              color: colors.grey[500],
+              backgroundColor: colors.greenAccent[600],
+              fontWeight: "bold",
+              fontSize: "1.2rem",
+              borderRadius: "14px",
+             }}
           />
         </Box>
         <Box
           sx={{
+            mt: "20px",
             borderBottom: "6px solid",
-            borderColor: colors.greenAccent[100],
-            margin: "20px 0",
+            color: colors.grey[500],
+              backgroundColor: colors.greenAccent[600],
+              fontWeight: "bold",
+              fontSize: "1.2rem",
+              borderRadius: "14px",
           }}
         ></Box>
         {/* Ligne 7  */}
@@ -800,7 +875,7 @@ const calculateLcf = useCallback(() => {
             type="number"
             label="Draft Inf"
             onChange={(e) => setDraftInf(e.target.value)}
-            value={Number(quarterMean) - 0.1}
+            value={(Number(quarterMean) - 0.1).toFixed(2)}
             name="draftInf"
             sx={{ flexColumn: "span 1", width: "200px" }}
           />
@@ -886,7 +961,9 @@ const calculateLcf = useCallback(() => {
             onChange={(e) => setQuarterMean(e.target.value)}
             value={quarterMean + 0}
             name="quarterMean"
-            sx={{ flexColumn: "span 1", width: "200px" }}
+            sx={{ flexColumn: "span 1", width: "200px",
+              
+             }}
           />
           <TextField
             fullWidth
@@ -1023,7 +1100,7 @@ const calculateLcf = useCallback(() => {
               type="number"
               label="Quarter -50"
               onChange={(e) => setQuarterMinus50(e.target.value)}
-              value={Number(quarterMean) - 0.5}
+              value={(Number(quarterMean) - 0.5).toFixed(2)}  
               name="quarterMinus50"
               sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
             />
@@ -1054,7 +1131,7 @@ const calculateLcf = useCallback(() => {
             disabled
             variant="outlined"
             type="number"
-            label="F T C "
+            placeholder="F T C "
             onChange={(e) => setFirstTrimCorrection(e.target.value)}
             value={firstTrimCorrection}
             name="firstTrimCorrection"
@@ -1065,7 +1142,7 @@ const calculateLcf = useCallback(() => {
             disabled
             variant="outlined"
             type="number"
-            label="S T C"
+            placeholder ="S T C"
             onChange={(e) => setSecondTrimCorrection(e.target.value)}
             value={secondTrimCorrection}
             name="secondTrimCorrection"
@@ -1076,7 +1153,7 @@ const calculateLcf = useCallback(() => {
             disabled
             variant="outlined"
             type="number"
-            label="Dis Corr Trim"
+            placeholder ="Dis Corr Trim"
             onChange={(e) => setDisplacementTrimCorrected(e.target.value)}
             value={displacementTrimCorrected}
             name="displacementTrimCorrected"
@@ -1087,11 +1164,17 @@ const calculateLcf = useCallback(() => {
             disabled
             variant="outlined"
             type="number"
-            label="Dis Corr Dsty"
+            placeholder ="Dis Corr Dsty"
             onChange={(e) => setDisplacementDstyCorrected(e.target.value)}
-            value={displacementDstyCorrected}
+            value={Number(displacementDstyCorrected).toFixed(2)}
             name="displacementDstyCorrected"
-            sx={{ gridColumn: "span 4" }}
+            sx={{ gridColumn: "span 4",
+              color: colors.grey[500],
+              backgroundColor: colors.greenAccent[600],
+              fontWeight: "bold",
+              fontSize: "1.2rem",
+              borderRadius: "14px",
+             }}
           />
         </Box>
 
