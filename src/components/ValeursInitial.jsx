@@ -268,18 +268,26 @@ export default function ValeursInitial() {
 
   }, [midCorrected, meanOfMean])
 
+  
+  
+
   //  Calcul du displacement
 
   const calculateDisplacement = useCallback(() => {
     let displacement = 0;
     const displacementSupValue = displacementSup;
     const displacementInfValue = displacementInf;
+    // draft sup et draft inf
+    let draftSup = (Number(quarterMean) + 0.1).toFixed(2);
+    let draftInf = (Number(quarterMean) - 0.1).toFixed(2)  ;
     const draftSupValue = draftSup;
     const draftInfValue = draftInf;
     const quarterMeanValue = quarterMean;
 
     console.log("displacementInfValue:", displacementInfValue);
     console.log("displacementSupValue:", displacementSupValue);
+    console.log("draftInf:", draftInf);
+    console.log("draftSup:", draftSup);
     console.log("draftInfValue:", draftInfValue);
     console.log("draftSupValue:", draftSupValue);
     console.log("quarterMeanValue:", quarterMeanValue);
@@ -294,8 +302,72 @@ export default function ValeursInitial() {
     console.log(displacement)
 
 
-  }, [quarterMean, displacementSup, displacementInf, draftSup, draftInf])
+  }, [quarterMean, displacementSup, displacementInf])
 
+// Calcul du Tpc:
+
+const calculateTpc = useCallback(() => {
+  let tpc = 0;
+  const tpcSupValue = tpcSup;
+  const tpcInfValue = tpcInf;
+  // draft sup et draft inf
+  let draftSup = (Number(quarterMean) + 0.1).toFixed(2);
+  let draftInf = (Number(quarterMean) - 0.1).toFixed(2)  ;
+  const draftSupValue = draftSup;
+  const draftInfValue = draftInf;
+  const quarterMeanValue = quarterMean;
+
+  console.log("tpcInfValue:", tpcInfValue);
+  console.log("tpcSupValue:", tpcSupValue);
+  console.log("draftInf:", draftInf);
+  console.log("draftSup:", draftSup);
+  console.log("draftInfValue:", draftInfValue);
+  console.log("draftSupValue:", draftSupValue);
+  console.log("quarterMeanValue:", quarterMeanValue);
+
+
+
+  tpc  = Number(tpcInfValue) +
+  ((Number(tpcSupValue) - Number(tpcInfValue)) / (Number(draftSupValue) - Number(draftInfValue))) *
+    (Number(draftSupValue ) - Number(quarterMeanValue));
+  
+  setTpc(tpc);
+  console.log(tpc)
+
+
+}, [quarterMean, tpcSup, tpcInf])
+
+
+const calculateLcf = useCallback(() => {
+  let lcf = 0;
+  const lcfSupValue = lcfSup;
+  const lcfInfValue = lcfInf;
+  // draft sup et draft inf
+  let draftSup = (Number(quarterMean) + 0.1).toFixed(2);
+  let draftInf = (Number(quarterMean) - 0.1).toFixed(2)  ;
+  const draftSupValue = draftSup;
+  const draftInfValue = draftInf;
+  const quarterMeanValue = quarterMean;
+
+  console.log("lcfInfValue:", lcfInfValue);
+  console.log("lcfSupValue:", lcfSupValue);
+  console.log("draftInf:", draftInf);
+  console.log("draftSup:", draftSup);
+  console.log("draftInfValue:", draftInfValue);
+  console.log("draftSupValue:", draftSupValue);
+  console.log("quarterMeanValue:", quarterMeanValue);
+
+
+
+  lcf  = Number(lcfInfValue) +
+  ((Number(lcfSupValue) - Number(lcfInfValue)) / (Number(draftSupValue) - Number(draftInfValue))) *
+    (Number(draftSupValue ) - Number(quarterMeanValue));
+  
+  setLcf(lcf);
+  console.log(lcf)
+
+
+}, [quarterMean, lcfSup, lcfInf])
 
 
 
@@ -321,6 +393,8 @@ export default function ValeursInitial() {
     calculateMeanOfMean();
     calculateQuarterMean();
     calculateDisplacement();
+    calculateTpc(); 
+    calculateLcf();
 
   }, [forePort, foreStbd, aftPort, aftStbd, midPort,
      midStbd, calculateMeanFore, calculateMeanAft, 
@@ -328,7 +402,9 @@ export default function ValeursInitial() {
      calculateForeCorrected, calculateAftCorrected, 
      calculateMidCorrected, calculateMeanForeAft, 
      calculateTrimCorrected, calculateMeanOfMean, 
-     calculateQuarterMean, calculateDisplacement, draftInf, draftSup]);
+     calculateQuarterMean, calculateDisplacement, draftInf, draftSup,
+     tpcSup, tpcInf, displacementSup, displacementInf,
+    lcfSup, lcfInf, calculateTpc, calculateLcf]);
 
   return (
     <Box m="20px">
@@ -693,7 +769,7 @@ export default function ValeursInitial() {
             disabled
             variant="outlined"
             type="number"
-            label="quarterMean"
+            
             onChange={(e) => setQuarterMean(e.target.value)}
             value={quarterMean}
             name="quarterMean"
@@ -808,7 +884,7 @@ export default function ValeursInitial() {
             type="number"
             label="QuarterMean"
             onChange={(e) => setQuarterMean(e.target.value)}
-            value={quarterMean}
+            value={quarterMean + 0}
             name="quarterMean"
             sx={{ flexColumn: "span 1", width: "200px" }}
           />
@@ -830,7 +906,7 @@ export default function ValeursInitial() {
             type="number"
             label="TPC"
             onChange={(e) => setTpc(e.target.value)}
-            value={tpc}
+            value={Number(tpc).toFixed(2)}
             name="tpc"
             sx={{ flexColumn: "span 1", width: "200px" }}
           />
@@ -841,7 +917,7 @@ export default function ValeursInitial() {
             type="number"
             label="LCF"
             onChange={(e) => setLcf(e.target.value)}
-            value={lcf}
+            value={Number(lcf).toFixed(2)}
             name="lcf"
             sx={{ flexColumn: "span 1", width: "200px" }}
           />
@@ -873,7 +949,7 @@ export default function ValeursInitial() {
               type="number"
               label="Delta MTC"
               onChange={(e) => setMtc(e.target.value)}
-              value={Number(mtcPlus50) - Number(mtcMinus50)}
+              value={(Number(mtcPlus50) - Number(mtcMinus50)).toFixed(2)}
               name="mtc"
               sx={{ flexColumn: "span 1", width: "130px" }}
             />
@@ -897,7 +973,7 @@ export default function ValeursInitial() {
             type="number"
             label="Draft Sup"
             onChange={(e) => setDraftSup(e.target.value)}
-            value={Number(quarterMean) + 0.1}
+            value={Number(quarterMean)+ 0.1}
             name="draftSup"
             sx={{ flexColumn: "span 1", width: "200px" }}
           />
