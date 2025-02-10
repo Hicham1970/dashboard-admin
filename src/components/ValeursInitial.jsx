@@ -2,6 +2,8 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Box from "@mui/material/Box";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { useTheme } from "@mui/material/styles";
@@ -10,11 +12,13 @@ import Header from "./Header";
 import StorageIcon from "@mui/icons-material/Storage";
 import CalculateIcon from "@mui/icons-material/Calculate";
 import { tokens } from "./../theme";
+import PrintToPdf from "./../functions/PrintToPdf";
 
 export default function ValeursInitial() {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const isNonMobile = useMediaQuery("(min-width: 600px)");
+  const [isEmpty, setIsEmpty] = useState(true)
   const [lbp, setLbp] = useState();
   const [keelCorrection, setKeelCorrection] = useState();
   const [foreDistance, setForeDistance] = useState();
@@ -60,17 +64,20 @@ export default function ValeursInitial() {
   const [displacementDstyCorrected, setDisplacementDstyCorrected] = useState();
   const [mtcPlus50, setMtcPlus50] = useState();
   const [quarterPlus50, setQuarterPlus50] = useState();
-  const [ballast, setBallast]=useState(); 
-  const [freeshWater, setFreeshWater]=useState();
-  const [fuel, setFuel]=useState();
-  const [diesel, setDiesel]=useState();
-  const [luboil, setLuboil]=useState();
-  const [others, setOthers]=useState();
-  const [total, setTotal]=useState();
-  const [lightship, setLightship] =useState();
-  const [constant, setConstant] =useState();  
-  const [netLightship, setNetLightship] =useState();
-  const [cargo, setCargo] =useState();
+  const [ballast, setBallast] = useState();
+  const [freshWater, setFreshWater] = useState();
+  const [fuel, setFuel] = useState();
+  const [diesel, setDiesel] = useState();
+  const [lubOil, setLubOil] = useState();
+  const [others, setOthers] = useState();
+  const [total, setTotal] = useState();
+  const [lightship, setLightship] = useState();
+  const [constant, setConstant] = useState();
+  const [netLight, setNetLight] = useState();
+  const [cargo, setCargo] = useState();
+  const [netLoad, setNetLoad] = useState();
+  const [constantDéclarée, setConstantDéclarée] = useState();
+  const [isLoader, setIsLoader] = useState(false);
 
   //  Fonctions de la logique 
   const calculateMeanFore = useCallback(() => {
@@ -230,7 +237,6 @@ export default function ValeursInitial() {
     setMidCorrected(midCorrected.toFixed(2));
   }, [midDistance, lbm, meanMid, trim, lbp]);
 
-
   const calculateTrimCorrected = useCallback(() => {
     let trimCorrected = 0;
     const foreCorrectedValue = foreCorrected;
@@ -241,7 +247,6 @@ export default function ValeursInitial() {
     console.log("trimCorrected:", trimCorrected);
 
   }, [foreCorrected, aftCorrected])
-
 
   const calculateMeanForeAft = useCallback(() => {
     console.log("The meanForeAft was calculated with :", foreCorrected, aftCorrected);
@@ -279,7 +284,6 @@ export default function ValeursInitial() {
 
   }, [midCorrected, meanOfMean])
 
-  
   //  Calcul du displacement
 
   const calculateDisplacement = useCallback(() => {
@@ -288,7 +292,7 @@ export default function ValeursInitial() {
     const displacementInfValue = displacementInf;
     // draft sup et draft inf
     let draftSup = (Number(quarterMean) + 0.1).toFixed(2);
-    let draftInf = (Number(quarterMean) - 0.1).toFixed(2)  ;
+    let draftInf = (Number(quarterMean) - 0.1).toFixed(2);
     const draftSupValue = draftSup;
     const draftInfValue = draftInf;
     const quarterMeanValue = quarterMean;
@@ -301,151 +305,170 @@ export default function ValeursInitial() {
     console.log("draftSupValue:", draftSupValue);
     console.log("quarterMeanValue:", quarterMeanValue);
 
-
-
     displacement = Number(displacementInfValue) +
-    ((Number(displacementSupValue) - Number(displacementInfValue)) / (Number(draftSupValue) - Number(draftInfValue))) *
-      (Number(draftSupValue ) - Number(quarterMeanValue));
-    
+      ((Number(displacementSupValue) - Number(displacementInfValue)) / (Number(draftSupValue) - Number(draftInfValue))) *
+      (Number(draftSupValue) - Number(quarterMeanValue));
+
     setDisplacement(displacement);
     console.log(displacement)
 
-
   }, [quarterMean, displacementSup, displacementInf])
 
-// Calcul du Tpc:
+  // Calcul du Tpc:
 
-const calculateTpc = useCallback(() => {
-  let tpc = 0;
-  const tpcSupValue = tpcSup;
-  const tpcInfValue = tpcInf;
-  // draft sup et draft inf
-  let draftSup = (Number(quarterMean) + 0.1).toFixed(2);
-  let draftInf = (Number(quarterMean) - 0.1).toFixed(2)  ;
-  const draftSupValue = draftSup;
-  const draftInfValue = draftInf;
-  const quarterMeanValue = quarterMean;
+  const calculateTpc = useCallback(() => {
+    let tpc = 0;
+    const tpcSupValue = tpcSup;
+    const tpcInfValue = tpcInf;
+    // draft sup et draft inf
+    let draftSup = (Number(quarterMean) + 0.1).toFixed(2);
+    let draftInf = (Number(quarterMean) - 0.1).toFixed(2);
+    const draftSupValue = draftSup;
+    const draftInfValue = draftInf;
+    const quarterMeanValue = quarterMean;
 
-  console.log("tpcInfValue:", tpcInfValue);
-  console.log("tpcSupValue:", tpcSupValue);
-  console.log("draftInf:", draftInf);
-  console.log("draftSup:", draftSup);
-  console.log("draftInfValue:", draftInfValue);
-  console.log("draftSupValue:", draftSupValue);
-  console.log("quarterMeanValue:", quarterMeanValue);
+    console.log("tpcInfValue:", tpcInfValue);
+    console.log("tpcSupValue:", tpcSupValue);
+    console.log("draftInf:", draftInf);
+    console.log("draftSup:", draftSup);
+    console.log("draftInfValue:", draftInfValue);
+    console.log("draftSupValue:", draftSupValue);
+    console.log("quarterMeanValue:", quarterMeanValue);
 
+    tpc = Number(tpcInfValue) +
+      ((Number(tpcSupValue) - Number(tpcInfValue)) / (Number(draftSupValue) - Number(draftInfValue))) *
+      (Number(draftSupValue) - Number(quarterMeanValue));
 
+    setTpc(tpc);
+    console.log(tpc)
 
-  tpc  = Number(tpcInfValue) +
-  ((Number(tpcSupValue) - Number(tpcInfValue)) / (Number(draftSupValue) - Number(draftInfValue))) *
-    (Number(draftSupValue ) - Number(quarterMeanValue));
-  
-  setTpc(tpc);
-  console.log(tpc)
+  }, [quarterMean, tpcSup, tpcInf])
 
+  const calculateLcf = useCallback(() => {
+    let lcf = 0;
+    const lcfSupValue = lcfSup;
+    const lcfInfValue = lcfInf;
+    // draft sup et draft inf
+    let draftSup = (Number(quarterMean) + 0.1).toFixed(2);
+    let draftInf = (Number(quarterMean) - 0.1).toFixed(2);
+    const draftSupValue = draftSup;
+    const draftInfValue = draftInf;
+    const quarterMeanValue = quarterMean;
 
-}, [quarterMean, tpcSup, tpcInf])
+    lcf = Number(lcfInfValue) +
+      ((Number(lcfSupValue) - Number(lcfInfValue)) / (Number(draftSupValue) - Number(draftInfValue))) *
+      (Number(draftSupValue) - Number(quarterMeanValue));
 
+    setLcf(lcf);
+    console.log(lcf)
 
-const calculateLcf = useCallback(() => {
-  let lcf = 0;
-  const lcfSupValue = lcfSup;
-  const lcfInfValue = lcfInf;
-  // draft sup et draft inf
-  let draftSup = (Number(quarterMean) + 0.1).toFixed(2);
-  let draftInf = (Number(quarterMean) - 0.1).toFixed(2)  ;
-  const draftSupValue = draftSup;
-  const draftInfValue = draftInf;
-  const quarterMeanValue = quarterMean;
+  }, [quarterMean, lcfSup, lcfInf])
 
-  lcf  = Number(lcfInfValue) +
-  ((Number(lcfSupValue) - Number(lcfInfValue)) / (Number(draftSupValue) - Number(draftInfValue))) *
-    (Number(draftSupValue ) - Number(quarterMeanValue));
-  
-  setLcf(lcf);
-  console.log(lcf)
+  // Calcul du displacement Corrigé:
 
+  const calculateFirstTrimCorrection = useCallback(() => {
+    let firstTrimCorrection = 0;
+    const trimCorrectedValue = trimCorrected;
 
-}, [quarterMean, lcfSup, lcfInf])
+    const tpcValue = tpc;
+    const lcfValue = lcf;
+    const lbpValue = lbp;
 
+    firstTrimCorrection =
+      (Number(trimCorrectedValue) *
+        100 * Number(tpcValue) * Number(lcfValue)) / Number(lbpValue);
 
-// Calcul du displacement Corrigé:
+    setFirstTrimCorrection(firstTrimCorrection.toFixed(2));
+    console.log("firstTrimCorrection :", firstTrimCorrection)
 
-const calculateFirstTrimCorrection = useCallback(() => {
-  let firstTrimCorrection = 0;
-  const trimCorrectedValue = trimCorrected;
-  
-  const tpcValue = tpc;
-  const lcfValue = lcf;
-  const lbpValue = lbp;
+  }, [trimCorrected, tpc, lcf, lbp])
 
-  firstTrimCorrection = 
-  (Number(trimCorrectedValue)*
-  100 * Number(tpcValue)*Number(lcfValue))/Number(lbpValue);
+  const calculateSecondTrimCorrection = useCallback(() => {
+    let secondTrimCorrection = 0;
+    const trimCorrectedValue = trimCorrected;
+    const mtcPlus50Value = mtcPlus50;
+    const mtcMinus50Value = mtcMinus50;
 
-  setFirstTrimCorrection(firstTrimCorrection.toFixed(2));
-  console.log("firstTrimCorrection :", firstTrimCorrection)
+    const mtcValue = mtcPlus50Value - mtcMinus50Value;
+    const lbpValue = lbp;
 
-}, [trimCorrected, tpc, lcf, lbp])
+    secondTrimCorrection =
+      (Number(trimCorrectedValue) *
+        Number(trimCorrectedValue) * Number(mtcValue) * 50) / Number(lbpValue);
 
+    setSecondTrimCorrection(secondTrimCorrection.toFixed(2));
+    console.log("secondTrimCorrection :", secondTrimCorrection)
 
-const calculateSecondTrimCorrection = useCallback(() => {
-  let secondTrimCorrection = 0;
-  const trimCorrectedValue = trimCorrected;
-  const mtcPlus50Value = mtcPlus50; 
-  const mtcMinus50Value = mtcMinus50; 
+  }, [trimCorrected, mtcPlus50, mtcMinus50, lbp])
 
-  const mtcValue = mtcPlus50Value - mtcMinus50Value;
-  const lbpValue = lbp;
+  const calculateDisplacementTrimCorrected = useCallback(() => {
+    let displacementTrimCorrected = 0;
+    const displacementValue = displacement;
+    const firstTrimCorrectionValue = firstTrimCorrection;
+    const secondTrimCorrectionValue = secondTrimCorrection;
 
-  secondTrimCorrection = 
-  (Number(trimCorrectedValue)*
-  Number(trimCorrectedValue) * Number(mtcValue) * 50)/Number(lbpValue);
+    displacementTrimCorrected =
+      Number(displacementValue) +
+      Number(firstTrimCorrectionValue) + Number(secondTrimCorrectionValue);
 
-  setSecondTrimCorrection(secondTrimCorrection.toFixed(2));
-  console.log("secondTrimCorrection :", secondTrimCorrection)
+    setDisplacementTrimCorrected(displacementTrimCorrected.toFixed(2));
+    console.log("displacementTrimCorrected:", displacementTrimCorrected)
 
-}, [trimCorrected, mtcPlus50, mtcMinus50, lbp])
+  }, [displacement, firstTrimCorrection, secondTrimCorrection])
 
-const calculateDisplacementTrimCorrected= useCallback(() => {
-  let displacementTrimCorrected = 0;
-  const displacementValue = displacement; 
-  const firstTrimCorrectionValue = firstTrimCorrection;
-  const secondTrimCorrectionValue = secondTrimCorrection;
+  const calculateDisplacementDstyCorrected = useCallback(() => {
+    let displacementDstyCorrected = 0;
+    const densityValue = density;
+    const displacementTrimCorrectedValue = displacementTrimCorrected;
 
-  displacementTrimCorrected = 
-  Number(displacementValue)+
-  Number(firstTrimCorrectionValue) + Number(secondTrimCorrectionValue) ;
+    displacementDstyCorrected =
+      (Number(displacementTrimCorrectedValue) * Number(densityValue)) / 1.025;
 
-  setDisplacementTrimCorrected(displacementTrimCorrected.toFixed(2));
-  console.log("displacementTrimCorrected:", displacementTrimCorrected)
+    setDisplacementDstyCorrected(displacementDstyCorrected.toFixed(2));
+    console.log("displacementDstyCorrected:", displacementDstyCorrected)
 
-}, [displacement, firstTrimCorrection, secondTrimCorrection])
+  }, [density, displacementTrimCorrected])
 
-const calculateDisplacementDstyCorrected = useCallback(() => {
-  let displacementDstyCorrected = 0;
-  const densityValue = density;
-  const displacementTrimCorrectedValue = displacementTrimCorrected;
+  const calculateTotal = useCallback(() => {
+    let total = 0;
+    const ballastValue = ballast;
+    const freshWaterValue = freshWater;
+    const fuelValue = fuel;
+    const dieselValue = diesel;
+    const lubOilValue = lubOil;
+    const othersValue = others;
 
-  displacementDstyCorrected = 
-  (Number(displacementTrimCorrectedValue) * Number(densityValue)) / 1.025 ;
+    total = Number(ballastValue) + Number(freshWaterValue) + Number(fuelValue) + Number(dieselValue) + Number(lubOilValue) + Number(othersValue);
+    setTotal(total.toFixed(2));
+    console.log('Total deductibles :', total)
+  }, [ballast, freshWater, fuel, diesel, lubOil, others])
 
-  setDisplacementDstyCorrected(displacementDstyCorrected.toFixed(2));
-  console.log("displacementDstyCorrected:", displacementDstyCorrected)
+  const calculateNetLight = useCallback(() => {
+    let netLight = 0;
+    const totalValue = total;
+    const displacementDstyCorrectedValue = displacementDstyCorrected;
 
+    netLight = Number(displacementDstyCorrectedValue) - Number(totalValue);
 
-}, [ density,displacementTrimCorrected])
+    setNetLight(netLight.toFixed(2));
+    console.log("Net light :", netLight)
+  }, [total, displacementDstyCorrected])
 
+  const calculateConstant = useCallback(() => {
+    let constant = 0;
+    const netLightValue = netLight;
+    const lightshipValue = lightship;
 
-
-
+    constant = Number(netLightValue) - Number(lightshipValue);
+    setConstant(constant.toFixed(2));
+    console.log("Constant Calculée :", constant)
+  }, [netLight, lightship])
 
   const handleChange = (e, setFieldValue) => {
     // Add setFieldValue
     const { name, value } = e.target;
     setFieldValue(name, value); // Use setFieldValue to update Formik state
   };
-
 
   useEffect(() => {
     calculateMeanFore();
@@ -461,29 +484,35 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
     calculateMeanOfMean();
     calculateQuarterMean();
     calculateDisplacement();
-    calculateTpc(); 
+    calculateTpc();
     calculateLcf();
     calculateFirstTrimCorrection();
     calculateSecondTrimCorrection();
     calculateDisplacementTrimCorrected();
     calculateDisplacementDstyCorrected();
+    calculateTotal();
+    calculateNetLight();
+    calculateConstant();
 
   }, [forePort, foreStbd, aftPort, aftStbd, midPort,
-     midStbd, calculateMeanFore, calculateMeanAft, 
-     calculateMeanMid, calculateTrim, calculateLbm, 
-     calculateForeCorrected, calculateAftCorrected, 
-     calculateMidCorrected, calculateMeanForeAft, 
-     calculateTrimCorrected, calculateMeanOfMean, 
-     calculateQuarterMean, calculateDisplacement, draftInf, draftSup,
-     tpcSup, tpcInf, displacementSup, displacementInf,
+    midStbd, calculateMeanFore, calculateMeanAft,
+    calculateMeanMid, calculateTrim, calculateLbm,
+    calculateForeCorrected, calculateAftCorrected,
+    calculateMidCorrected, calculateMeanForeAft,
+    calculateTrimCorrected, calculateMeanOfMean,
+    calculateQuarterMean, calculateDisplacement, draftInf, draftSup,
+    tpcSup, tpcInf, displacementSup, displacementInf,
     lcfSup, lcfInf, calculateTpc, calculateLcf,
     calculateFirstTrimCorrection,
-    calculateSecondTrimCorrection,mtc,trimCorrected, lbp, 
+    calculateSecondTrimCorrection, mtc, trimCorrected, lbp,
     calculateDisplacementTrimCorrected,
-    calculateDisplacementDstyCorrected]);
+    calculateDisplacementDstyCorrected,
+    calculateTotal, ballast, freshWater,
+    fuel, diesel, lubOil, others,
+    calculateNetLight, total, calculateConstant, lightship, netLight]);
 
   return (
-    <Box m="20px">
+    <Box m="20px" id ="printMe">
       <Header title="NEW CALCULATION" subtitle="Create a New draft survey" />
       <form>
         <Box
@@ -497,6 +526,20 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
             width: "500px",
           }}
         >
+          <FormControlLabel
+            control={<Checkbox defaultChecked />}
+            label={isEmpty ? "Empty" : "Full"}
+            size="small"
+            checked={isEmpty}
+            onChange={(e) => setIsEmpty(!isEmpty)}
+            sx={{
+              '& .MuiSvgIcon-root': { fontSize: 28 },
+              color: colors.greenAccent[500],
+              '&.Mui-checked': {
+                color: colors.greenAccent[200],
+              }
+            }}
+          />
           <TextField
             fullWidth
             variant="filled"
@@ -565,7 +608,7 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
             }}
           />
         </Box>
-        {/* Ligne2 */}
+        
         <Box
           sx={{
             borderBottom: "4px solid",
@@ -618,11 +661,13 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
             disabled
             variant="outlined"
             type="number"
-            label="Mean Fore"
+            placeholder="Mean Fore"
             onChange={() => calculateMeanFore()}
             value={meanFore}
             name="meanFore"
-            sx={{ gridColumn: "span 4" }}
+            sx={{ gridColumn: "span 4",
+              backgroundColor: colors.greenAccent[600],
+             }}
           />
         </Box>
         {/* Ligne3 */}
@@ -672,7 +717,7 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
             disabled
             variant="outlined"
             type="number"
-            label="Mean Aft"
+            placeholder="Mean Aft"
             onChange={(e) => setMeanAft(e.target.value)}
             value={meanAft}
             name="meanAft"
@@ -726,7 +771,7 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
             disabled
             variant="outlined"
             type="number"
-            label="Mean Mid"
+            placeholder ="Mean Mid"
             onChange={(e) => setMeanMid(e.target.value)}
             value={meanMid}
             name="meanMid"
@@ -747,7 +792,7 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
             disabled
             variant="outlined"
             type="number"
-            label="Fore Corrected"
+            placeholder="Fore Corrected"
             onChange={(e) => setForeCorrected(e.target.value)}
             value={foreCorrected}
             name="foreCorrected"
@@ -845,28 +890,25 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
             disabled
             variant="outlined"
             type="number"
-            
+
             onChange={(e) => setQuarterMean(e.target.value)}
             value={quarterMean}
             name="quarterMean"
-            sx={{ gridColumn: "span 4",
+            sx={{
+              gridColumn: "span 4",
               color: colors.grey[500],
               backgroundColor: colors.greenAccent[600],
               fontWeight: "bold",
               fontSize: "1.2rem",
               borderRadius: "14px",
-             }}
+            }}
           />
         </Box>
         <Box
           sx={{
             mt: "20px",
             borderBottom: "6px solid",
-            color: colors.grey[500],
-              backgroundColor: colors.greenAccent[600],
-              fontWeight: "bold",
-              fontSize: "1.2rem",
-              borderRadius: "14px",
+            color: colors.blueAccent[100],
           }}
         ></Box>
         {/* Ligne 7  */}
@@ -972,9 +1014,10 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
             onChange={(e) => setQuarterMean(e.target.value)}
             value={quarterMean + 0}
             name="quarterMean"
-            sx={{ flexColumn: "span 1", width: "200px",
-              
-             }}
+            sx={{
+              flexColumn: "span 1", width: "200px",
+
+            }}
           />
           <TextField
             fullWidth
@@ -1061,7 +1104,7 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
             type="number"
             label="Draft Sup"
             onChange={(e) => setDraftSup(e.target.value)}
-            value={Number(quarterMean)+ 0.1}
+            value={Number(quarterMean) + 0.1}
             name="draftSup"
             sx={{ flexColumn: "span 1", width: "200px" }}
           />
@@ -1111,7 +1154,7 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
               type="number"
               label="Quarter -50"
               onChange={(e) => setQuarterMinus50(e.target.value)}
-              value={(Number(quarterMean) - 0.5).toFixed(2)}  
+              value={(Number(quarterMean) - 0.5).toFixed(2)}
               name="quarterMinus50"
               sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
             />
@@ -1153,7 +1196,7 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
             disabled
             variant="outlined"
             type="number"
-            placeholder ="S T C"
+            placeholder="S T C"
             onChange={(e) => setSecondTrimCorrection(e.target.value)}
             value={secondTrimCorrection}
             name="secondTrimCorrection"
@@ -1164,7 +1207,7 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
             disabled
             variant="outlined"
             type="number"
-            placeholder ="Dis Corr Trim"
+            placeholder="Dis Corr Trim"
             onChange={(e) => setDisplacementTrimCorrected(e.target.value)}
             value={displacementTrimCorrected}
             name="displacementTrimCorrected"
@@ -1175,34 +1218,31 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
             disabled
             variant="outlined"
             type="number"
-            placeholder ="Dis Corr Dsty"
+            placeholder="Dis Corr Dsty"
             onChange={(e) => setDisplacementDstyCorrected(e.target.value)}
             value={Number(displacementDstyCorrected).toFixed(2)}
             name="displacementDstyCorrected"
-            sx={{ gridColumn: "span 4",
+            sx={{
+              gridColumn: "span 4",
               color: colors.grey[500],
               backgroundColor: colors.greenAccent[600],
               fontWeight: "bold",
               fontSize: "1.2rem",
               borderRadius: "14px",
-             }}
+            }}
           />
         </Box>
         <Box
           sx={{
             mt: "20px",
             borderBottom: "6px solid",
-            color: colors.grey[500],
-              backgroundColor: colors.greenAccent[600],
-              fontWeight: "bold",
-              fontSize: "1.2rem",
-              borderRadius: "14px",
+            color: colors.blueAccent[100],
           }}
         ></Box>
         {/* Deductubles */}
-                {/* Ligne 7  */}
+        {/* Ligne 7  */}
 
-                <Box
+        <Box
           mt="60px"
           display="flex"
           gap="15px"
@@ -1225,9 +1265,9 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
             variant="filled"
             type="number"
             label="Freesh Water"
-            onChange={(e) => setFreeshWater(e.target.value)}
-            value={freeshWater}
-            name="freeshWater"
+            onChange={(e) => setFreshWater(e.target.value)}
+            value={freshWater}
+            name="freshWater"
             sx={{ flexColumn: "span 1", width: "140px" }}
           />
           <TextField
@@ -1248,19 +1288,19 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
             onChange={(e) => setDiesel(e.target.value)}
             value={diesel}
             name="diesel"
-            sx={{ flexColumn: "span 1", width:"140px" }}
+            sx={{ flexColumn: "span 1", width: "140px" }}
           />
 
-          
+
           <TextField
             fullWidth
             variant="filled"
             type="number"
-            label="Luboil"
-            onChange={(e) => setLuboil(e.target.value)}
-            value={luboil}
-            name="luboil"
-            sx={{ flexColumn: "span 1",  width: "140px" }}
+            label="lubOil"
+            onChange={(e) => setLubOil(e.target.value)}
+            value={lubOil}
+            name="lubOil"
+            sx={{ flexColumn: "span 1", width: "140px" }}
           />
 
           <TextField
@@ -1275,18 +1315,18 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
           />
           <TextField
             fullWidth
-            disabled  
+            disabled
             variant="outlined"
             type="number"
-            label="total"
+            placeholder="total"
             onChange={(e) => setTotal(e.target.value)}
-            value={total}
+            value={Number(total).toFixed(2)}
             name="total"
-            sx={{ flexColumn: "span 1", width: "180px", mx:"60px" }}
+            sx={{ flexColumn: "span 1", width: "180px", mx: "60px" }}
           />
-          
+
         </Box>
-        
+
 
         <Box
           mt="30px"
@@ -1297,27 +1337,29 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
           }}
         >
           <TextField
+            id="lightship"
             fullWidth
-            
             variant="filled"
             type="number"
             label="Lightship"
             onChange={(e) => setLightship(e.target.value)}
             value={lightship}
             name="lightship"
-            sx={{ flexColumn: "span 1", width: "200px",
-              
-             }}
+            sx={{
+              flexColumn: "span 1", width: "200px",
+
+            }}
           />
           <TextField
+            id="netLight"
             fullWidth
             disabled
             variant="outlined"
             type="number"
-            label="netLightship"
-            onChange={(e) => setNetLightship(e.target.value)}
-            value={Number(netLightship).toFixed(2)}
-            name="netLightship"
+            label="NetLight"
+            onChange={(e) => setNetLight(e.target.value)}
+            value={Number(netLight).toFixed(2)}
+            name="netLight"
             sx={{ flexColumn: "span 1", width: "200px" }}
           />
           <TextField
@@ -1331,53 +1373,64 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
             name="constant"
             sx={{ flexColumn: "span 1", width: "200px" }}
           />
-          <TextField
-            fullWidth
-            disabled
-            variant="outlined"
-            type="number"
-            label="Cargo"
-            onChange={(e) => setCargo(e.target.value)}
-            value={Number(cargo).toFixed(2)}
-            name="cargo"
-            sx={{ flexColumn: "span 1", width: "200px" }}
-          />
+          {!isEmpty && (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                mx: "40px",
+              }}
+            >
+              <TextField
+                fullWidth
+                disabled
+                variant="outlined"
+                type="number"
+                label="Cargo"
+                onChange={(e) => setCargo(e.target.value)}
+                value={Number(cargo).toFixed(2)}
+                name="cargo"
+                sx={{ flexColumn: "span 1", width: "130px" }}
+              />
 
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              mx: "40px",
-            }}
-          >
-            <TextField
-              fullWidth
-              disabled
-              variant="outlined"
-              type="number"
-              label=""
-              onChange={(e) => setQuarter(e.target.value)}
-              value={Number(quarterMean) + 0}
-              name="quarter"
-              sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
-            />
+              <TextField
+                fullWidth
+                disabled
+                id="constantDéclarée"
+                variant="outlined"
+                type="number"
+                label="Constante Déclarée"
+                onChange={(e) => setConstantDéclarée(e.target.value)}
+                value={constantDéclarée}
+                name="constantDéclarée"
+                sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
+              />
 
-            <TextField
-              fullWidth
-              disabled
-              variant="outlined"
-              type="number"
-              label=""
-              onChange={(e) => setMtc(e.target.value)}
-              value={(Number(mtcPlus50) - Number(mtcMinus50)).toFixed(2)}
-              name="mtc"
-              sx={{ flexColumn: "span 1", width: "130px" }}
-            />
-          </Box>
+              <TextField
+                id="netLoad"
+                fullWidth
+                disabled
+                variant="outlined"
+                type="number"
+                label="NetLoad"
+                onChange={(e) => setNetLoad(e.target.value)}
+                value={Number(netLoad).toFixed(2)}
+                name="netLoad"
+                sx={{ flexColumn: "span 1", width: "130px" }}
+              />
+            </Box>
+          )}
         </Box>
         {/* fin Deductibles     */}
         {/* Ligne 10   */}
+        <Box
+          sx={{
+            mt: "20px",
+            borderBottom: "10px solid",
+            color: colors.blueAccent[200],
+          }}
+        ></Box>
         <Box
           display="flex"
           justifyContent="center"
@@ -1401,7 +1454,7 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
           <Button
             type="button"
             variant="contained"
-            onClick={calculateMeanFore}
+            onClick={PrintToPdf()}
             sx={{
               mx: "60px",
               color: colors.primary[800],
@@ -1410,8 +1463,9 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
               fontSize: "1.2rem",
               borderRadius: "10px",
             }}
+            
           >
-            Calculate
+            {isLoader ? (<span>Downloading...</span>) : (<span>Download</span>)}
             <CalculateIcon sx={{ ml: "10px" }} />
           </Button>
         </Box>

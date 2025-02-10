@@ -10,14 +10,14 @@ import TrafficIcon from "@mui/icons-material/Traffic";
 import LineChart from "../../components/LineChart";
 import BarChart from "../../components/BarChart";
 import PieChart from "../../components/PieChart";
-import GeographyChart from "../../components/GeographyChart";
+
 import StatBox from "../../components/StatBox";
 import ProgressCircles from "../../components/ProgressCircles";
-import { useState } from "react";
+// import { useState } from "react";
 const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [progress, setProgress] = useState(0);
+  // const [progress, setProgress] = useState(0);
 
   return (
     <Box m="20px">

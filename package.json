@@ -10,10 +10,11 @@
     "eject": "react-scripts eject"
   },
   "keywords": [],
-  "author": "",
+  "author": "Hicham Garoum",
   "license": "ISC",
   "dependencies": {
-    "@emotion/react": "^11.10.6",
+    "@emotion/core": "^11.0.0",
+    "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.10.6",
     "@fullcalendar/core": "^6.1.15",
     "@fullcalendar/interaction": "^6.1.15",
@@ -31,6 +32,8 @@
     "@nivo/pie": "^0.88.0",
     "cra-template": "^1.2.0",
     "formik": "^2.4.6",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.2",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-pro-sidebar": "^1.1.0",
