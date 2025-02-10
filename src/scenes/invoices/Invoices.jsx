@@ -56,10 +56,10 @@ export default function Invoices() {
       height="75vh"
       sx={{
       "& .MuiDataGrid-cell":{
-      borderBotom:"none",
+      borderBottom:"none",
       },
       "& .name-column-cell .MuiDataGrid-cell MuiDataGrid-cell--textLeft":{
-      coloe:colors.greenAccent[300],
+      color:colors.greenAccent[300],
       },
       "& .MuiDataGrid-columnHeader":{
       backgroundColor:colors.blueAccent[700]

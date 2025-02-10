@@ -60,6 +60,17 @@ export default function ValeursInitial() {
   const [displacementDstyCorrected, setDisplacementDstyCorrected] = useState();
   const [mtcPlus50, setMtcPlus50] = useState();
   const [quarterPlus50, setQuarterPlus50] = useState();
+  const [ballast, setBallast]=useState(); 
+  const [freeshWater, setFreeshWater]=useState();
+  const [fuel, setFuel]=useState();
+  const [diesel, setDiesel]=useState();
+  const [luboil, setLuboil]=useState();
+  const [others, setOthers]=useState();
+  const [total, setTotal]=useState();
+  const [lightship, setLightship] =useState();
+  const [constant, setConstant] =useState();  
+  const [netLightship, setNetLightship] =useState();
+  const [cargo, setCargo] =useState();
 
   //  Fonctions de la logique 
   const calculateMeanFore = useCallback(() => {
@@ -1177,7 +1188,195 @@ const calculateDisplacementDstyCorrected = useCallback(() => {
              }}
           />
         </Box>
+        <Box
+          sx={{
+            mt: "20px",
+            borderBottom: "6px solid",
+            color: colors.grey[500],
+              backgroundColor: colors.greenAccent[600],
+              fontWeight: "bold",
+              fontSize: "1.2rem",
+              borderRadius: "14px",
+          }}
+        ></Box>
+        {/* Deductubles */}
+                {/* Ligne 7  */}
 
+                <Box
+          mt="60px"
+          display="flex"
+          gap="15px"
+          sx={{
+            "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
+          }}
+        >
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="Ballast"
+            onChange={(e) => setBallast(e.target.value)}
+            value={ballast}
+            name="ballast"
+            sx={{ flexColumn: "span 1", width: "140px" }}
+          />
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="Freesh Water"
+            onChange={(e) => setFreeshWater(e.target.value)}
+            value={freeshWater}
+            name="freeshWater"
+            sx={{ flexColumn: "span 1", width: "140px" }}
+          />
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="Fuel"
+            onChange={(e) => setFuel(e.target.value)}
+            value={fuel}
+            name="fuel"
+            sx={{ flexColumn: "span 1", width: "140px" }}
+          />
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="diesel"
+            onChange={(e) => setDiesel(e.target.value)}
+            value={diesel}
+            name="diesel"
+            sx={{ flexColumn: "span 1", width:"140px" }}
+          />
+
+          
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="Luboil"
+            onChange={(e) => setLuboil(e.target.value)}
+            value={luboil}
+            name="luboil"
+            sx={{ flexColumn: "span 1",  width: "140px" }}
+          />
+
+          <TextField
+            fullWidth
+            variant="filled"
+            type="number"
+            label="others"
+            onChange={(e) => setOthers(e.target.value)}
+            value={others}
+            name="others"
+            sx={{ flexColumn: "span 1", width: "140px" }}
+          />
+          <TextField
+            fullWidth
+            disabled  
+            variant="outlined"
+            type="number"
+            label="total"
+            onChange={(e) => setTotal(e.target.value)}
+            value={total}
+            name="total"
+            sx={{ flexColumn: "span 1", width: "180px", mx:"60px" }}
+          />
+          
+        </Box>
+        
+
+        <Box
+          mt="30px"
+          display="flex"
+          gap="10px"
+          sx={{
+            "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
+          }}
+        >
+          <TextField
+            fullWidth
+            
+            variant="filled"
+            type="number"
+            label="Lightship"
+            onChange={(e) => setLightship(e.target.value)}
+            value={lightship}
+            name="lightship"
+            sx={{ flexColumn: "span 1", width: "200px",
+              
+             }}
+          />
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            label="netLightship"
+            onChange={(e) => setNetLightship(e.target.value)}
+            value={Number(netLightship).toFixed(2)}
+            name="netLightship"
+            sx={{ flexColumn: "span 1", width: "200px" }}
+          />
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            label="Constant"
+            onChange={(e) => setConstant(e.target.value)}
+            value={Number(constant).toFixed(2)}
+            name="constant"
+            sx={{ flexColumn: "span 1", width: "200px" }}
+          />
+          <TextField
+            fullWidth
+            disabled
+            variant="outlined"
+            type="number"
+            label="Cargo"
+            onChange={(e) => setCargo(e.target.value)}
+            value={Number(cargo).toFixed(2)}
+            name="cargo"
+            sx={{ flexColumn: "span 1", width: "200px" }}
+          />
+
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mx: "40px",
+            }}
+          >
+            <TextField
+              fullWidth
+              disabled
+              variant="outlined"
+              type="number"
+              label=""
+              onChange={(e) => setQuarter(e.target.value)}
+              value={Number(quarterMean) + 0}
+              name="quarter"
+              sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
+            />
+
+            <TextField
+              fullWidth
+              disabled
+              variant="outlined"
+              type="number"
+              label=""
+              onChange={(e) => setMtc(e.target.value)}
+              value={(Number(mtcPlus50) - Number(mtcMinus50)).toFixed(2)}
+              name="mtc"
+              sx={{ flexColumn: "span 1", width: "130px" }}
+            />
+          </Box>
+        </Box>
+        {/* fin Deductibles     */}
         {/* Ligne 10   */}
         <Box
           display="flex"
