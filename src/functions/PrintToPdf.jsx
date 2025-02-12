@@ -26,13 +26,13 @@ export default function PrintToPdf() {
     
                 const imgWidth = pageWidth - 2 * 10;
                 const imgHeight = (imgWidth * canvas.height) / canvas.width;
+                const imgY = (pageHeight - imgHeight) / 6 ;
                 const imgX = (pageWidth - imgWidth) / 2;
-                const imgY = (pageHeight - imgHeight) / 2;
                 pdf.addImage(imgData, "PNG", imgX, imgY, imgWidth, imgHeight);
     
-                // Add borders around the content
-                pdf.setDrawColor(0); // Set border color to black
-                pdf.rect(imgX - 5, imgY - 5, imgWidth + 10, imgHeight + 10); // Draw border
+                // // Add borders around the content
+                // pdf.setDrawColor(0); // Set border color to black
+                // pdf.rect(imgX - 5, imgY - 5, imgWidth + 5, imgHeight + 5); // Draw border
     
                 pdf.save("page.pdf");
                 setIsLoader(false);
@@ -41,7 +41,8 @@ export default function PrintToPdf() {
                 console.error("Error capturing page:", error);
                 setIsLoader(false);
             });
-    };  
+    };
+
     // Call handleDownload when the component is used
     return handleDownload;
 }

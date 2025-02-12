@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
-// import "react-pro-sidebar/dist/css/styles.css";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import { Link } from "react-router-dom";
@@ -17,19 +16,7 @@ import PieChartOutlinedIcon from "@mui/icons-material/PieChartOutlined";
 import TimeLineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
-import useMode from "../../theme";
-import ValeursInitial from "../valeursInitial";
-/**
- * Creates a menu item with a title, link, icon, and selected state
- * that can be used in the sidebar
- * @param {string} title - The title of the menu item
- * @param {string} to - The link to navigate to when the menu item is clicked
- * @param {ReactNode} icon - The icon to use for the menu item
- * @param {string} selected - The currently selected menu item
- * @param {function} setSelected - The function to call when a menu item is selected
- * @param {object} theme - The theme object
- * @returns {ReactNode} A menu item element
- */
+
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -62,14 +49,14 @@ const SideBar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
 
-  const sidebarBackground =
-    theme.palette.mode === "dark" ? "#434957" : "#f2f0f0";
-
   return (
     <Box
       sx={{
+        height: '100vh', // Prend toute la hauteur de la fenêtre
         "& .ps-sidebar-container": {
           background: `${colors.primary[400]} !important`,
+          height: '100%', // Assurez-vous que le conteneur de la barre latérale prend toute la hauteur
+          overflow: 'hidden', // Évite le défilement
         },
         "& .pro-icon-wrapper": {
           backgroundColor: "transparent !important",
@@ -83,12 +70,10 @@ const SideBar = () => {
         "& .pro-menu-item.active": {
           color: "#6870fa !important",
         },
-        
       }}
     >
       <Sidebar collapsed={isCollapsed}>
         <Menu iconShape="square">
-          {/* LOGO ET ICÔNE DU MENU */}
           <MenuItem
             onClick={() => setIsCollapsed(!isCollapsed)}
             icon={isCollapsed ? <MenuOutlinedIcon /> : undefined}
@@ -241,7 +226,7 @@ const SideBar = () => {
             />
             <Item
               title="Initial Draft Survey"
-              to = "/valeursInitial"
+              to="/valeursInitial"
               icon={<MapOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}

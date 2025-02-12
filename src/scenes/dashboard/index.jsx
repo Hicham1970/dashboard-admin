@@ -10,7 +10,8 @@ import TrafficIcon from "@mui/icons-material/Traffic";
 import LineChart from "../../components/LineChart";
 import BarChart from "../../components/BarChart";
 import PieChart from "../../components/PieChart";
-
+import PrintToPdf from "../../functions/PrintToPdf";
+import { useState } from "react";
 import StatBox from "../../components/StatBox";
 import ProgressCircles from "../../components/ProgressCircles";
 // import { useState } from "react";
@@ -18,6 +19,7 @@ const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   // const [progress, setProgress] = useState(0);
+  const [isLoader, setIsLoader] = useState(false);
 
   return (
     <Box m="20px">
@@ -25,21 +27,28 @@ const Dashboard = () => {
         <Header title="DASHBOARD" subtitle="Welcome to your Dashboard" />
       </Box>
       <Box>
-        <Button
+        <Button 
+        type="button"
+        onClick={PrintToPdf()}
+        disabled={isLoader}
+
           sx={{
             backgroundColor: colors.blueAccent[700],
             color: colors.grey[100],
             fontSize: "14px",
             fontWeight: "bold",
             padding: "10px 20px",
+            borderRadius:"4px",
+            
           }}
         >
           <DownloadOutlinedIcon sx={{ mr: "10px" }} />
-          Download Reports
+          {isLoader ? "Generating Report..." : "Download Reports"}
         </Button>
       </Box>
       {/* Grid & Charts  */}
       <Box
+      id="printMe"    
         display="grid"
         gridTemplateColumns="repeat(12, 1fr)"
         gap="20px"

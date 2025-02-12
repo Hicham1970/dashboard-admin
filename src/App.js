@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { ColorModeContext, useMode } from "./theme";
 import { CssBaseline, ThemeProvider } from '@mui/material';
-import {Routes, Route} from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Topbar from "./scenes/global/Topbar";
 import SideBar from "./scenes/global/Sidebar";
 import Dashboard from "./scenes/dashboard";
@@ -16,6 +16,8 @@ import Faq from "./scenes/faq/Faq";
 import ValeursInitial from "./scenes/valeursInitial";
 import Calendar from "./scenes/calendar/Calendar";
 
+
+
 function App() {
   const [theme, colorMode] = useMode();
 
@@ -24,7 +26,7 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div className="app">
-            <SideBar />
+          <SideBar />
           <main className="content">
             <Topbar />
             <Routes>
@@ -38,12 +40,13 @@ function App() {
               <Route path="/faq" element={<Faq />} />
               <Route path="/line" element={<Line />} />
               <Route path="/pie" element={<Pie />} />
-              <Route path="/valeursInitial" element={<ValeursInitial />} /> 
+              <Route path="/valeursInitial" element={<ValeursInitial />} />
             </Routes>
+
           </main>
         </div>
       </ThemeProvider>
-  </ColorModeContext.Provider>
+    </ColorModeContext.Provider>
   );
 }
 

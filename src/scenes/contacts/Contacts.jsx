@@ -7,9 +7,14 @@ import {tokens} from '../../theme'
 import {mockDataContacts} from '../../data/mockData' 
 import Header from "../../components/Header"
 import {useTheme} from '@mui/material'
+import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
+import { useState } from 'react';
+import {Button} from '@mui/material'
+import PrintToPdf from '../../functions/PrintToPdf'
 
 
 export default function Contacts(){
+    const [isLoader, setIsLoader] = useState(false)
     const theme = useTheme()
     const colors = tokens(theme.palette.mode)
     const columns = [
@@ -24,10 +29,30 @@ export default function Contacts(){
         {field:"zipCode", headerName:"ZipCode", flex:1},
     ]
     return (
-        <Box m="20px">
+        <Box m="20px" id="printMe">
             <Box display={'flex'} justifyContent="space-between" alignItems="center">
                 <Header  title= "CONTACTS" subtitle="List of Contacts for Future Reference"  />
             </Box>
+        <Box>
+        <Button 
+        type="button"
+        onClick={PrintToPdf()}
+        disabled={isLoader}
+
+          sx={{
+            backgroundColor: colors.blueAccent[700],
+            color: colors.grey[100],
+            fontSize: "14px",
+            fontWeight: "bold",
+            padding: "10px 20px",
+            borderRadius:"4px",
+            
+          }}
+        >
+          <DownloadOutlinedIcon sx={{ mr: "10px" }} />
+          {isLoader ? "Generating Report..." : "Download Reports"}
+        </Button>
+      </Box>
             <Box
             m="40px 0 0 0"
             height="75vh"
