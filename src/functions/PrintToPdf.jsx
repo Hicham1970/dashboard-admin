@@ -1,6 +1,7 @@
 import { useState } from "react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
+import Box from "@mui/material/Box";
 
 export default function PrintToPdf() {
     const [isLoader, setIsLoader] = useState(false);
@@ -11,38 +12,57 @@ export default function PrintToPdf() {
             console.error("Element with id 'printMe' not found.");
             return;
         }
-        setIsLoader(true);
-    
+        setIsLoader(true); // Démarre le chargement
+
         html2canvas(capturePage, {
             backgroundColor: null,
-            scale: 2, // Increase the scale for better resolution
+            scale: 2, // Augmente l'échelle pour une meilleure résolution
         })
             .then((canvas) => {
                 const imgData = canvas.toDataURL("image/png");
                 const pdf = new jsPDF("p", "mm", "a4");
-    
+
                 const pageHeight = pdf.internal.pageSize.getHeight();
                 const pageWidth = pdf.internal.pageSize.getWidth();
-    
+
                 const imgWidth = pageWidth - 2 * 10;
                 const imgHeight = (imgWidth * canvas.height) / canvas.width;
-                const imgY = (pageHeight - imgHeight) / 6 ;
+                const imgY = (pageHeight - imgHeight) / 6;
                 const imgX = (pageWidth - imgWidth) / 2;
                 pdf.addImage(imgData, "PNG", imgX, imgY, imgWidth, imgHeight);
-    
-                // // Add borders around the content
-                // pdf.setDrawColor(0); // Set border color to black
-                // pdf.rect(imgX - 5, imgY - 5, imgWidth + 5, imgHeight + 5); // Draw border
-    
+
                 pdf.save("page.pdf");
-                setIsLoader(false);
+                setIsLoader(false); // Arrête le chargement après le téléchargement
             })
             .catch((error) => {
                 console.error("Error capturing page:", error);
-                setIsLoader(false);
+                setIsLoader(false); // Arrête le chargement en cas d'erreur
             });
     };
 
-    // Call handleDownload when the component is used
-    return handleDownload;
+    return (
+        <Box
+            display="flex"
+            justifyContent="center" // Centre le contenu horizontalement
+            alignItems="center" // Centre le contenu verticalement
+            mt={2} // Marge supérieure
+            mb={2} // Marge inférieure
+            sx={{ // Styles supplémentaires
+                padding: '25px', // Espacement interne
+                backgroundColor: 'rgb(255, 165, 0)', // Couleur de fond
+                borderRadius: '8px', // Coins arrondis
+                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                border: '2px solid #1976d2',
+                cursor: 'pointer',
+                transition: 'background-color 0.3s ease',
+                '&:hover': {
+                    backgroundColor: '#e0e0e0',
+                },
+            }}>
+            <button onClick={handleDownload} disabled={isLoader}>
+                {isLoader ? "Téléchargement..." : "Télécharger PDF"}
+            </button>
+            {isLoader && <span>Chargement en cours...</span>}
+        </Box>
+    );
 }

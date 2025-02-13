@@ -923,7 +923,7 @@ export default function ValeursFinal() {
             mt: "80px",
           }}
         ></Box>
-        {/* Deductubles */}
+        {/* Deductibles */}
         {/* Ligne 7  */}
 
         <Box
@@ -1148,7 +1148,17 @@ export default function ValeursFinal() {
       mt="40px"
       mb="40px"
     >
-        <PrintToPdf />
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems={"center"}
+          mt="40px"
+          mb="40px"
+          width="300px"
+          height="15px"
+        >
+          <PrintToPdf />
+        </Box>
       </Box>
       < Footer />
     </>

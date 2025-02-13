@@ -1,29 +1,27 @@
 //  Fonctions de la logique 
 export const calculateMeanFore = (forePort, foreStbd) => {
-    console.log("Calculating meanFore with:", forePort, foreStbd);
+
     const meanFore = ((Number(forePort) || 0) + (Number(foreStbd) || 0)) / 2;
-    console.log("Calculated meanFore:", meanFore);
+
     return (meanFore.toFixed(2));
 };
 
 export const calculateMeanAft = (aftPort, aftStbd) => {
-    console.log("Calculating meanAft with:", aftPort, aftStbd);
+
     const meanAft = ((Number(aftPort) || 0) + (Number(aftStbd) || 0)) / 2;
-    console.log("Calculated meanAft:", meanAft);
+
     return (meanAft.toFixed(2));
 };
 
 export const calculateMeanMid = (midPort, midStbd) => {
-    console.log("Calculating meanMid with:", midPort, midStbd);
     const meanMid = ((Number(midPort) || 0) + (Number(midStbd) || 0)) / 2;
-    console.log("Calculated meanMid:", meanMid);
     return (meanMid.toFixed(2));
 };
 
 export const calculateTrim = (meanAft, meanFore) => {
-    console.log("Calculate trim with:", meanAft, meanFore);
+
     const trim = Number(meanAft) - Number(meanFore);
-    console.log("Trim :", trim);
+
     return (trim.toFixed(2));
 };
 
@@ -64,24 +62,11 @@ export const calculateLbm = (foreDistance, aftDistance, lbp) => {
         // LBM = LBP
         lbm = lbpValue;
     }
-
-    console.log(
-        "Calculating LBM with:",
-        foreDistanceValue,
-        aftDistanceValue,
-        lbpValue
-    );
-    console.log("LBM:", lbm);
     return (lbm.toFixed(2)); // Convert lbm to meters
 };
 
 export const calculateForeCorrected = (trim, foreDistance, lbm, meanFore) => {
-    console.log("Calculating foreCorrected with inputs:", {
-        trim, 
-        foreDistance, 
-        lbm, 
-        meanFore
-    });
+
 
     // Convert inputs to numbers
     const trimValue = Number(trim);
@@ -90,7 +75,7 @@ export const calculateForeCorrected = (trim, foreDistance, lbm, meanFore) => {
     const meanForeValue = Number(meanFore);
 
     // Validate inputs
-    if (isNaN(trimValue) || isNaN(foreDistanceValue) || 
+    if (isNaN(trimValue) || isNaN(foreDistanceValue) ||
         isNaN(lbmValue) || isNaN(meanForeValue)) {
         console.error('Invalid inputs for foreCorrected calculation');
         return '0.00';
@@ -99,28 +84,23 @@ export const calculateForeCorrected = (trim, foreDistance, lbm, meanFore) => {
     // Perform fore corrected calculation
     let foreCorrected;
     if (foreDistanceValue < 0) {
-        foreCorrected = meanForeValue - 
-            ((trimValue * foreDistanceValue) / lbmValue) * 
+        foreCorrected = meanForeValue -
+            ((trimValue * foreDistanceValue) / lbmValue) *
             (trimValue > 0 ? 1 : -1);
     } else if (foreDistanceValue > 0) {
-        foreCorrected = meanForeValue + 
-            ((trimValue * foreDistanceValue) / lbmValue) * 
+        foreCorrected = meanForeValue +
+            ((trimValue * foreDistanceValue) / lbmValue) *
             (trimValue > 0 ? 1 : -1);
     } else {
         foreCorrected = meanForeValue;
     }
 
-    console.log("Calculated foreCorrected:", foreCorrected);
+
     return foreCorrected.toFixed(2);
 };
 
 export const calculateAftCorrected = (trim, aftDistance, lbm, meanAft) => {
-    console.log("Calculating aftCorrected with inputs:", {
-        trim, 
-        aftDistance, 
-        lbm, 
-        meanAft
-    });
+
 
     // Convert inputs to numbers
     const trimValue = Number(trim);
@@ -129,7 +109,7 @@ export const calculateAftCorrected = (trim, aftDistance, lbm, meanAft) => {
     const meanAftValue = Number(meanAft);
 
     // Validate inputs
-    if (isNaN(trimValue) || isNaN(aftDistanceValue) || 
+    if (isNaN(trimValue) || isNaN(aftDistanceValue) ||
         isNaN(lbmValue) || isNaN(meanAftValue)) {
         console.error('Invalid inputs for aftCorrected calculation');
         return '0.00';
@@ -138,28 +118,22 @@ export const calculateAftCorrected = (trim, aftDistance, lbm, meanAft) => {
     // Perform aft corrected calculation
     let aftCorrected;
     if (aftDistanceValue < 0) {
-        aftCorrected = meanAftValue - 
-            ((trimValue * aftDistanceValue) / lbmValue) * 
+        aftCorrected = meanAftValue -
+            ((trimValue * aftDistanceValue) / lbmValue) *
             (trimValue > 0 ? 1 : -1);
     } else if (aftDistanceValue > 0) {
-        aftCorrected = meanAftValue + 
-            ((trimValue * aftDistanceValue) / lbmValue) * 
+        aftCorrected = meanAftValue +
+            ((trimValue * aftDistanceValue) / lbmValue) *
             (trimValue > 0 ? 1 : -1);
     } else {
         aftCorrected = meanAftValue;
     }
 
-    console.log("Calculated aftCorrected:", aftCorrected);
+
     return aftCorrected.toFixed(2);
 };
 
 export const calculateMidCorrected = (trim, midDistance, lbm, meanMid) => {
-    console.log("Calculating midCorrected with inputs:", {
-        trim, 
-        midDistance, 
-        lbm, 
-        meanMid
-    });
 
     // Convert inputs to numbers
     const trimValue = Number(trim);
@@ -168,7 +142,7 @@ export const calculateMidCorrected = (trim, midDistance, lbm, meanMid) => {
     const meanMidValue = Number(meanMid);
 
     // Validate inputs
-    if (isNaN(trimValue) || isNaN(midDistanceValue) || 
+    if (isNaN(trimValue) || isNaN(midDistanceValue) ||
         isNaN(lbmValue) || isNaN(meanMidValue)) {
         console.error('Invalid inputs for midCorrected calculation');
         return '0.00';
@@ -177,18 +151,18 @@ export const calculateMidCorrected = (trim, midDistance, lbm, meanMid) => {
     // Perform mid corrected calculation
     let midCorrected;
     if (midDistanceValue < 0) {
-        midCorrected = meanMidValue - 
-            ((trimValue * midDistanceValue) / lbmValue) * 
+        midCorrected = meanMidValue -
+            ((trimValue * midDistanceValue) / lbmValue) *
             (trimValue > 0 ? 1 : -1);
     } else if (midDistanceValue > 0) {
-        midCorrected = meanMidValue + 
-            ((trimValue * midDistanceValue) / lbmValue) * 
+        midCorrected = meanMidValue +
+            ((trimValue * midDistanceValue) / lbmValue) *
             (trimValue > 0 ? 1 : -1);
     } else {
         midCorrected = meanMidValue;
     }
 
-    console.log("Calculated midCorrected:", midCorrected);
+
     return midCorrected.toFixed(2);
 };
 
@@ -199,14 +173,14 @@ export const calculateTrimCorrected = (meanAftCorrected, meanForeCorrected) => {
 
     // Calculate absolute difference to ensure non-negative trim
     const trimCorrected = Math.abs(aftCorrectedValue - foreCorrectedValue);
-    
-    console.log("trimCorrected:", trimCorrected);
+
+
     return trimCorrected.toFixed(2);
 };
 
 
 export const calculateMeanForeAft = (foreCorrected, aftCorrected) => {
-    console.log("The meanForeAft was calculated with :", foreCorrected, aftCorrected);
+
 
     let meanForeAft = 0;
     const foreCorrectedValue = foreCorrected;
@@ -218,7 +192,6 @@ export const calculateMeanForeAft = (foreCorrected, aftCorrected) => {
 };
 
 export const calculateMeanOfMean = (midCorrected, meanForeAft) => {
-    console.log("The meanOfMean was calculated with :", meanForeAft, midCorrected);
 
     let meanOfMean = 0;
     const midCorrectedValue = midCorrected;
@@ -230,7 +203,6 @@ export const calculateMeanOfMean = (midCorrected, meanForeAft) => {
 };
 
 export const calculateQuarterMean = (midCorrected, meanOfMean) => {
-    console.log("The quarterMean was calculated with :", meanOfMean, midCorrected);
 
     let quarterMean = 0;
     const midCorrectedValue = midCorrected;
@@ -244,25 +216,18 @@ export const calculateQuarterMean = (midCorrected, meanOfMean) => {
 //  Calcul du displacement
 
 export const calculateDisplacement = (draftInf, draftSup, quarterMean, displacementInf, displacementSup) => {
-    // Validate inputs
-    console.log('Displacement Calculation Inputs:', {
-        draftInf, 
-        draftSup, 
-        quarterMean, 
-        displacementInf, 
-        displacementSup
-    });
+
 
     // Convert inputs to numbers with error handling
     const draftInfValue = (Number(quarterMean) - 0.1).toFixed(2);
-    const draftSupValue = (Number(quarterMean) + 0.1).toFixed(2);   
+    const draftSupValue = (Number(quarterMean) + 0.1).toFixed(2);
     const quarterMeanValue = Number(quarterMean);
     const displacementInfValue = Number(displacementInf);
     const displacementSupValue = Number(displacementSup);
 
     // Check for invalid inputs
-    if (isNaN(draftInfValue) || isNaN(draftSupValue) || 
-        isNaN(quarterMeanValue) || isNaN(displacementInfValue) || 
+    if (isNaN(draftInfValue) || isNaN(draftSupValue) ||
+        isNaN(quarterMeanValue) || isNaN(displacementInfValue) ||
         isNaN(displacementSupValue)) {
         console.error('Invalid input values for displacement calculation');
         return '0.00';
@@ -279,7 +244,7 @@ export const calculateDisplacement = (draftInf, draftSup, quarterMean, displacem
         ((displacementSupValue - displacementInfValue) / (draftSupValue - draftInfValue)) *
         (draftSupValue - quarterMeanValue);
 
-    console.log('Calculated Displacement:', displacement);
+
 
     return displacement.toFixed(2);
 };
@@ -293,21 +258,14 @@ export const calculateTpc = (quarterMean, tpcSup, tpcInf) => {
     // draft sup et draft inf
 
     const draftInfValue = (Number(quarterMean) - 0.1).toFixed(2);
-    const draftSupValue = (Number(quarterMean) + 0.1).toFixed(2);   
+    const draftSupValue = (Number(quarterMean) + 0.1).toFixed(2);
     const quarterMeanValue = quarterMean;
-
-    console.log("tpcInfValue:", tpcInfValue);
-    console.log("tpcSupValue:", tpcSupValue);
-    
-    console.log("draftInfValue:", draftInfValue);
-    console.log("draftSupValue:", draftSupValue);
-    console.log("quarterMeanValue:", quarterMeanValue);
 
     tpc = Number(tpcInfValue) +
         ((Number(tpcSupValue) - Number(tpcInfValue)) / (Number(draftSupValue) - Number(draftInfValue))) *
         (Number(draftSupValue) - Number(quarterMeanValue));
 
-        console.log("Tpc :", tpc)
+
     return (tpc);
 
 };
@@ -319,14 +277,14 @@ export const calculateLcf = (quarterMean, lcfSup, lcfInf) => {
     // draft sup et draft inf
     let draftSupValue = (Number(quarterMean) + 0.1).toFixed(2);
     let draftInfValue = (Number(quarterMean) - 0.1).toFixed(2);
-    
+
     const quarterMeanValue = quarterMean;
 
     lcf = Number(lcfInfValue) +
         ((Number(lcfSupValue) - Number(lcfInfValue)) / (Number(draftSupValue) - Number(draftInfValue))) *
         (Number(draftSupValue) - Number(quarterMeanValue));
 
-        console.log("Lcf:", lcf)
+
     return (lcf);
 
 };
@@ -345,7 +303,7 @@ export const calculateFirstTrimCorrection = (trimCorrected, tpc, lcf, lbp) => {
         (Number(trimCorrectedValue) *
             100 * Number(tpcValue) * Number(lcfValue)) / Number(lbpValue);
 
-        console.log("firstTrimCorrection :", firstTrimCorrection)
+
     return (firstTrimCorrection.toFixed(2));
 
 };
@@ -363,7 +321,7 @@ export const calculateSecondTrimCorrection = (trimCorrected, mtcPlus50, mtcMinus
         (Number(trimCorrectedValue) *
             Number(trimCorrectedValue) * Number(mtcValue) * 50) / Number(lbpValue);
 
-        console.log("secondTrimCorrection :", secondTrimCorrection)
+
     return (secondTrimCorrection.toFixed(2));
 
 };
@@ -378,7 +336,7 @@ export const calculateDisplacementTrimCorrected = (displacement, firstTrimCorrec
         Number(displacementValue) +
         Number(firstTrimCorrectionValue) + Number(secondTrimCorrectionValue);
 
-        console.log("displacementTrimCorrected:", displacementTrimCorrected)
+
     return (displacementTrimCorrected.toFixed(2));
 
 };
@@ -391,7 +349,7 @@ export const calculateDisplacementDstyCorrected = (density, displacementTrimCorr
     displacementDstyCorrected =
         (Number(displacementTrimCorrectedValue) * Number(densityValue)) / 1.025;
 
-        console.log("displacementDstyCorrected:", displacementDstyCorrected)
+
     return (displacementDstyCorrected.toFixed(2));
 
 };
@@ -406,7 +364,7 @@ export const calculateTotal = (ballast, freshWater, fuel, diesel, lubOil, others
     const othersValue = others;
 
     total = Number(ballastValue) + Number(freshWaterValue) + Number(fuelValue) + Number(dieselValue) + Number(lubOilValue) + Number(othersValue);
-    console.log('Total deductibles :', total)
+
     return (total.toFixed(2));
 };
 
@@ -417,7 +375,7 @@ export const calculateNetLight = (total, displacementDstyCorrected) => {
 
     netLight = Number(displacementDstyCorrectedValue) - Number(totalValue);
 
-    console.log("Net light :", netLight)
+
     return (netLight.toFixed(2));
 };
 
@@ -427,7 +385,7 @@ export const calculateConstant = (netLight, lightship) => {
     const lightshipValue = lightship;
 
     constant = Number(netLightValue) - Number(lightshipValue);
-    console.log("Constant Calculée :", constant)
+
     return (constant.toFixed(2));
 };
 
