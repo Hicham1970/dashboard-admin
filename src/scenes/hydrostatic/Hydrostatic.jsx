@@ -4,7 +4,7 @@ import {
     GridToolbar
 } from '@mui/x-data-grid'
 import { tokens } from '../../theme'
-import { mockDataContacts } from '../../data/mockData'
+import { hydrostatic_table } from '../../data/hydrostatic_table'
 import Header from "../../components/Header"
 import { useTheme } from '@mui/material'
 import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
@@ -13,26 +13,23 @@ import { Button } from '@mui/material'
 import PrintToPdf from '../../functions/PrintToPdf'
 
 
-export default function Contacts() {
+export default function Hydrostatic() {
     // eslint-disable-next-line no-unused-vars
     const [isLoader, setIsLoader] = useState(false)
     const theme = useTheme()
     const colors = tokens(theme.palette.mode)
     const columns = [
-        { field: "id", headerName: "ID", flex: 0.5 },
-        { field: "registerId", headerName: "Register ID", flex: 0.5 },
-        { field: "name", headerName: "Name", flex: 1, cellClassName: "name-column--cell" },
-        { field: "age", headerName: "Age", type: "number", headerAlign: "left", align: "left" },
-        { field: "phone", headerName: "Phone", flex: 1 },
-        { field: "email", headerName: "Email", flex: 1 },
-        { field: "address", headerName: "Address", flex: 1 },
-        { field: "city", headerName: "City", flex: 1 },
-        { field: "zipCode", headerName: "ZipCode", flex: 1 },
+        { field: "id", headerName: "ID", flex: 0.1, className: "id-column--cell" },
+        { field: "DRAFT", type: "number", headerName: "DRAFT", flex: 0.2, cellClassName: "draft-column--cell" },
+        { field: "DISPLACEMENT", type: "number", headerName: "DISPLACEMENT", flex: 0.3 },
+        { field: "TPC", headerName: "TPC", type: "number", flex: 0.3, cellClassName: "name-column--cell" },
+        { field: "MTC", headerName: "MTC", type: "number", flex: 0.3 },
+        { field: "LCF", type: "number", headerName: "LCF", flex: 0.3 },
     ]
     return (
         <Box m="20px" id="printMe">
             <Box display={'flex'} justifyContent="space-between" alignItems="center">
-                <Header title="CONTACTS" subtitle="List of Contacts for Future Reference" />
+                <Header title="HYDROSTATIC TABLE" subtitle="Hydrostatic Table Mv TBN" />
             </Box>
             <Box>
                 <Button
@@ -59,18 +56,22 @@ export default function Contacts() {
                 height="75vh"
                 // styling using classNames
                 sx={{
+                    "& .id-column--cell": {
+                        width: "10px",
+                    },
                     "& .MuiDataGrid-root": {
-                        border: "none",
+                        border: "thick",
                     },
                     "& .MuiDataGrid-cell": {
                         borderBottom: "none"
                     },
-                    "& .name-column--cell": {
-                        color: colors.greenAccent[300]
+                    "& .draft-column--cell": {
+                        color: colors.greenAccent[500]
                     },
                     "& .MuiDataGrid-columnHeader": {
                         backgroundColor: colors.blueAccent[700],
-                        backgroundBottom: "none"
+                        backgroundBottom: "none",
+                        headerAlign: "center", align: "center", width: "27px"
                     },
                     "& .MuiDataGrid-virtualScroller": {
                         backgroundColor: colors.primary[400]
@@ -81,12 +82,20 @@ export default function Contacts() {
                     },
                     "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
                         color: `${colors.grey[100]} !important`,
+                    },
+                    "& .MuiDataGrid-columnHeaderTitleContainer ": {
+                        color: `${colors.grey[100]} !important`,
+                        fontSize: '25px'
+                    },
+                    "& .MuiDataGrid-cell.MuiDataGrid-cell ": {
+                        color: `${colors.grey[100]} !important`,
+                        fontSize: '25px'
                     }
 
                 }}
             >
                 <DataGrid
-                    rows={mockDataContacts}
+                    rows={hydrostatic_table}
                     columns={
                         columns
                     }

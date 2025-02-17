@@ -154,8 +154,8 @@ const SideBar = () => {
               setSelected={setSelected}
             />
             <Item
-              title="Contacts Informations"
-              to="/contacts"
+              title="Hydrostatic Informations"
+              to="/hydrostatic"
               icon={<ContactsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -201,8 +201,23 @@ const SideBar = () => {
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}
             >
-              Charts
+              Draft survey
             </Typography>
+            <Item
+              title="DS Report"
+              to="/ds"
+              icon={<TimeLineOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+
+            <Item
+              title="Initial Draft"
+              to="/valeursInitial"
+              icon={<MapOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
             <Item
               title="Final Draft"
               to="/valeursFinal"
@@ -217,20 +232,7 @@ const SideBar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
-              title="Line Chart"
-              to="/line"
-              icon={<TimeLineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Initial Draft Survey"
-              to="/valeursInitial"
-              icon={<MapOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+
           </Box>
         </Menu>
       </Sidebar>

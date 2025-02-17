@@ -39,6 +39,8 @@ import {
   calculateNetLight,
   calculateLbm,
   calculateConstant,
+  calculateNetLoad,
+  calculateCargo,
 
 } from "../functions/calculationUtils";
 import Footer from "./Footer";
@@ -226,6 +228,15 @@ export default function ValeursFinal() {
     [netLightCalculated, lightship]
   );
 
+  const netLoadCalculated = useMemo(() =>
+    calculateNetLoad(totalCalculated, displacementDstyCorrectionCalculated),
+    [totalCalculated, displacementDstyCorrectionCalculated]
+  );
+
+  const cargoCalculated = useMemo(() =>
+    calculateCargo(netLoadCalculated, netLightCalculated)
+    , [netLoadCalculated, netLightCalculated])
+
   // Update state with calculated values
   useEffect(() => {
     setMeanFore(meanForeCalculated);
@@ -250,12 +261,10 @@ export default function ValeursFinal() {
     setTotal(totalCalculated);
     setNetLight(netLightCalculated);
     setConstant(constantCalculated);
-  }, [meanForeCalculated, meanAftCalculated, meanMidCalculated, trimCalculated,
-    lbmCalculated, foreCorrectedCalculated, aftCorrectedCalculated, midCorrectedCalculated,
-    trimCorrectedCalculated, meanForeAftCalculated, meanOfMeanCalculated, quarterMeanCalculated,
-    displacementCalculated, tpcCalculated, lcfCalculated, firstTrimCorrectionCalculated,
-    secondTrimCorrectionCalculated, displacementTrimCorrectedCalculated,
-    displacementDstyCorrectionCalculated, totalCalculated, netLightCalculated, constantCalculated]);
+    setNetLoad(netLoadCalculated);
+    setCargo(cargoCalculated);
+
+  }, [meanForeCalculated, meanAftCalculated, meanMidCalculated, trimCalculated, lbmCalculated, foreCorrectedCalculated, aftCorrectedCalculated, midCorrectedCalculated, trimCorrectedCalculated, meanForeAftCalculated, meanOfMeanCalculated, quarterMeanCalculated, displacementCalculated, tpcCalculated, lcfCalculated, firstTrimCorrectionCalculated, secondTrimCorrectionCalculated, displacementTrimCorrectedCalculated, displacementDstyCorrectionCalculated, totalCalculated, netLightCalculated, constantCalculated, netLoadCalculated, netLoad, cargoCalculated, cargo]);
 
 
 
@@ -274,7 +283,7 @@ export default function ValeursFinal() {
           gap="6px"
           sx={{
             fontSize: "44px",
-            width: "500px",
+            width: "900px",
           }}
         >
           <FormControlLabel
@@ -298,7 +307,10 @@ export default function ValeursFinal() {
             value={lbp}
             onChange={(e) => setLbp(e.target.value)}
             name="lbp"
-            sx={{ flexGrow: "2" }} />
+            sx={{ flexGrow: "3", width: "900px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             variant="filled"
@@ -307,7 +319,10 @@ export default function ValeursFinal() {
             value={keelCorrection}
             onChange={(e) => setKeelCorrection(e.target.value)}
             name="keelCorrection"
-            sx={{ gridColumn: "span 1" }} />
+            sx={{ gridColumn: "span 1", width: "900px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             variant="filled"
@@ -318,41 +333,47 @@ export default function ValeursFinal() {
             name="density"
             sx={{
               gridColumn: "span 2",
-              width: "500px",
-            }} />
+              width: "900px",
+            }}
+
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             disabled
             variant="filled"
             type="number"
-            label="Trim"
+            placeholder="Trim"
             onChange={(e) => setTrim(e.target.value)}
             value={trim}
             name="trim"
             sx={{
-              flexColumn: "span 2",
-              color: colors.grey[500],
-              fontWeight: "bold",
-              fontSize: "1.2rem",
-              borderRadius: "14px",
-            }} />
+              gridColumn: "span 2",
+              width: "900px",
+            }}
+
+            InputProps={{ style: { fontSize: '20px' }, fontWeight: "bold" }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
 
           <TextField
             fullWidth
             disabled
             variant="filled"
             type="number"
-            label="lbm"
+            placeholder="lbm"
             onChange={(e) => setLbm(e.target.value)}
             value={lbm}
             name="lbm"
             sx={{
               gridColumn: "span 2",
-              color: colors.grey[500],
-              fontWeight: "bold",
-              fontSize: "1.2rem",
-              borderRadius: "14px"
-            }} />
+              width: "900px",
+            }}
+
+            InputProps={{ style: { fontSize: '20px', fontWeight: "bold" } }}
+            InputLabelProps={{ style: { fontSize: '16px' } }}
+          />
         </Box>
 
         <Box
@@ -389,7 +410,11 @@ export default function ValeursFinal() {
             onChange={(e) => setForeStbd(e.target.value)}
             value={foreStbd}
             name="foreStbd"
-            sx={{ flexColumn: "span 2" }} />
+            sx={{ flexColumn: "span 2" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+
+          />
           <TextField
             fullWidth
             variant="filled"
@@ -398,7 +423,10 @@ export default function ValeursFinal() {
             onChange={(e) => setForeDistance(e.target.value)}
             value={foreDistance}
             name="foreDistance"
-            sx={{ flexColumn: "span 2" }} />
+            sx={{ flexColumn: "span 2" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             disabled
@@ -408,7 +436,11 @@ export default function ValeursFinal() {
             onChange={() => calculateMeanFore()}
             value={meanFore}
             name="meanFore"
-            sx={{ gridColumn: "span 4" }} />
+            sx={{ gridColumn: "span 4" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
+
         </Box>
         {/* Ligne3 */}
         <Box
@@ -427,7 +459,11 @@ export default function ValeursFinal() {
             onChange={(e) => setAftPort(e.target.value)}
             value={aftPort}
             name="aftPort"
-            sx={{ gridColumn: "span 4" }} />
+            sx={{ gridColumn: "span 4" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
+
           <TextField
             fullWidth
             variant="filled"
@@ -436,7 +472,10 @@ export default function ValeursFinal() {
             onChange={(e) => setAftStbd(e.target.value)}
             value={aftStbd}
             name="aftStbd"
-            sx={{ flexColumn: "span 2" }} />
+            sx={{ flexColumn: "span 2" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             variant="filled"
@@ -448,7 +487,11 @@ export default function ValeursFinal() {
             sx={{
               flexColumn: "span 2",
               textAlign: 'right'
-            }} />
+            }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
+
           <TextField
             fullWidth
             disabled
@@ -461,7 +504,10 @@ export default function ValeursFinal() {
             style={{ textAlign: 'right' }}
             sx={{
               gridColumn: "span 1"
-            }} />
+            }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
         </Box>
         {/* Ligne4 */}
         <Box
@@ -480,7 +526,11 @@ export default function ValeursFinal() {
             onChange={(e) => setMidPort(e.target.value)}
             value={midPort}
             name="midPort"
-            sx={{ gridColumn: "span 4" }} />
+            sx={{ gridColumn: "span 4" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
+
           <TextField
             fullWidth
             variant="filled"
@@ -489,7 +539,10 @@ export default function ValeursFinal() {
             onChange={(e) => setMidStbd(e.target.value)}
             value={midStbd}
             name="midStbd"
-            sx={{ flexColumn: "span 2" }} />
+            sx={{ flexColumn: "span 2" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             variant="filled"
@@ -498,7 +551,10 @@ export default function ValeursFinal() {
             onChange={(e) => setMidDistance(e.target.value)}
             value={midDistance}
             name="midDistance"
-            sx={{ flexColumn: "span 2" }} />
+            sx={{ flexColumn: "span 2" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             disabled
@@ -508,7 +564,11 @@ export default function ValeursFinal() {
             onChange={(e) => setMeanMid(e.target.value)}
             value={meanMid}
             name="meanMid"
-            sx={{ gridColumn: "span 4" }} />
+            sx={{ gridColumn: "span 4" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
+
         </Box>
         {/* Ligne5 */}
         <Box
@@ -524,37 +584,48 @@ export default function ValeursFinal() {
             disabled
             variant="outlined"
             type="number"
-            label="Fore Corrected"
+            placeholder="Fore Corrected"
             onChange={(e) => setForeCorrected(e.target.value)}
             value={foreCorrected}
             name="foreCorrected"
             sx={{
               gridColumn: "span 3"
-            }} />
+            }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             disabled
             variant="outlined"
             type="number"
-            label="Aft Corrected"
+            placeholder="Aft Corrected"
             onChange={(e) => setAftCorrected(e.target.value)}
             value={aftCorrected}
             name="aftCorrected"
             sx={{
               flexColumn: "span 3"
-            }} />
+            }}
+            InputProps={{ style: { fontSize: '20px', mr: "125px" } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
+
           <TextField
             fullWidth
             disabled
             variant="outlined"
             type="number"
-            label="Mid Corrected"
+            placeholder="Mid Corrected"
             onChange={(e) => setMidCorrected(e.target.value)}
             value={midCorrected}
             name="midCorrected"
             sx={{
               flexColumn: "span 3",
-            }} />
+            }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
+
         </Box>
         {/* Ligne6 */}
         <Box
@@ -574,7 +645,11 @@ export default function ValeursFinal() {
             onChange={(e) => setTrimCorrected(e.target.value)}
             value={Number(trimCorrected).toFixed(2)}
             name="trimCorrected"
-            sx={{ gridColumn: "span 4" }} />
+            sx={{ gridColumn: "span 4" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
+
           <TextField
             fullWidth
             disabled
@@ -584,7 +659,10 @@ export default function ValeursFinal() {
             onChange={(e) => setMeanForeAft(e.target.value)}
             value={meanForeAft}
             name="meanForeAft"
-            sx={{ flexColumn: "span 2" }} />
+            sx={{ flexColumn: "span 2" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             disabled
@@ -594,7 +672,10 @@ export default function ValeursFinal() {
             onChange={(e) => setMeanOfMean(e.target.value)}
             value={meanOfMean}
             name="meanOfMean"
-            sx={{ flexColumn: "span 2" }} />
+            sx={{ flexColumn: "span 2" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             disabled
@@ -606,12 +687,10 @@ export default function ValeursFinal() {
             name="quarterMean"
             sx={{
               gridColumn: "span 4",
-              color: colors.grey[500],
-              backgroundColor: colors.greenAccent[600],
-              fontWeight: "bold",
-              fontSize: "1.2rem",
-              borderRadius: "14px",
-            }} />
+            }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
         </Box>
         <Box
           sx={{
@@ -640,7 +719,10 @@ export default function ValeursFinal() {
             onChange={(e) => setDraftInf(e.target.value)}
             value={(Number(quarterMean) - 0.1).toFixed(2)}
             name="draftInf"
-            sx={{ flexColumn: "span 1", width: "200px" }} />
+            sx={{ flexColumn: "span 1", width: "200px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             variant="filled"
@@ -649,7 +731,10 @@ export default function ValeursFinal() {
             onChange={(e) => setDisplacementInf(e.target.value)}
             value={displacementInf}
             name="displacementInf"
-            sx={{ flexColumn: "span 1", width: "200px" }} />
+            sx={{ flexColumn: "span 1", width: "200px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             variant="filled"
@@ -658,7 +743,10 @@ export default function ValeursFinal() {
             onChange={(e) => setTpcInf(e.target.value)}
             value={tpcInf}
             name="tpcInf"
-            sx={{ flexColumn: "span 1", width: "200px" }} />
+            sx={{ flexColumn: "span 1", width: "200px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             variant="filled"
@@ -667,7 +755,10 @@ export default function ValeursFinal() {
             onChange={(e) => setLcfInf(e.target.value)}
             value={lcfInf}
             name="lcfInf"
-            sx={{ flexColumn: "span 1", width: "200px" }} />
+            sx={{ flexColumn: "span 1", width: "200px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
 
           <Box
             sx={{
@@ -686,7 +777,10 @@ export default function ValeursFinal() {
               onChange={(e) => setQuarterPlus50(e.target.value)}
               value={Number(quarterMean) + 0.5}
               name="quarter50Sup"
-              sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }} />
+              sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
+              InputProps={{ style: { fontSize: '20px' } }}
+              InputLabelProps={{ style: { fontSize: '20px' } }}
+            />
 
             <TextField
               fullWidth
@@ -696,7 +790,11 @@ export default function ValeursFinal() {
               onChange={(e) => setMtcPlus50(e.target.value)}
               value={mtcPlus50}
               name="mtcPlus50"
-              sx={{ flexColumn: "span 1", width: "130px" }} />
+              sx={{ flexColumn: "span 1", width: "130px" }}
+              InputProps={{ style: { fontSize: '20px' } }}
+              InputLabelProps={{ style: { fontSize: '20px' } }}
+
+            />
           </Box>
         </Box>
         {/* Ligne 8  */}
@@ -720,7 +818,9 @@ export default function ValeursFinal() {
             name="quarterMean"
             sx={{
               flexColumn: "span 1", width: "200px",
-            }} />
+            }} InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             disabled
@@ -730,7 +830,10 @@ export default function ValeursFinal() {
             onChange={(e) => setDisplacement(e.target.value)}
             value={Number(displacement).toFixed(2)}
             name="displacement"
-            sx={{ flexColumn: "span 1", width: "200px" }} />
+            sx={{ flexColumn: "span 1", width: "200px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             disabled
@@ -740,7 +843,11 @@ export default function ValeursFinal() {
             onChange={(e) => setTpc(e.target.value)}
             value={Number(tpc).toFixed(2)}
             name="tpc"
-            sx={{ flexColumn: "span 1", width: "200px" }} />
+            sx={{ flexColumn: "span 1", width: "200px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+
+          />
           <TextField
             fullWidth
             disabled
@@ -750,7 +857,11 @@ export default function ValeursFinal() {
             onChange={(e) => setLcf(e.target.value)}
             value={Number(lcf).toFixed(2)}
             name="lcf"
-            sx={{ flexColumn: "span 1", width: "200px" }} />
+            sx={{ flexColumn: "span 1", width: "200px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+
+          />
 
           <Box
             sx={{
@@ -769,7 +880,10 @@ export default function ValeursFinal() {
               onChange={(e) => setQuarter(e.target.value)}
               value={Number(quarterMean) + 0}
               name="quarter"
-              sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }} />
+              sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
+              InputProps={{ style: { fontSize: '20px' } }}
+              InputLabelProps={{ style: { fontSize: '20px' } }}
+            />
 
             <TextField
               fullWidth
@@ -780,7 +894,10 @@ export default function ValeursFinal() {
               onChange={(e) => setMtc(e.target.value)}
               value={(Number(mtcPlus50) - Number(mtcMinus50)).toFixed(2)}
               name="mtc"
-              sx={{ flexColumn: "span 1", width: "130px" }} />
+              sx={{ flexColumn: "span 1", width: "130px" }}
+              InputProps={{ style: { fontSize: '20px' } }}
+              InputLabelProps={{ style: { fontSize: '20px' } }}
+            />
           </Box>
         </Box>
 
@@ -803,7 +920,11 @@ export default function ValeursFinal() {
             onChange={(e) => setDraftSup(e.target.value)}
             value={(Number(quarterMean) + 0.1).toFixed(2)}
             name="draftSup"
-            sx={{ flexColumn: "span 1", width: "200px" }} />
+            sx={{ flexColumn: "span 1", width: "200px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+
+          />
           <TextField
             fullWidth
             variant="filled"
@@ -812,7 +933,10 @@ export default function ValeursFinal() {
             onChange={(e) => setDisplacementSup(e.target.value)}
             value={displacementSup}
             name="displacementSup"
-            sx={{ flexColumn: "span 1", width: "200px" }} />
+            sx={{ flexColumn: "span 1", width: "200px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             variant="filled"
@@ -821,7 +945,10 @@ export default function ValeursFinal() {
             onChange={(e) => setTpcSup(e.target.value)}
             value={tpcSup}
             name="tpcSup"
-            sx={{ flexColumn: "span 1", width: "200px" }} />
+            sx={{ flexColumn: "span 1", width: "200px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             variant="filled"
@@ -830,7 +957,10 @@ export default function ValeursFinal() {
             onChange={(e) => setLcfSup(e.target.value)}
             value={lcfSup}
             name="lcfSup"
-            sx={{ flexColumn: "span 1", width: "200px" }} />
+            sx={{ flexColumn: "span 1", width: "200px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
 
           <Box
             sx={{
@@ -849,7 +979,10 @@ export default function ValeursFinal() {
               onChange={(e) => setQuarterMinus50(e.target.value)}
               value={(Number(quarterMean) - 0.5).toFixed(2)}
               name="quarterMinus50"
-              sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }} />
+              sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
+              InputProps={{ style: { fontSize: '20px' } }}
+              InputLabelProps={{ style: { fontSize: '20px' } }}
+            />
 
             <TextField
               fullWidth
@@ -859,7 +992,10 @@ export default function ValeursFinal() {
               onChange={(e) => setMtcMinus50(e.target.value)}
               value={mtcMinus50}
               name="mtcMinus50"
-              sx={{ flexColumn: "span 1", width: "130px" }} />
+              sx={{ flexColumn: "span 1", width: "130px" }}
+              InputProps={{ style: { fontSize: '20px' } }}
+              InputLabelProps={{ style: { fontSize: '20px' } }}
+            />
           </Box>
         </Box>
         {/* Ligne 10 */}
@@ -880,7 +1016,10 @@ export default function ValeursFinal() {
             onChange={(e) => setFirstTrimCorrection(e.target.value)}
             value={firstTrimCorrection}
             name="firstTrimCorrection"
-            sx={{ gridColumn: "span 4" }} />
+            sx={{ gridColumn: "span 4" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             disabled
@@ -890,7 +1029,10 @@ export default function ValeursFinal() {
             onChange={(e) => setSecondTrimCorrection(e.target.value)}
             value={secondTrimCorrection}
             name="secondTrimCorrection"
-            sx={{ flexColumn: "span 2" }} />
+            sx={{ flexColumn: "span 2" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             disabled
@@ -900,7 +1042,11 @@ export default function ValeursFinal() {
             onChange={(e) => setDisplacementTrimCorrected(e.target.value)}
             value={displacementTrimCorrected}
             name="displacementTrimCorrected"
-            sx={{ flexColumn: "span 2" }} />
+            sx={{ flexColumn: "span 2" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+
+          />
           <TextField
             fullWidth
             disabled
@@ -912,8 +1058,11 @@ export default function ValeursFinal() {
             name="displacementDstyCorrected"
             sx={{
               gridColumn: "span 4",
+            }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
 
-            }} />
+          />
         </Box>
         <Box
           sx={{
@@ -923,7 +1072,7 @@ export default function ValeursFinal() {
             mt: "80px",
           }}
         ></Box>
-        {/* Deductibles */}
+
         {/* Ligne 7  */}
 
         <Box
@@ -942,16 +1091,23 @@ export default function ValeursFinal() {
             onChange={(e) => setBallast(e.target.value)}
             value={ballast}
             name="ballast"
-            sx={{ flexColumn: "span 1", width: "140px" }} />
+            sx={{ flexColumn: "span 1", width: "140px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+
+          />
           <TextField
             fullWidth
             variant="filled"
             type="number"
-            label="Freesh Water"
+            label="Fresh Water"
             onChange={(e) => setFreshWater(e.target.value)}
             value={freshWater}
             name="freshWater"
-            sx={{ flexColumn: "span 1", width: "140px" }} />
+            sx={{ flexColumn: "span 1", width: "140px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
           <TextField
             fullWidth
             variant="filled"
@@ -960,7 +1116,11 @@ export default function ValeursFinal() {
             onChange={(e) => setFuel(e.target.value)}
             value={fuel}
             name="fuel"
-            sx={{ flexColumn: "span 1", width: "140px" }} />
+            sx={{ flexColumn: "span 1", width: "140px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+
+          />
           <TextField
             fullWidth
             variant="filled"
@@ -969,7 +1129,11 @@ export default function ValeursFinal() {
             onChange={(e) => setDiesel(e.target.value)}
             value={diesel}
             name="diesel"
-            sx={{ flexColumn: "span 1", width: "140px" }} />
+            sx={{ flexColumn: "span 1", width: "140px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+
+          />
 
 
           <TextField
@@ -980,7 +1144,10 @@ export default function ValeursFinal() {
             onChange={(e) => setLubOil(e.target.value)}
             value={lubOil}
             name="lubOil"
-            sx={{ flexColumn: "span 1", width: "140px" }} />
+            sx={{ flexColumn: "span 1", width: "140px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
 
           <TextField
             fullWidth
@@ -990,7 +1157,11 @@ export default function ValeursFinal() {
             onChange={(e) => setOthers(e.target.value)}
             value={others}
             name="others"
-            sx={{ flexColumn: "span 1", width: "140px" }} />
+            sx={{ flexColumn: "span 1", width: "140px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+
+          />
           <TextField
             fullWidth
             disabled
@@ -1000,99 +1171,129 @@ export default function ValeursFinal() {
             onChange={(e) => setTotal(e.target.value)}
             value={Number(total).toFixed(2)}
             name="total"
-            sx={{ flexColumn: "span 1", width: "180px", mx: "60px" }} />
+            sx={{ flexColumn: "span 1", width: "180px", mx: "60px" }}
+            InputProps={{ style: { fontSize: '20px' } }}
+            InputLabelProps={{ style: { fontSize: '20px' } }}
+          />
 
         </Box>
 
-
-        <Box
-          mt="40px"
-          display="flex"
-          gap="10px"
-          sx={{
-            "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
-          }}
-        >
-          <TextField
-            id="lightship"
-            fullWidth
-            variant="filled"
-            type="number"
-            label="Lightship"
-            onChange={(e) => setLightship(e.target.value)}
-            value={lightship}
-            name="lightship"
+        {isEmpty && (
+          < Box
+            mt="40px"
+            display="flex"
+            gap="10px"
             sx={{
-              flexColumn: "span 1", width: "200px",
-            }} />
-          <TextField
-            id="netLight"
-            fullWidth
-            disabled
-            variant="outlined"
-            type="number"
-            label="NetLight"
-            onChange={(e) => setNetLight(e.target.value)}
-            value={Number(netLight).toFixed(2)}
-            name="netLight"
-            sx={{ flexColumn: "span 1", width: "200px" }} />
-          <TextField
-            fullWidth
-            disabled
-            variant="outlined"
-            type="number"
-            label="Constant"
-            onChange={(e) => setConstant(e.target.value)}
-            value={Number(constant).toFixed(2)}
-            name="constant"
-            sx={{ flexColumn: "span 1", width: "200px" }} />
-          {!isEmpty && (
-            <Box
+              "& > div": { flexColumn: isNonMobile ? undefined : "span 4" },
+            }}
+          >
+            <TextField
+              id="lightship"
+              fullWidth
+              variant="filled"
+              type="number"
+              label="Lightship"
+              onChange={(e) => setLightship(e.target.value)}
+              value={lightship}
+              name="lightship"
               sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                mx: "40px",
+                flexColumn: "span 1", width: "200px",
               }}
-            >
-              <TextField
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="Cargo"
-                onChange={(e) => setCargo(e.target.value)}
-                value={Number(cargo).toFixed(2)}
-                name="cargo"
-                sx={{ flexColumn: "span 1", width: "130px" }} />
+              InputProps={{ style: { fontSize: '20px' } }}
+              InputLabelProps={{ style: { fontSize: '20px' } }}
 
-              <TextField
-                fullWidth
-                disabled
-                id="constantDéclarée"
-                variant="outlined"
-                type="number"
-                label="Constante Déclarée"
-                onChange={(e) => setConstantDéclarée(e.target.value)}
-                value={constantDéclarée}
-                name="constantDéclarée"
-                sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }} />
+            />
+            <TextField
+              id="netLight"
+              fullWidth
+              disabled
+              variant="outlined"
+              type="number"
+              label="NetLight"
+              onChange={(e) => setNetLight(e.target.value)}
+              value={Number(netLight).toFixed(2)}
+              name="netLight"
+              sx={{ flexColumn: "span 1", width: "200px" }}
+              InputProps={{ style: { fontSize: '20px' } }}
+              InputLabelProps={{ style: { fontSize: '20px' } }}
 
-              <TextField
-                id="netLoad"
-                fullWidth
-                disabled
-                variant="outlined"
-                type="number"
-                label="NetLoad"
-                onChange={(e) => setNetLoad(e.target.value)}
-                value={Number(netLoad).toFixed(2)}
-                name="netLoad"
-                sx={{ flexColumn: "span 1", width: "130px" }} />
-            </Box>
-          )}
-        </Box>
-        {/* Boutons     */}
+            />
+            <TextField
+              fullWidth
+              disabled
+              variant="outlined"
+              type="number"
+              label="Constant"
+              onChange={(e) => setConstant(e.target.value)}
+              value={Number(constant).toFixed(2)}
+              name="constant"
+              sx={{ flexColumn: "span 1", width: "200px" }}
+              InputProps={{ style: { fontSize: '20px' } }}
+              InputLabelProps={{ style: { fontSize: '20px' } }}
+
+            />
+
+          </Box>)}
+        {!isEmpty && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mx: "40px",
+              mt: "120px"
+            }}
+          >
+
+            <TextField
+              id="netLoad"
+              fullWidth
+              disabled
+              variant="outlined"
+              type="number"
+              label="NetLoad"
+              onChange={(e) => setNetLoad(e.target.value)}
+              value={Number(netLoad).toFixed(2)}
+              name="netLoad"
+              sx={{ flexColumn: "span 2", width: "130px", mx: "40px" }}
+              InputProps={{ style: { fontSize: '20px' } }}
+              InputLabelProps={{ style: { fontSize: '20px' } }}
+            />
+
+            <TextField
+              fullWidth
+              disabled
+              variant="outlined"
+              type="number"
+              label="Cargo"
+              onChange={(e) => setCargo(e.target.value)}
+              value={Number(cargo).toFixed(2)}
+              name="cargo"
+              sx={{ flexColumn: "span 2", width: "130px" }}
+              InputProps={{ style: { fontSize: '20px' } }}
+              InputLabelProps={{ style: { fontSize: '20px' } }}
+
+            />
+
+            <TextField
+
+              id="constantDéclarée"
+              variant="filled"
+              type="number"
+              label="Constante Déclarée"
+              onChange={(e) => setConstantDéclarée(e.target.value)}
+              value={Number(constantDéclarée).toFixed(2)}
+              name="constantDéclarée"
+              sx={{ flexColumn: "span 2", width: "130px", mx: "40px" }}
+              InputProps={{ style: { fontSize: '20px' } }}
+              InputLabelProps={{ style: { fontSize: '20px' } }}
+
+            />
+
+          </Box>
+        )}
+
+
         {/* Signatures   */}
         <Box
           sx={{
@@ -1107,20 +1308,19 @@ export default function ValeursFinal() {
           <Box
             display="flex"
             flexDirection="column"
-
             fontWeight="italic"
             fontSize="1.2rem"
           >
             <span>
               <img src={`${process.env.PUBLIC_URL}/assets/img/logo_sgs.png`} alt="SGS Logo" style={{ width: '120px', height: '120px', marginRight: '15px' }} />
-              Ship's Captain
+              Surveyor print
             </span>
-            <span>Chef Officer / Ship's staff</span>
+            <span>Company surveyor / Terminal's staff</span>
           </Box>
           <Box
             display="flex"
             flexDirection="column"
-            mr="250px"
+            mr="200px"
             fontWeight="italic"
             fontSize="1.2rem"
           >
@@ -1132,7 +1332,7 @@ export default function ValeursFinal() {
           </Box>
         </Box>
 
-      </form>
+      </form >
       <Box
         sx={{
           mt: "120px",
@@ -1141,24 +1341,14 @@ export default function ValeursFinal() {
 
         }}
       ></Box>
-    </Box><Box
+    </Box ><Box
       display="flex"
       justifyContent="center"
       alignItems={"center"}
       mt="40px"
       mb="40px"
     >
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems={"center"}
-          mt="40px"
-          mb="40px"
-          width="300px"
-          height="15px"
-        >
-          <PrintToPdf />
-        </Box>
+        <PrintToPdf />
       </Box>
       < Footer />
     </>

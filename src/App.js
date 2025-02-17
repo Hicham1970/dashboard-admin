@@ -7,7 +7,7 @@ import SideBar from "./scenes/global/Sidebar";
 import Dashboard from "./scenes/dashboard";
 import Team from "./scenes/team/Team";
 import Invoices from "./scenes/invoices/Invoices";
-import Contacts from "./scenes/contacts/Contacts";
+import Hydrostatic from "./scenes/hydrostatic/Hydrostatic";
 import Bar from "./scenes/bar";
 import UserForm from "./scenes/form/Form";
 import Line from "./scenes/line/Line";
@@ -16,7 +16,7 @@ import Faq from "./scenes/faq/Faq";
 import ValeursInitial from "./scenes/valeursInitial";
 import ValeursFinal from "./scenes/valeursFinal";
 import Calendar from "./scenes/calendar/Calendar";
-
+import DS from "./scenes/ds";
 
 
 function App() {
@@ -33,13 +33,13 @@ function App() {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/team" element={<Team />} />
-              <Route path="/contacts" element={<Contacts />} />
+              <Route path="/Hydrostatic" element={<Hydrostatic />} />
               <Route path="/invoices" element={<Invoices />} />
               <Route path="/valeursFinal" element={<ValeursFinal />} />
               <Route path="/form" element={<UserForm />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/faq" element={<Faq />} />
-              <Route path="/line" element={<Line />} />
+              <Route path="/ds" element={<DS />} />
               <Route path="/pie" element={<Pie />} />
               <Route path="/valeursInitial" element={<ValeursInitial />} />
             </Routes>

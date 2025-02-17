@@ -19,7 +19,7 @@ const Footer = () => {
           <InstagramIcon />
         </IconButton>
       </Box>
-      <Typography variant="body2">&copy; 2023 Mon Application. Tous droits réservés.</Typography>
+      <Typography variant="body2">&copy; 2023 Surveyor 's Utilities made by HG with 💦. Tous droits réservés.</Typography>
     </Box>
   );
 };
