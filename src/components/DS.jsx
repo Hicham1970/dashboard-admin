@@ -56,13 +56,14 @@ import {
   calculateSecondTrimCorrectionFinal,
   calculateDisplacementDstyCorrectedFinal,
   calculateTotalFinal,
-
-
-  
-  
+  getHydrostaticValues,
+  getHydrostaticValuesInf,
+  getHydrostaticValuesSup, 
   
 } from "../functions/calculationUtils";
 import Footer from "./Footer";
+
+import { hydrostatic_table } from "../data/hydrostatic_table";
 
 
 
@@ -469,6 +470,36 @@ const lcfFinalCalculated = useMemo(() =>
     setNetLoad(netLoadCalculated); 
 
   }, [meanForeCalculated, meanAftCalculated, meanMidCalculated, trimCalculated, lbmCalculated, foreCorrectedCalculated, aftCorrectedCalculated, midCorrectedCalculated, trimCorrectedCalculated, meanForeAftCalculated, meanOfMeanCalculated, quarterMeanCalculated, displacementCalculated, tpcCalculated, lcfCalculated, firstTrimCorrectionCalculated, secondTrimCorrectionCalculated, displacementTrimCorrectedCalculated, displacementDstyCorrectionCalculated, totalCalculated, netLightCalculated, constantCalculated, netLoadCalculated, netLoad, cargoCalculated, cargo, meanForeFinalCalculated, meanAftFinalCalculated, meanMidFinalCalculated, trimFinalCalculated, lbmFinalCalculated, foreCorrectedFinalCalculated, aftCorrectedFinalCalculated, midCorrectedFinalCalculated, trimCorrectedFinalCalculated, meanForeAftFinalCalculated, meanOfMeanFinalCalculated, quarterMeanFinalCalculated, trimCorrectedFinal, meanForeAftFinal, meanOfMeanFinal, quarterMeanFinal, keelCorrectionFinal, keelCorrection, displacementFinalCalculated, tpcFinalCalculated, lcfFinalCalculated, draftSupFinal, draftInfFinal, lcfSupFinal, lcfInfFinal, firstTrimCorrectionFinalCalculated, secondTrimCorrectionFinalCalculated, freshWater, freshWaterFinal, displacementTrimCorrectedFinalCalculated, totalFinal, ballast, ballastFinal, totalFinalCalculated, displacementDstyCorrectedFinalCalculated]);
+
+  // Pour le calcul automatic
+
+  useEffect(() => {
+    if (quarterMean) {
+      const calculatedDraftSup = (Number(Math.round(quarterMean * 10) / 10) + 0.1).toFixed(2);
+      const calculatedDraftInf = (Number(Math.round(quarterMean * 10) / 10) - 0.1).toFixed(2);
+
+      setDraftSup(calculatedDraftSup);
+      setDraftInf(calculatedDraftInf);
+    }
+  }, [quarterMean]); // Dépendance sur quarterMean
+
+  useEffect(() => {
+    if (draftSup) {
+      const { displacement, tpc, lcf } = getHydrostaticValues(draftSup, hydrostatic_table);
+      setDisplacementSup(displacement);
+      setTpcSup(tpc);
+      setLcfSup(lcf);
+    }
+  }, [draftSup, quarterMean]); // Ajoutez draftSup ici
+
+  useEffect(() => {
+    if (draftInf) {
+      const { displacement, tpc, lcf } = getHydrostaticValues(draftInf, hydrostatic_table);
+      setDisplacementInf(displacement);
+      setTpcInf(tpc);
+      setLcfInf(lcf);
+    }
+  }, [draftInf, quarterMean]); // Ajoutez draftInf ici
 
 
 
@@ -1004,7 +1035,7 @@ const lcfFinalCalculated = useMemo(() =>
                 width="200px"
                 variant="filled"
                 type="number"
-                label="Fore Port Fi"
+                label="Fore Port"
                 onChange={(e) => setForePortFinal(e.target.value)}
                 value={forePortFinal}
                 name="forePortFinal"
@@ -1343,7 +1374,7 @@ const lcfFinalCalculated = useMemo(() =>
                 type="number"
                 placeholder="Draft Inf"
                 onChange={(e) => setDraftInf(e.target.value)}
-                value={(Number(Math.round(quarterMean * 10) / 10) - 0.1).toFixed(2)}
+                value={draftInf}
                 name="draftInf"
                 sx={{ flexColumn: "span 1", width: "130px" }}
                 InputProps={{ style: { fontSize: '20px' } }}
@@ -1548,7 +1579,7 @@ const lcfFinalCalculated = useMemo(() =>
                 type="number"
                 placeholder="Draft Sup"
                 onChange={(e) => setDraftSup(e.target.value)}
-                value={(Number(Math.round(quarterMean * 10) / 10) + 0.1).toFixed(2)}
+                value={draftSup}
                 name="draftSup"
                 sx={{ flexColumn: "span 1", width: "130px" }}
                 InputProps={{ style: { fontSize: '20px' } }}
@@ -2300,7 +2331,7 @@ const lcfFinalCalculated = useMemo(() =>
               sx={{
                 flexColumn: "span 1", width: "200px",
               }}
-              InputProps={{ style: { fontSize: '20px' } }}
+              InputProps={{ style: { fontSize: '30px' } }}
               InputLabelProps={{ style: { fontSize: '20px' } }}
 
             />
@@ -2309,12 +2340,13 @@ const lcfFinalCalculated = useMemo(() =>
               disabled
               variant="outlined"
               type="number"
-              placeholder="total"
+              placeholder="total Initial"
               onChange={(e) => setTotal(e.target.value)}
               value={Number(total).toFixed(2)}
               name="total"
+             
               sx={{ flexColumn: "span 1", width: "180px" }}
-              InputProps={{ style: { fontSize: '20px' } }}
+              InputProps={{ style: { fontSize: '30px' , color:colors.redAccent[600]} }}
               InputLabelProps={{ style: { fontSize: '20px' } }}
             />
             <TextField
@@ -2328,7 +2360,7 @@ const lcfFinalCalculated = useMemo(() =>
               value={Number(netLight).toFixed(2)}
               name="netLight"
               sx={{ flexColumn: "span 1", width: "200px" }}
-              InputProps={{ style: { fontSize: '20px' } }}
+              InputProps={{ style: { fontSize: '30px' } }}
               InputLabelProps={{ style: { fontSize: '20px' } }}
 
             />
@@ -2342,7 +2374,7 @@ const lcfFinalCalculated = useMemo(() =>
               value={Number(constant).toFixed(2)}
               name="constant"
               sx={{ flexColumn: "span 1", width: "200px" }}
-              InputProps={{ style: { fontSize: '20px' } }}
+              InputProps={{ style: { fontSize: '30px' } }}
               InputLabelProps={{ style: { fontSize: '20px' } }}
 
             />
@@ -2351,7 +2383,9 @@ const lcfFinalCalculated = useMemo(() =>
           <Box
             sx={{
               display: "flex",
-              mx: "40px",
+              justifyContent: "center",
+              justifyItems:"center",
+              
               mt: "40px"
             }}
           >
@@ -2367,7 +2401,7 @@ const lcfFinalCalculated = useMemo(() =>
               InputProps = {
                 {
                   style: {
-                    fontSize: '20px'
+                    fontSize: '30px'
                   }
                 }
               }
@@ -2388,8 +2422,8 @@ const lcfFinalCalculated = useMemo(() =>
               onChange={(e) => setNetLoad(e.target.value)}
               value={Number(netLoad).toFixed(2)}
               name="netLoad"
-              sx={{ flexColumn: "span 2", width: "130px", mx: "40px" }}
-              InputProps={{ style: { fontSize: '20px' } }}
+              sx={{ flexColumn: "span 2", width: "180px", mx: "40px" }}
+              InputProps={{ style: { fontSize: '30px' } }}
               InputLabelProps={{ style: { fontSize: '20px' } }}
             />
 
@@ -2401,22 +2435,14 @@ const lcfFinalCalculated = useMemo(() =>
               onChange={(e) => setCargo(e.target.value)}
               value={Number(cargo).toFixed(2)}
               name="cargo"
-              sx={{ flexColumn: "span 2", width: "130px" }}
-              InputProps={{ style: { fontSize: '20px' } }}
+              sx={{ flexColumn: "span 2", width: "180px" }}
+              InputProps={{ style: { fontSize: '30px' } }}
               InputLabelProps={{ style: { fontSize: '20px' } }}
 
             />
-
-
-
           </Box>
 
           {/**TODO  Insérer ici une section pour les remarques     */}
-
-
-
-
-
           {/* Signatures   */}
           <Box
             sx={{

@@ -205,14 +205,20 @@ export const calculateQuarterMean = (midCorrected, meanOfMean) => {
 };
 
 
-
-
-
 export const getHydrostaticValues = (draft, hydrostaticTable) => {
     console.log("Draft reçu:", draft); // Affiche le draft reçu
     console.log("Tableau hydrostatique:", hydrostaticTable); // Affiche le tableau hydrostatique
 
-    const entry = hydrostaticTable.find(item => item.DRAFT === parseFloat(draft));
+    // Convertir le draft en nombre
+    const draftValue = parseFloat(draft);
+    console.log("Draft converti:", draftValue); // Affiche le draft converti
+
+    // Vérifiez que le tableau hydrostatique contient des valeurs numériques pour DRAFT
+    const entry = hydrostaticTable.find(item => {
+        console.log("Comparaison:", item.DRAFT, draftValue); // Affiche la comparaison
+        return item.DRAFT === draftValue;
+    });
+
     console.log("Entrée trouvée:", entry); // Affiche l'entrée trouvée
 
     if (entry) {
@@ -261,8 +267,8 @@ export const calculateDisplacement = (
     displacementSup
 ) => {
     // Convert inputs to numbers with error handling
-    const draftInfValue = (Number(Math.round(quarterMean)) - 0.1).toFixed(2);
-    const draftSupValue = (Number(Math.round(quarterMean)) + 0.1).toFixed(2);
+    const draftInfValue = Number(draftInf);
+    const draftSupValue = Number(draftSup);
     const quarterMeanValue = Number(quarterMean);
     const displacementInfValue = Number(displacementInf);
     const displacementSupValue = Number(displacementSup);
@@ -299,14 +305,14 @@ export const calculateDisplacement = (
 
 // Calcul du Tpc:
 
-export const calculateTpc = (quarterMean, tpcSup, tpcInf) => {
+export const calculateTpc = (quarterMean, tpcSup, tpcInf, draftInf, draftSup) => {
     let tpc = 0;
     const tpcSupValue = tpcSup;
     const tpcInfValue = tpcInf;
     // draft sup et draft inf
 
-    const draftInfValue = (Number(Math.round(quarterMean)) - 0.1).toFixed(2);
-    const draftSupValue = (Number(Math.round(quarterMean)) + 0.1).toFixed(2);
+    const draftInfValue = Number(draftInf);
+    const draftSupValue = Number(draftSup);
     const quarterMeanValue = quarterMean;
 
     tpc =
@@ -318,13 +324,13 @@ export const calculateTpc = (quarterMean, tpcSup, tpcInf) => {
     return tpc;
 };
 
-export const calculateLcf = (quarterMean, lcfSup, lcfInf) => {
+export const calculateLcf = (quarterMean, lcfSup, lcfInf, draftSup, draftInf) => {
     let lcf = 0;
     const lcfSupValue = lcfSup;
     const lcfInfValue = lcfInf;
     // draft sup et draft inf
-    let draftSupValue = (Number(Math.round(quarterMean)) + 0.1).toFixed(2);
-    let draftInfValue = (Number(Math.round(quarterMean)) - 0.1).toFixed(2);
+    let draftSupValue = Number(draftSup);
+    let draftInfValue = Number(draftInf);
 
     const quarterMeanValue = quarterMean;
 

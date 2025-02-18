@@ -18,16 +18,12 @@ export default function Faq() {
             <Accordion defaultExpanded={true}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     <Typography color={colors.greenAccent[500]} variant="h5">
-                        What is a Dashboard?
+                        What is a Draft Survey?
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <Typography>
-                        Ce site web est un dashboard de démonstration pour illustrer
-                        comment le développement d'un site web peut être réalisé avec
-                        le framework ReactJS et Material-UI. Il est conçu pour
-                        illustrer les concepts de base de ReactJS et Material-UI
-                        et pour vous permettre de vous familiariser avec les outils et les techniques utilisés dans le développement web moderne.
+                        Draft survey ou lecture des tirants d'eau est une méthode de mesure qui permet au marin et au surveillants de déterminer les quantités chargées ou déchargée abord d'un navire.
                     </Typography>
                 </AccordionDetails>
             </Accordion >
@@ -35,7 +31,7 @@ export default function Faq() {
             <Accordion defaultExpanded={true}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     <Typography color={colors.greenAccent[500]} variant="h5">
-                        What is Mui Material?
+                        Que doit avoir comme competences un inspecteur maritime?
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>

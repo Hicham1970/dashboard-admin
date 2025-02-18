@@ -10,7 +10,7 @@ import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "./Header";
 import StorageIcon from "@mui/icons-material/Storage";
-import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
+import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import EmailIcon from "@mui/icons-material/Email";
 import CalculateIcon from "@mui/icons-material/Calculate";
 import { tokens } from "./../theme";
