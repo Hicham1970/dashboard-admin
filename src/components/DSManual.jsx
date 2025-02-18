@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography"; 
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "./Header";
@@ -43,8 +44,23 @@ import {
   calculateForeCorrectedFinal,
   calculateAftCorrectedFinal,
   calculateMidCorrectedFinal,
+  calculateTrimCorrectedFinal,
+  calculateMeanForeAftFinal,
+  calculateMeanOfMeanFinal,
+  calculateQuarterMeanFinal,
+  calculateDisplacementFinal,
+  calculateTpcFinal,
+  calculateLcfFinal,
+  calculateDisplacementTrimCorrectedFinal,
+  calculateFirstTrimCorrectionFinal,
+  calculateSecondTrimCorrectionFinal,
+  calculateDisplacementDstyCorrectedFinal,
+  calculateTotalFinal,
 
 
+  
+  
+  
 } from "../functions/calculationUtils";
 import Footer from "./Footer";
 
@@ -231,8 +247,8 @@ export default function DS() {
   );
 
   const quarterMeanCalculated = useMemo(() =>
-    calculateQuarterMean(meanForeAftCalculated, meanMidCalculated, meanOfMeanCalculated),
-    [meanForeAftCalculated, meanMidCalculated, meanOfMeanCalculated]
+    calculateQuarterMean(meanForeAftCalculated, meanMidCalculated, meanOfMeanCalculated, keelCorrection),
+    [meanForeAftCalculated, meanMidCalculated, meanOfMeanCalculated, keelCorrection]
   );
 
   const displacementCalculated = useMemo(() =>
@@ -286,16 +302,8 @@ export default function DS() {
     [netLightCalculated, lightship]
   );
 
-  const netLoadCalculated = useMemo(() =>
-    calculateNetLoad(totalCalculated, displacementDstyCorrectionCalculated),
-    [totalCalculated, displacementDstyCorrectionCalculated]
-  );
 
-  const cargoCalculated = useMemo(() =>
-    calculateCargo(netLoadCalculated, netLightCalculated)
-    , [netLoadCalculated, netLightCalculated])
-
-
+  
   // Final Memoized calculation results
   const meanForeFinalCalculated = useMemo(() =>
     calculateMeanForeFinal(forePortFinal, foreStbdFinal),
@@ -337,9 +345,77 @@ export default function DS() {
     [trimFinalCalculated, midDistanceFinal, lbmFinalCalculated, meanMidFinalCalculated]
   );
 
+const trimCorrectedFinalCalculated = useMemo(() =>
+  calculateTrimCorrectedFinal(aftCorrectedFinalCalculated, foreCorrectedFinalCalculated),
+  [aftCorrectedFinalCalculated, foreCorrectedFinalCalculated]
+);
+
+const meanForeAftFinalCalculated = useMemo(() =>
+  calculateMeanForeAftFinal(foreCorrectedFinalCalculated, aftCorrectedFinalCalculated),
+  [foreCorrectedFinalCalculated, aftCorrectedFinalCalculated]
+);
+
+const meanOfMeanFinalCalculated = useMemo(() =>
+  calculateMeanOfMeanFinal(midCorrectedFinalCalculated, meanForeAftFinalCalculated),
+  [midCorrectedFinalCalculated, meanForeAftFinalCalculated]
+);
+
+const quarterMeanFinalCalculated = useMemo(() =>
+  calculateQuarterMeanFinal(midCorrectedFinalCalculated, meanOfMeanFinalCalculated,keelCorrectionFinal),
+  [midCorrectedFinalCalculated, meanOfMeanFinalCalculated, keelCorrectionFinal]
+);
+
+
+const displacementFinalCalculated = useMemo(() =>
+  calculateDisplacementFinal(draftInfFinal, draftSupFinal, quarterMeanFinalCalculated, displacementInfFinal, displacementSupFinal),
+  [displacementInfFinal, displacementSupFinal, draftInfFinal, draftSupFinal, quarterMeanFinalCalculated]
+);
+
+
+const tpcFinalCalculated = useMemo(() =>
+  calculateTpcFinal(draftInfFinal, draftSupFinal, quarterMeanFinalCalculated, tpcSupFinal, tpcInfFinal ),
+  [draftInfFinal, draftSupFinal, quarterMeanFinalCalculated, tpcSupFinal, tpcInfFinal]
+);
+
+const lcfFinalCalculated = useMemo(() =>
+  calculateLcfFinal(quarterMeanFinalCalculated, lcfSupFinal, lcfInfFinal,draftSupFinal, draftInfFinal),
+  [quarterMeanFinalCalculated, lcfSupFinal, lcfInfFinal, draftSupFinal, draftInfFinal]
+);
+
+  const firstTrimCorrectionFinalCalculated = useMemo(() =>
+    calculateFirstTrimCorrectionFinal(trimCorrectedFinalCalculated, tpcFinalCalculated, lcfFinalCalculated, lbp),
+    [trimCorrectedFinalCalculated, tpcFinalCalculated, lcfFinalCalculated, lbp]
+  );
+
+   const secondTrimCorrectionFinalCalculated = useMemo(() =>
+     calculateSecondTrimCorrectionFinal(trimCorrectedFinalCalculated, mtcPlus50Final, mtcMinus50Final, lbp),
+     [trimCorrectedFinalCalculated, mtcPlus50Final, mtcMinus50Final, lbp]
+   );
+
+  const displacementTrimCorrectedFinalCalculated = useMemo(() =>
+    calculateDisplacementTrimCorrected(displacementFinalCalculated, firstTrimCorrectionFinalCalculated, secondTrimCorrectionFinalCalculated),
+    [displacementFinalCalculated, firstTrimCorrectionFinalCalculated, secondTrimCorrectionFinalCalculated]);
+
+  const displacementDstyCorrectedFinalCalculated = useMemo(() =>
+    calculateDisplacementDstyCorrectedFinal(displacementTrimCorrectedFinalCalculated, densityFinal),
+    [displacementTrimCorrectedFinalCalculated, densityFinal]
+  )
 
 
 
+   const totalFinalCalculated = useMemo(() =>
+     calculateTotalFinal(ballastFinal, freshWaterFinal, fuelFinal, dieselFinal, lubOilFinal, othersFinal),
+     [ballastFinal, freshWaterFinal, fuelFinal, dieselFinal, lubOilFinal, othersFinal]
+   );
+
+     const netLoadCalculated = useMemo(() =>
+       calculateNetLoad(totalFinalCalculated, displacementDstyCorrectedFinal),
+       [totalFinalCalculated, displacementDstyCorrectedFinal]
+     );
+
+  const cargoCalculated = useMemo(() =>
+    calculateCargo(netLoadCalculated, netLightCalculated), [netLoadCalculated, netLightCalculated])
+   
 
   // Update state with calculated values
   useEffect(() => {
@@ -376,11 +452,23 @@ export default function DS() {
     setForeCorrectedFinal(foreCorrectedFinalCalculated);
     setAftCorrectedFinal(aftCorrectedFinalCalculated);
     setMidCorrectedFinal(midCorrectedFinalCalculated);
+    setTrimCorrectedFinal(trimCorrectedFinalCalculated); 
+    setMeanForeAftFinal(meanForeAftFinalCalculated);
+    setMeanOfMeanFinal(meanOfMeanFinalCalculated);
+    setQuarterMeanFinal(quarterMeanFinalCalculated);
+    setDisplacementFinal(displacementFinalCalculated); 
+    setTpcFinal(tpcFinalCalculated); 
+    setLcfFinal(lcfFinalCalculated); 
+    setLcfSupFinal(lcfSupFinal); 
+    setLcfInfFinal(lcfInfFinal); 
+    setFirstTrimCorrectionFinal(firstTrimCorrectionFinalCalculated);
+    setSecondTrimCorrectionFinal(secondTrimCorrectionFinalCalculated);
+    setDisplacementTrimCorrectedFinal(displacementTrimCorrectedFinalCalculated);
+    setDisplacementDstyCorrectedFinal(displacementDstyCorrectedFinalCalculated);
+    setTotalFinal(totalFinalCalculated);
+    setNetLoad(netLoadCalculated); 
 
-  }, [meanForeCalculated, meanAftCalculated, meanMidCalculated, trimCalculated, lbmCalculated, foreCorrectedCalculated, aftCorrectedCalculated, midCorrectedCalculated, trimCorrectedCalculated, meanForeAftCalculated, meanOfMeanCalculated, quarterMeanCalculated, displacementCalculated, tpcCalculated, lcfCalculated, firstTrimCorrectionCalculated, secondTrimCorrectionCalculated, displacementTrimCorrectedCalculated, displacementDstyCorrectionCalculated, totalCalculated, netLightCalculated, constantCalculated, netLoadCalculated, netLoad, cargoCalculated, cargo,
-    meanForeFinalCalculated, meanAftFinalCalculated, meanMidFinalCalculated, trimFinalCalculated, lbmFinalCalculated,
-    foreCorrectedFinalCalculated, aftCorrectedFinalCalculated, midCorrectedFinalCalculated,
-  ]);
+  }, [meanForeCalculated, meanAftCalculated, meanMidCalculated, trimCalculated, lbmCalculated, foreCorrectedCalculated, aftCorrectedCalculated, midCorrectedCalculated, trimCorrectedCalculated, meanForeAftCalculated, meanOfMeanCalculated, quarterMeanCalculated, displacementCalculated, tpcCalculated, lcfCalculated, firstTrimCorrectionCalculated, secondTrimCorrectionCalculated, displacementTrimCorrectedCalculated, displacementDstyCorrectionCalculated, totalCalculated, netLightCalculated, constantCalculated, netLoadCalculated, netLoad, cargoCalculated, cargo, meanForeFinalCalculated, meanAftFinalCalculated, meanMidFinalCalculated, trimFinalCalculated, lbmFinalCalculated, foreCorrectedFinalCalculated, aftCorrectedFinalCalculated, midCorrectedFinalCalculated, trimCorrectedFinalCalculated, meanForeAftFinalCalculated, meanOfMeanFinalCalculated, quarterMeanFinalCalculated, trimCorrectedFinal, meanForeAftFinal, meanOfMeanFinal, quarterMeanFinal, keelCorrectionFinal, keelCorrection, displacementFinalCalculated, tpcFinalCalculated, lcfFinalCalculated, draftSupFinal, draftInfFinal, lcfSupFinal, lcfInfFinal, firstTrimCorrectionFinalCalculated, secondTrimCorrectionFinalCalculated, freshWater, freshWaterFinal, displacementTrimCorrectedFinalCalculated, totalFinal, ballast, ballastFinal, totalFinalCalculated, displacementDstyCorrectedFinalCalculated]);
 
 
 
@@ -388,7 +476,7 @@ export default function DS() {
   return (
     <><Box m="20px" id="printMe">
       <Header title="Mv Arc Rainbow" subtitle="Draft Survey Calculation" />
-      <img src={`${process.env.PUBLIC_URL}/assets/img/logo_sgs.png`} alt="SGS Logo" style={{ width: '100px', height: '80px', marginRight: '5px' }} />
+      <img src={`${process.env.PUBLIC_URL}/assets/img/logo_iso.png`} alt="Iso Logo" style={{ width: '100px', height: '80px', marginRight: '5px' }} />
       <form>
         <Box display="flex" gap="30px" flexDirection="row">
 
@@ -405,26 +493,14 @@ export default function DS() {
               width: "700px",
             }}
           >
-            <Box>
-              <h3
-                style={{ fontSize: "44px", color: colors.greenAccent[500], fontWeight: "bold", ml: "200px" }}>
+           <Box>
+              
+              <Typography variant="h1" sx={{ fontSize: "48px", color: colors.grey[300], fontWeight:"bold", mr: "30px" }}>
                 Initial
-              </h3>
-
+              </Typography>
+                
             </Box>
-            <FormControlLabel
-              control={<Checkbox defaultChecked />}
-              label={isEmpty ? "Empty" : "Full"}
-              size="small"
-              checked={isEmpty}
-              onChange={(e) => setIsEmpty(!isEmpty)}
-              sx={{
-                '& .MuiSvgIcon-root': { fontSize: 28 },
-                color: colors.greenAccent[500],
-                '&.Mui-checked': {
-                  color: colors.greenAccent[200],
-                }
-              }} />
+            
             <TextField
               fullWidth
               variant="filled"
@@ -442,7 +518,7 @@ export default function DS() {
               variant="filled"
               type="number"
               label="Keel Correction"
-              value={keelCorrection}
+              value={Number(keelCorrection)}
               onChange={(e) => setKeelCorrection(e.target.value)}
               name="keelCorrection"
               sx={{ gridColumn: "span 1", width: "900px" }}
@@ -517,24 +593,13 @@ export default function DS() {
             }}
           >
             <Box>
-              <h3
-                style={{ fontSize: "44px", color: colors.greenAccent[500], fontWeight: "bold", ml: "200px" }}>
+              
+              <Typography variant="h1" sx={{ fontSize: "48px", color: colors.grey[300], fontWeight:"bold", mr: "30px" }}>
                 Final
-              </h3>
+              </Typography>
+                
             </Box>
-            <FormControlLabel
-              control={<Checkbox defaultChecked />}
-              label={isEmpty ? "Empty" : "Full"}
-              size="small"
-              checked={isEmpty}
-              onChange={(e) => setIsEmpty(!isEmpty)}
-              sx={{
-                '& .MuiSvgIcon-root': { fontSize: 28 },
-                color: colors.greenAccent[500],
-                '&.Mui-checked': {
-                  color: colors.greenAccent[200],
-                }
-              }} />
+            
 
             <TextField
               fullWidth
@@ -890,7 +955,7 @@ export default function DS() {
                 disabled
                 variant="outlined"
                 type="number"
-                label="Mean F/A"
+                placeholder="Mean F/A"
                 onChange={(e) => setMeanForeAft(e.target.value)}
                 value={meanForeAft}
                 name="meanForeAft"
@@ -903,7 +968,7 @@ export default function DS() {
                 disabled
                 variant="outlined"
                 type="number"
-                label="Mean Of Mean"
+                placeholder = "Mean Of Mean"
                 onChange={(e) => setMeanOfMean(e.target.value)}
                 value={meanOfMean}
                 name="meanOfMean"
@@ -918,7 +983,7 @@ export default function DS() {
                 type="number"
 
                 onChange={(e) => setQuarterMean(e.target.value)}
-                value={quarterMean}
+                value={(Number(quarterMean)-Number(keelCorrection)).toFixed(2)}
                 name="quarterMean"
                 sx={{
                   gridColumn: "span 4",
@@ -978,7 +1043,9 @@ export default function DS() {
                 variant="outlined"
                 type="number"
                 placeholder="Mean Fore"
-                onChange={() => calculateMeanFore()}
+                onChange = {
+                  (e) => setMeanForeFinal(e.target.value)
+                }
                 value={meanForeFinal}
                 name="meanForeFinal"
                 sx={{ gridColumn: "span 4" }}
@@ -1162,7 +1229,7 @@ export default function DS() {
                 type="number"
                 placeholder="Mid Corrected"
                 onChange={(e) => setMidCorrectedFinal(e.target.value)}
-                value={Number(midCorrectedFinal).toFixed}
+                value={Number(midCorrectedFinal).toFixed(2)}
                 name="midCorrectedFinal"
                 sx={{
                   flexColumn: "span 3",
@@ -1200,7 +1267,7 @@ export default function DS() {
                 disabled
                 variant="outlined"
                 type="number"
-                label="Mean F/A"
+                placeholder = "Mean F/A"
                 onChange={(e) => setMeanForeAftFinal(e.target.value)}
                 value={meanForeAftFinal}
                 name="meanForeAftFinal"
@@ -1213,7 +1280,7 @@ export default function DS() {
                 disabled
                 variant="outlined"
                 type="number"
-                label="Mean Of Mean"
+                placeholder = "Mean Of Mean"
                 onChange={(e) => setMeanOfMeanFinal(e.target.value)}
                 value={meanOfMeanFinal}
                 name="meanOfMeanFinal"
@@ -1228,13 +1295,13 @@ export default function DS() {
                 type="number"
 
                 onChange={(e) => setQuarterMeanFinal(e.target.value)}
-                value={quarterMeanFinal}
+                value={(Number(quarterMeanFinal) - Number(keelCorrectionFinal)).toFixed(2)}
                 name="quarterMeanFinal"
                 sx={{
                   gridColumn: "span 4",
                 }}
                 InputProps={{ style: { fontSize: '20px' } }}
-                InputLabelProps={{ style: { fontSize: '20px' } }}
+                InputLabelProps={{ style: { fontSize: '20px' } }}   
               />
             </Box>
           </Box>
@@ -1334,7 +1401,7 @@ export default function DS() {
                   type="number"
                   label="Quarter +50"
                   onChange={(e) => setQuarterPlus50(e.target.value)}
-                  value={Number(quarterMean) + 0.5}
+                  value={(Number(Math.round(quarterMean * 10) / 10) + 0.5).toFixed(2)}
                   name="quarter50Sup"
                   sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
                   InputProps={{ style: { fontSize: '20px' } }}
@@ -1374,7 +1441,9 @@ export default function DS() {
                 type="number"
                 label="QuarterMean"
                 onChange={(e) => setQuarterMean(e.target.value)}
-                value={quarterMean + 0}
+                value = {
+                  (Number(quarterMean) - Number(keelCorrection)).toFixed(2)
+                }
                 name="quarterMean"
                 sx={{
                   flexColumn: "span 1", width: "130px",
@@ -1538,7 +1607,7 @@ export default function DS() {
                   type="number"
                   label="Quarter -50"
                   onChange={(e) => setQuarterMinus50(e.target.value)}
-                  value={(Number(quarterMean) - 0.5).toFixed(2)}
+                  value={(Number(Math.round(quarterMean * 10) / 10) - 0.5).toFixed(2)}
                   name="quarterMinus50"
                   sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
                   InputProps={{ style: { fontSize: '20px' } }}
@@ -1573,7 +1642,7 @@ export default function DS() {
                 disabled
                 variant="outlined"
                 type="number"
-                label="F T C "
+                placeholder="F T C "
                 onChange={(e) => setFirstTrimCorrection(e.target.value)}
                 value={firstTrimCorrection}
                 name="firstTrimCorrection"
@@ -1586,7 +1655,7 @@ export default function DS() {
                 disabled
                 variant="outlined"
                 type="number"
-                label="S T C"
+                placeholder="S T C"
                 onChange={(e) => setSecondTrimCorrection(e.target.value)}
                 value={secondTrimCorrection}
                 name="secondTrimCorrection"
@@ -1599,7 +1668,7 @@ export default function DS() {
                 disabled
                 variant="outlined"
                 type="number"
-                label="Dis Corr Trim"
+                placeholder="Dis Corr Trim"
                 onChange={(e) => setDisplacementTrimCorrected(e.target.value)}
                 value={displacementTrimCorrected}
                 name="displacementTrimCorrected"
@@ -1613,7 +1682,7 @@ export default function DS() {
                 disabled
                 variant="outlined"
                 type="number"
-                label="Dis Corr Dsty"
+                placeholder="Dis Corr Dsty"
                 onChange={(e) => setDisplacementDstyCorrected(e.target.value)}
                 value={Number(displacementDstyCorrected).toFixed(2)}
                 name="displacementDstyCorrected"
@@ -1669,7 +1738,7 @@ export default function DS() {
                 type="number"
                 label="TPC Inf"
                 onChange={(e) => setTpcInfFinal(e.target.value)}
-                value={tpcInfFinal}
+                value={Number(tpcInfFinal)}
                 name="tpcInfFinal"
                 sx={{ flexColumn: "span 1", width: "130px" }}
                 InputProps={{ style: { fontSize: '20px' } }}
@@ -1703,7 +1772,7 @@ export default function DS() {
                   type="number"
                   label="Quarter +50"
                   onChange={(e) => setQuarterPlus50Final(e.target.value)}
-                  value={Number(quarterMeanFinal) + 0.5}
+                  value={(Number(Math.round(quarterMeanFinal * 10) / 10) + 0.5).toFixed(2)}
                   name="quarter50SupFinal"
                   sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
                   InputProps={{ style: { fontSize: '20px' } }}
@@ -1743,7 +1812,7 @@ export default function DS() {
                 type="number"
                 label="QuarterMean"
                 onChange={(e) => setQuarterMeanFinal(e.target.value)}
-                value={quarterMeanFinal + 0}
+                value={(Number(quarterMeanFinal)-Number(keelCorrectionFinal)).toFixed(2)}
                 name="quarterMeanFinal"
                 sx={{
                   flexColumn: "span 1", width: "130px",
@@ -1755,9 +1824,9 @@ export default function DS() {
                 disabled
                 variant="outlined"
                 type="number"
-                label="Displacement"
+                placeholder="Displacement"
                 onChange={(e) => setDisplacementFinal(e.target.value)}
-                value={Number(displacementFinal).toFixed(2)}
+                value={displacementFinal}
                 name="displacementFinal"
                 sx={{ flexColumn: "span 1", width: "130px" }}
                 InputProps={{ style: { fontSize: '20px' } }}
@@ -1768,9 +1837,9 @@ export default function DS() {
                 disabled
                 variant="outlined"
                 type="number"
-                label="TPC"
+                placeholder="TPC Final"
                 onChange={(e) => setTpcFinal(e.target.value)}
-                value={Number(tpcFinal).toFixed(2)}
+                value={tpcFinal}
                 name="tpcFinal"
                 sx={{ flexColumn: "span 1", width: "130px" }}
                 InputProps={{ style: { fontSize: '20px' } }}
@@ -1782,7 +1851,7 @@ export default function DS() {
                 disabled
                 variant="outlined"
                 type="number"
-                label="LCF"
+                placeholder="LCF"
                 onChange={(e) => setLcfFinal(e.target.value)}
                 value={Number(lcfFinal).toFixed(2)}
                 name="lcfFinal"
@@ -1807,7 +1876,7 @@ export default function DS() {
                   type="number"
                   label="QuarterFinal"
                   onChange={(e) => setQuarterFinal(e.target.value)}
-                  value={Number(quarterMeanFinal) + 0}
+                  value={(Number(quarterMeanFinal)-Number(keelCorrectionFinal)).toFixed(2)}
                   name="quarterFinal"
                   sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
                   InputProps={{ style: { fontSize: '20px' } }}
@@ -1907,7 +1976,7 @@ export default function DS() {
                   type="number"
                   label="Quarter -50"
                   onChange={(e) => setQuarterMinus50Final(e.target.value)}
-                  value={(Number(quarterMeanFinal) - 0.5).toFixed(2)}
+                  value={(Number(Math.round(quarterMeanFinal * 10) / 10) - 0.5).toFixed(2)}
                   name="quarterMinus50Final"
                   sx={{ flexColumn: "span 1", width: "130px", mx: "40px" }}
                   InputProps={{ style: { fontSize: '20px' } }}
@@ -1942,7 +2011,7 @@ export default function DS() {
                 disabled
                 variant="outlined"
                 type="number"
-                label="F T C "
+                placeholder="F T C "
                 onChange={(e) => setFirstTrimCorrectionFinal(e.target.value)}
                 value={firstTrimCorrectionFinal}
                 name="firstTrimCorrectionFinal"
@@ -1955,7 +2024,7 @@ export default function DS() {
                 disabled
                 variant="outlined"
                 type="number"
-                label="S T C"
+                placeholder="S T C"
                 onChange={(e) => setSecondTrimCorrectionFinal(e.target.value)}
                 value={secondTrimCorrectionFinal}
                 name="secondTrimCorrectionFinal"
@@ -1968,7 +2037,7 @@ export default function DS() {
                 disabled
                 variant="outlined"
                 type="number"
-                label="Dis Corr Trim"
+                placeholder="Dis Corr Trim"
                 onChange={(e) => setDisplacementTrimCorrectedFinal(e.target.value)}
                 value={displacementTrimCorrectedFinal}
                 name="displacementTrimCorrectedFinal"
@@ -1982,7 +2051,7 @@ export default function DS() {
                 disabled
                 variant="outlined"
                 type="number"
-                label="Dis Corr Dsty"
+                placeholder="Dis Corr Dsty"
                 onChange={(e) => setDisplacementDstyCorrectedFinal(e.target.value)}
                 value={Number(displacementDstyCorrectedFinal).toFixed(2)}
                 name="displacementDstyCorrectedFinal"
@@ -2240,7 +2309,7 @@ export default function DS() {
               disabled
               variant="outlined"
               type="number"
-              label="total"
+              placeholder="total"
               onChange={(e) => setTotal(e.target.value)}
               value={Number(total).toFixed(2)}
               name="total"
@@ -2249,7 +2318,7 @@ export default function DS() {
               InputLabelProps={{ style: { fontSize: '20px' } }}
             />
             <TextField
-              id="netLight"
+              
 
               disabled
               variant="outlined"
@@ -2286,9 +2355,32 @@ export default function DS() {
               mt: "40px"
             }}
           >
-
+          < TextField
+              disabled
+              variant = "outlined"
+              type = "number"
+              placeholder = "totalFinal"
+              onChange = {(e) => setTotalFinal(e.target.value) }
+              value = {Number(totalFinal).toFixed(2) }
+              name = "totalFinal"
+              sx = {{flexColumn: "span 1",width: "180px"}}
+              InputProps = {
+                {
+                  style: {
+                    fontSize: '20px'
+                  }
+                }
+              }
+              InputLabelProps = {
+                {
+                  style: {
+                    fontSize: '20px'
+                  }
+                }
+              }
+              />
             <TextField
-              id="netLoad"
+              
               disabled
               variant="outlined"
               type="number"
@@ -2315,22 +2407,6 @@ export default function DS() {
 
             />
 
-            <TextField
-
-              id="constantDéclarée"
-              variant="filled"
-              type="number"
-              label="Constante Déclarée"
-              onChange={(e) => setConstantDéclarée(e.target.value)}
-              value={Number(constantDéclarée).toFixed(2)}
-              name="constantDéclarée"
-              sx={{ flexColumn: "span 2", width: "130px", mx: "40px" }}
-              InputProps={{ style: { fontSize: '20px' } }}
-              InputLabelProps={{ style: { fontSize: '20px' } }}
-
-            />
-
-            < /Box>
 
 
           </Box>
@@ -2352,22 +2428,11 @@ export default function DS() {
 
             }}
           >
+           
             <Box
               display="flex"
               flexDirection="column"
-              fontWeight="italic"
-              fontSize="1.2rem"
-            >
-              <span>
-                <img src={`${process.env.PUBLIC_URL}/assets/img/logo_sgs.png`} alt="SGS Logo" style={{ width: '120px', height: '120px', marginRight: '15px' }} />
-                Surveyor print
-              </span>
-              <span>Company surveyor / Terminal's staff</span>
-            </Box>
-            <Box
-              display="flex"
-              flexDirection="column"
-              mr="200px"
+
               fontWeight="italic"
               fontSize="1.2rem"
             >
@@ -2378,7 +2443,7 @@ export default function DS() {
               <span>Chef Officer / Captain</span>
             </Box>
           </Box>
-
+        </Box>
       </form >
       <Box
         sx={{
@@ -2401,5 +2466,3 @@ export default function DS() {
     </>
   );
 }
-
-

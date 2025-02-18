@@ -437,16 +437,6 @@ export const calculateTotal = (
     return total.toFixed(2);
 };
 
-export const calculateNetLight = (total, displacementDstyCorrected) => {
-    let netLight = 0;
-    const totalValue = total;
-    const displacementDstyCorrectedValue = displacementDstyCorrected;
-
-    netLight = Number(displacementDstyCorrectedValue) - Number(totalValue);
-
-    return netLight.toFixed(2);
-};
-
 export const calculateConstant = (netLight, lightship) => {
     let constant = 0;
     const netLightValue = netLight;
@@ -455,27 +445,6 @@ export const calculateConstant = (netLight, lightship) => {
     constant = Number(netLightValue) - Number(lightshipValue);
 
     return constant.toFixed(2);
-};
-
-export const calculateNetLoad = (total, displacementDstyCorrected) => {
-    let netLoad = 0;
-    const totalValue = total;
-    const displacementDstyCorrectedValue = displacementDstyCorrected;
-
-    netLoad = Number(displacementDstyCorrectedValue) - Number(totalValue);
-
-    console.log('Net Load:', netLoad);
-    return netLoad.toFixed(2);
-};
-
-export const calculateCargo = (netLoad, netLight) => {
-    let cargo = 0;
-
-    console.log('netLoad:', netLoad);
-    console.log('netLight:', netLight);
-    cargo = Number(netLoad) - Number(netLight);
-    console.log('Cargo:', cargo);
-    return cargo.toFixed(2);
 };
 
 
@@ -694,12 +663,17 @@ export const calculateDisplacementFinal = (
     displacementSupFinal
 ) => {
     // Convert inputs to numbers with error handling
-    const draftInfFinalValue = (Number(Math.round(quarterMeanFinal)) - 0.1).toFixed(2);
-    const draftSupFinalValue = (Number(Math.round(quarterMeanFinal)) + 0.1).toFixed(2);
+    const draftInfFinalValue = (Number(Math.round(quarterMeanFinal * 10) / 10) - 0.1).toFixed(2);
+    const draftSupFinalValue = (Number(Math.round(quarterMeanFinal * 10) / 10) + 0.1).toFixed(2);
     const quarterMeanFinalValue = Number(quarterMeanFinal);
     const displacementInfFinalValue = Number(displacementInfFinal);
     const displacementSupFinalValue = Number(displacementSupFinal);
 
+    console.log("draftInfFinalValue :", draftInfFinalValue); 
+    console.log("draftSupFinalValue :", draftSupFinalValue);
+    console.log("quarterMeanFinalValue :", quarterMeanFinalValue);
+    console.log("displacementInfFinalValue :", displacementInfFinalValue);
+    console.log("displacementSupFinalValue :", displacementSupFinalValue);
     // Check for invalid inputs
     if (
         isNaN(draftInfFinalValue) ||
@@ -726,38 +700,71 @@ export const calculateDisplacementFinal = (
         ((displacementSupFinalValue - displacementInfFinalValue) /
             (draftSupFinalValue - draftInfFinalValue)) *
         (draftSupFinalValue - quarterMeanFinalValue);
-
+    console.log("draftInfFinalValue :", draftInfFinalValue);
+    console.log("draftSupFinalValue :", draftSupFinalValue);
+    console.log("quarterMeanFinalValue :", quarterMeanFinalValue);
+    console.log(displacementFinal); 
     return displacementFinal.toFixed(2);
 };
 
-export const calculateTpcFinal = (quarterMeanFinal, tpcSupFinal, tpcInfFinal, draftSupFinal, draftInfFinal) => {
-    let tpcFinal = 0;
-    const tpcSupFinalValue = Number(tpcSupFinal);
+export const calculateTpcFinal = (
+    draftInfFinal,
+    draftSupFinal,
+    quarterMeanFinal,
+    tpcInfFinal,
+    tpcSupFinal
+) => {
+    // Convert inputs to numbers with error handling
+     const draftInfFinalValue = (Number(Math.round(quarterMeanFinal * 10) / 10) - 0.1).toFixed(2);
+    const draftSupFinalValue = (Number(Math.round(quarterMeanFinal * 10) / 10) + 0.1).toFixed(2);
+    const quarterMeanFinalValue = Number(quarterMeanFinal);
     const tpcInfFinalValue = Number(tpcInfFinal);
-    // draft sup et draft inf
+    const tpcSupFinalValue = Number(tpcSupFinal);
 
-    const draftInfFinalValue = (Number(Math.round(quarterMeanFinal)) - 0.1).toFixed(2);
-    const draftSupFinalValue = (Number(Math.round(quarterMeanFinal)) + 0.1).toFixed(2);
-    const quarterMeanFinalValue = quarterMeanFinal;
+    console.log("draftInfFinalValue :", draftInfFinalValue);
+    console.log("draftSupFinalValue :", draftSupFinalValue);
+    console.log("quarterMeanFinalValue :", quarterMeanFinalValue);
+    console.log("tpcInfFinalValue :", tpcInfFinalValue);
+    console.log("tpcSupFinalValue :", tpcSupFinalValue);
+    // Check for invalid inputs
+    if (
+        isNaN(draftInfFinalValue) ||
+        isNaN(draftSupFinalValue) ||
+        isNaN(quarterMeanFinalValue) ||
+        isNaN(tpcInfFinalValue) ||
+        isNaN(tpcSupFinalValue)
+    ) {
+        console.error("Invalid input values for TPC calculation");
+        return "0.00";
+    }
 
-    tpcFinal =
-        tpcInfFinalValue +
-        ((tpcSupFinalValue - tpcInfFinalValue) /
-            (draftSupFinalValue - draftInfFinalValue)) *
-        (draftSupFinalValue - quarterMeanFinalValue);
+    // Prevent division by zero
+    if (draftSupFinalValue === draftInfFinalValue) {
+        console.error(
+            "Draft sup and draft inf are the same, cannot calculate TPC"
+        );
+        return "0.00";
+    }
 
-    console.log('tpcFinal :', tpcFinal)
+    // Perform TPC calculation
+    const tpcFinal =
+        Number(tpcInfFinalValue) +
+        ((Number(tpcSupFinalValue) - Number(tpcInfFinalValue)) /
+            (Number(draftSupFinalValue) - Number(draftInfFinalValue))) *
+        (Number(draftSupFinalValue) - Number(quarterMeanFinalValue));
+
+    console.log("tpcFinal :", tpcFinal);
     return tpcFinal.toFixed(2);
 };
+
 
 export const calculateLcfFinal = (quarterMeanFinal, lcfSupFinal, lcfInfFinal) => {
     let lcfFinal = 0;
     const lcfSupFinalValue = lcfSupFinal;
     const lcfInfFinalValue = lcfInfFinal;
     // draft sup et draft inf
-    let draftSupFinalValue = (Number(Math.round(quarterMeanFinal)) + 0.1).toFixed(2);
-    let draftInfFinalValue = (Number(Math.round(quarterMeanFinal)) - 0.1).toFixed(2);
-
+     const draftInfFinalValue = (Number(Math.round(quarterMeanFinal * 10) / 10) - 0.1).toFixed(2);
+    const draftSupFinalValue = (Number(Math.round(quarterMeanFinal * 10) / 10) + 0.1).toFixed(2);
     const quarterMeanFinalValue = quarterMeanFinal;
 
     lcfFinal =
@@ -765,6 +772,141 @@ export const calculateLcfFinal = (quarterMeanFinal, lcfSupFinal, lcfInfFinal) =>
         ((Number(lcfSupFinalValue) - Number(lcfInfFinalValue)) /
             (Number(draftSupFinalValue) - Number(draftInfFinalValue))) *
         (Number(draftSupFinalValue) - Number(quarterMeanFinalValue));
-
+    console.log("lcfFinal :", lcfFinal);
     return lcfFinal;
 };
+
+export const calculateFirstTrimCorrectionFinal = (trimCorrectedFinal, tpcFinal, lcfFinal, lbp) => {
+    let firstTrimCorrectionFinal = 0;
+    const trimCorrectedFinalValue = trimCorrectedFinal;
+
+    const tpcFinalValue = tpcFinal;
+    const lcfFinalValue = lcfFinal;
+    const lbpValue = lbp;
+
+    firstTrimCorrectionFinal =
+        (Number(trimCorrectedFinalValue) * 100 * Number(tpcFinalValue) * Number(lcfFinalValue)) /
+        Number(lbpValue);
+
+    return firstTrimCorrectionFinal.toFixed(2);
+};
+
+export const calculateSecondTrimCorrectionFinal = (
+    trimCorrectedFinal,
+    mtcPlus50Final,
+    mtcMinus50Final,
+    lbp
+) => {
+    let secondTrimCorrectionFinal = 0;
+    const trimCorrectedFinalValue = trimCorrectedFinal;
+    const mtcPlus50FinalValue = mtcPlus50Final;
+    const mtcMinus50FinalValue = mtcMinus50Final;
+
+    const mtcFinalValue = mtcPlus50FinalValue - mtcMinus50FinalValue;
+    const lbpValue = lbp;
+
+    secondTrimCorrectionFinal =
+        (Number(trimCorrectedFinalValue) *
+            Number(trimCorrectedFinalValue) *
+            Number(mtcFinalValue) *
+            50) /
+        Number(lbpValue);
+
+    return secondTrimCorrectionFinal.toFixed(2);
+};
+
+export const calculateDisplacementTrimCorrectedFinal = (
+    displacementFinal,
+    firstTrimCorrectionFinal,
+    secondTrimCorrectionFinal
+) => {
+    let displacementTrimCorrectedFinal = 0;
+    const displacementFinalValue = displacementFinal;
+    const firstTrimCorrectionFinalValue = firstTrimCorrectionFinal;
+    const secondTrimCorrectionFinalValue = secondTrimCorrectionFinal;
+
+    displacementTrimCorrectedFinal =
+        Number(displacementFinalValue) +
+        Number(firstTrimCorrectionFinalValue) +
+        Number(secondTrimCorrectionFinalValue);
+
+    return displacementTrimCorrectedFinal.toFixed(2);
+};
+
+export const calculateDisplacementDstyCorrectedFinal = (
+    densityFinal,
+    displacementTrimCorrectedFinal
+) => {
+    let displacementDstyCorrectedFinal = 0;
+    const densityFinalValue = Number(densityFinal);
+    const displacementTrimCorrectedFinalValue = Number(displacementTrimCorrectedFinal);
+
+    displacementDstyCorrectedFinal =
+        (Number(displacementTrimCorrectedFinalValue) * Number(densityFinalValue)) / 1.025;
+
+    return displacementDstyCorrectedFinal.toFixed(2);
+};
+
+export const calculateTotalFinal = (
+    ballastFinal,
+    freshWaterFinal,
+    fuelFinal,
+    dieselFinal,
+    lubOilFinal,
+    othersFinal
+) => {
+    let totalFinal = 0;
+    const ballastFinalValue = Number(ballastFinal);
+    const freshWaterFinalValue = Number(freshWaterFinal);
+    const fuelFinalValue = Number(fuelFinal);
+    const dieselFinalValue = Number(dieselFinal);
+    const lubOilFinalValue = Number(lubOilFinal);
+    const othersFinalValue = Number(othersFinal);
+
+    totalFinal =
+        Number(ballastFinalValue) +
+        Number(freshWaterFinalValue) +
+        Number(fuelFinalValue) +
+        Number(dieselFinalValue) +
+        Number(lubOilFinalValue) +
+        Number(othersFinalValue);
+
+    return totalFinal.toFixed(2);
+};  
+
+
+export const calculateNetLoad = (totalFinal, displacementDstyCorrectedFinal) => {
+    let netLoad = 0;
+    const totalFinalValue = Number(totalFinal);
+    const displacementDstyCorrectedFinalValue = Number(displacementDstyCorrectedFinal);
+    console.log("displacementDstyCorrectedFinalValue :" , displacementDstyCorrectedFinalValue);
+    console.log('totalFinalValue :', totalFinalValue); 
+
+    netLoad = Number(displacementDstyCorrectedFinalValue) - Number(totalFinalValue);
+    console.log('Net Load:', netLoad);
+    return netLoad.toFixed(2);
+};
+
+
+export const calculateNetLight = (total, displacementDstyCorrected) => {
+    let netLight = 0;
+    const totalValue = Number(total);
+    const displacementDstyCorrectedValue = Number(displacementDstyCorrected);
+
+    netLight = Number(displacementDstyCorrectedValue) - Number(totalValue);
+
+    return netLight.toFixed(2);
+};
+
+
+export const calculateCargo = (netLoad, netLight) => {
+    let cargo = 0;
+
+    console.log('netLoad:', netLoad);
+    console.log('netLight:', netLight);
+    cargo = Number(netLoad) - Number(netLight);
+    console.log('Cargo:', cargo);
+    return cargo.toFixed(2);
+};
+
+
