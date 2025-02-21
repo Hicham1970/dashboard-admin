@@ -17,6 +17,7 @@ import ValeursInitial from "./scenes/valeursInitial";
 import ValeursFinal from "./scenes/valeursFinal";
 import Calendar from "./scenes/calendar/Calendar";
 import DS from "./scenes/ds";
+import DSManualComponent from "./scenes/dsManuel";
 
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
               <Route path="/ds" element={<DS />} />
               <Route path="/pie" element={<Pie />} />
               <Route path="/valeursInitial" element={<ValeursInitial />} />
+              <Route path="/dsManual" element={<DSManualComponent />} />
             </Routes>
 
           </main>

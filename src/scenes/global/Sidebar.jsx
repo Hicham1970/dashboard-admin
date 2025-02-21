@@ -14,7 +14,7 @@ import HelpOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import PieChartOutlinedIcon from "@mui/icons-material/PieChartOutlined";
 import TimeLineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
-import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
+import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
@@ -52,11 +52,11 @@ const SideBar = () => {
   return (
     <Box
       sx={{
-        height: '100vh', // Prend toute la hauteur de la fenêtre
+        height: "100vh", // Prend toute la hauteur de la fenêtre
         "& .ps-sidebar-container": {
           background: `${colors.primary[400]} !important`,
-          height: '100%', // Assurez-vous que le conteneur de la barre latérale prend toute la hauteur
-          overflow: 'hidden', // Évite le défilement
+          height: "100%", // Assurez-vous que le conteneur de la barre latérale prend toute la hauteur
+          overflow: "hidden", // Évite le défilement
         },
         "& .pro-icon-wrapper": {
           backgroundColor: "transparent !important",
@@ -210,6 +210,13 @@ const SideBar = () => {
               selected={selected}
               setSelected={setSelected}
             />
+            <Item
+              title="Manual DS Report"
+              to="/dsManual"
+              icon={<TimeLineOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
 
             <Item
               title="Initial Draft"
@@ -232,7 +239,6 @@ const SideBar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-
           </Box>
         </Menu>
       </Sidebar>

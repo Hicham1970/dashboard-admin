@@ -1,3 +1,5 @@
+import { hydrostatic_table } from "../data/hydrostatic_table"; // Assurez-vous que le chemin est correct
+
 //  Fonctions de la logique section initial
 export const calculateMeanFore = (forePort, foreStbd) => {
     const meanFore = ((Number(forePort) || 0) + (Number(foreStbd) || 0)) / 2;
@@ -140,28 +142,22 @@ export const calculateMidCorrected = (trim, midDistance, lbm, meanMid) => {
     const meanMidValue = Number(meanMid);
 
     // Validate inputs
-    if (
-        isNaN(trimValue) ||
-        isNaN(midDistanceValue) ||
-        isNaN(lbmValue) ||
-        isNaN(meanMidValue)
-    ) {
-        console.error("Invalid inputs for midCorrected calculation");
-        return "0.00";
+    if (trim == null || midDistance == null || lbm == null || meanMid == null) {
+        throw new Error("Invalid inputs for midCorrected calculation");
     }
 
     // Perform mid corrected calculation
     let midCorrected;
     if (midDistanceValue < 0) {
         midCorrected =
-            meanMidValue -
-            ((trimValue * midDistanceValue) / lbmValue) * (trimValue > 0 ? 1 : -1);
+            Number(meanMidValue) -
+            ((Number(trimValue) * Number(midDistanceValue)) / Number(lbmValue)) * (Number(trimValue) > 0 ? 1 : -1);
     } else if (midDistanceValue > 0) {
         midCorrected =
-            meanMidValue +
-            ((trimValue * midDistanceValue) / lbmValue) * (trimValue > 0 ? 1 : -1);
+            Number(meanMidValue) +
+            ((Number(trimValue) * Number(midDistanceValue)) / Number(lbmValue)) * (Number(trimValue) > 0 ? 1 : -1);
     } else {
-        midCorrected = meanMidValue;
+        midCorrected = Number(meanMidValue);
     }
 
     return midCorrected.toFixed(2);
@@ -205,27 +201,68 @@ export const calculateQuarterMean = (midCorrected, meanOfMean) => {
 };
 
 
-export const getHydrostaticValues = (draft, hydrostaticTable) => {
+export const getHydrostaticValues = (draft, hydrostatic_table) => {
     console.log("Draft reçu:", draft); // Affiche le draft reçu
-    console.log("Tableau hydrostatique:", hydrostaticTable); // Affiche le tableau hydrostatique
+    console.log("Type de hydrostatic_table:", Array.isArray(hydrostatic_table)); // Vérifiez si c'est un tableau
+    console.log("Tableau hydrostatique:", hydrostatic_table); // Affiche le tableau hydrostatique
+
+    if (!Array.isArray(hydrostatic_table)) {
+        console.error("hydrostatic_table n'est pas un tableau ou est undefined");
+        return {
+            displacement: 0,
+            tpc: 0,
+            lcf: 0,
+            mtcPlus50: 0,
+            mtcMinus50: 0,
+        };
+    }
 
     // Convertir le draft en nombre
     const draftValue = parseFloat(draft);
-    console.log("Draft converti:", draftValue); // Affiche le draft converti
+    console.log("Draft converti:", draftValue);
+    if (isNaN(draftValue)) {
+        console.error("Draft n'est pas un nombre valide :", draft);
+        return {
+            displacement: 0,
+            tpc: 0,
+            lcf: 0,
+            mtcPlus50: 0,
+            mtcMinus50: 0,
+        };
+    }
 
     // Vérifiez que le tableau hydrostatique contient des valeurs numériques pour DRAFT
-    const entry = hydrostaticTable.find(item => {
-        console.log("Comparaison:", item.DRAFT, draftValue); // Affiche la comparaison
-        return item.DRAFT === draftValue;
+    const entry = hydrostatic_table.find(item => {
+        console.log("Comparaison:", parseFloat(item.DRAFT), draftValue); // Affiche la comparaison
+        return parseFloat(item.DRAFT) === draftValue; // Assurez-vous que les deux sont des nombres
     });
 
-    console.log("Entrée trouvée:", entry); // Affiche l'entrée trouvée
+    console.log("Entrée trouvée pour le draft:", entry); // Affiche l'entrée trouvée
+
+    // Calculer les drafts ajustés pour quarterPlus50 et quarterMinus50
+    const quarterPlus50 = (Number(Math.round(draftValue * 10) / 10) + 0.5).toFixed(2);
+    const quarterMinus50 = (Number(Math.round(draftValue * 10) / 10) - 0.5).toFixed(2);
+
+    const mtcEntryPlus = hydrostatic_table.find(item => {
+        console.log("Comparaison pour MTC +0.5 (quarterPlus50):", parseFloat(item.DRAFT), parseFloat(quarterPlus50)); // Affiche la comparaison pour MTC +0.5
+        return parseFloat(item.DRAFT) === parseFloat(quarterPlus50);
+    });
+
+    const mtcEntryMinus = hydrostatic_table.find(item => {
+        console.log("Comparaison pour MTC -0.5 (quarterMinus50):", parseFloat(item.DRAFT), parseFloat(quarterMinus50)); // Affiche la comparaison pour MTC -0.5
+        return parseFloat(item.DRAFT) === parseFloat(quarterMinus50);
+    });
+
+    console.log("Entrée trouvée pour MTC +0.5:", mtcEntryPlus); // Affiche l'entrée trouvée pour MTC +0.5
+    console.log("Entrée trouvée pour MTC -0.5:", mtcEntryMinus); // Affiche l'entrée trouvée pour MTC -0.5
 
     if (entry) {
         return {
             displacement: entry.DISPLACEMENT,
             tpc: entry.TPC,
             lcf: entry.LCF,
+            mtcPlus50: mtcEntryPlus ? mtcEntryPlus.MTC : 0, // Si mtcEntryPlus existe, retourner MTC, sinon 0
+            mtcMinus50: mtcEntryMinus ? mtcEntryMinus.MTC : 0, // Si mtcEntryMinus existe, retourner MTC, sinon 0
         };
     } else {
         console.warn("Aucune entrée trouvée pour le draft donné :", draft);
@@ -233,28 +270,30 @@ export const getHydrostaticValues = (draft, hydrostaticTable) => {
             displacement: 0,
             tpc: 0,
             lcf: 0,
+            mtcPlus50: 0, // Retourner 0 si aucune entrée trouvée
+            mtcMinus50: 0, // Retourner 0 si aucune entrée trouvée
         };
     }
 };
 
 // Ajoutez une fonction pour obtenir les valeurs pour draftInf
-export const getHydrostaticValuesInf = (draftInf, hydrostaticTable) => {
-    return getHydrostaticValues(draftInf, hydrostaticTable);
+export const getHydrostaticValuesInf = (draftInf, hydrostatic_table) => {
+    return getHydrostaticValues(draftInf, hydrostatic_table);
 };
 
 // Ajoutez une fonction pour obtenir les valeurs pour draftInf
-export const getHydrostaticValuesSup = (draftSup, hydrostaticTable) => {
-    return getHydrostaticValues(draftSup, hydrostaticTable);
+export const getHydrostaticValuesSup = (draftSup, hydrostatic_table) => {
+    return getHydrostaticValues(draftSup, hydrostatic_table);
 };
 
 
-export const getMtcPlus50FromTable = (quarterPlus50, hydrostaticTable) => {
-    const entry = hydrostaticTable.find(item => item.QUARTER_PLUS50 === parseFloat(quarterPlus50));
+export const getMtcPlus50FromTable = (quarterPlus50, hydrostatic_table) => {
+    const entry = hydrostatic_table.find(item => item.QUARTER_PLUS50 === parseFloat(quarterPlus50));
     return entry ? entry.MTC : 0; // Remplacez MTC_PLUS_50 par le nom de la colonne appropriée
 };
 
-export const getMtcMinus50FromTable = (quarterMinus50, hydrostaticTable) => {
-    const entry = hydrostaticTable.find(item => item.QUARTER_MINUS50 === parseFloat(quarterMinus50));
+export const getMtcMinus50FromTable = (quarterMinus50, hydrostatic_table) => {
+    const entry = hydrostatic_table.find(item => item.QUARTER_MINUS50 === parseFloat(quarterMinus50));
     return entry ? entry.MTC : 0;
 };
 //  Calcul du displacement
@@ -321,41 +360,41 @@ export const calculateTpc = (quarterMean, tpcSup, tpcInf, draftInf, draftSup) =>
             (Number(draftSupValue) - Number(draftInfValue))) *
         (Number(draftSupValue) - Number(quarterMeanValue));
 
-    return tpc;
+    return tpc.toFixed(2);
 };
 
 export const calculateLcf = (quarterMean, lcfSup, lcfInf, draftSup, draftInf) => {
     let lcf = 0;
-    const lcfSupValue = lcfSup;
-    const lcfInfValue = lcfInf;
+    const lcfSupValue = Number(lcfSup);
+    const lcfInfValue = Number(lcfInf);
     // draft sup et draft inf
     let draftSupValue = Number(draftSup);
     let draftInfValue = Number(draftInf);
 
-    const quarterMeanValue = quarterMean;
+    const quarterMeanValue = Number(quarterMean);
 
     lcf =
-        Number(lcfInfValue) +
-        ((Number(lcfSupValue) - Number(lcfInfValue)) /
-            (Number(draftSupValue) - Number(draftInfValue))) *
-        (Number(draftSupValue) - Number(quarterMeanValue));
+        lcfInfValue +
+        (lcfSupValue - lcfInfValue) /
+            (draftSupValue - draftInfValue) *
+        (draftSupValue - quarterMeanValue);
 
-    return lcf;
+    return lcf.toFixed(2);
 };
 
 // Calcul du displacement Corrigé:
 
 export const calculateFirstTrimCorrection = (trimCorrected, tpc, lcf, lbp) => {
     let firstTrimCorrection = 0;
-    const trimCorrectedValue = trimCorrected;
+    const trimCorrectedValue = Number(trimCorrected);
 
-    const tpcValue = tpc;
-    const lcfValue = lcf;
-    const lbpValue = lbp;
+    const tpcValue = Number(tpc);
+    const lcfValue = Number(lcf);
+    const lbpValue = Number(lbp);
 
     firstTrimCorrection =
-        (Number(trimCorrectedValue) * 100 * Number(tpcValue) * Number(lcfValue)) /
-        Number(lbpValue);
+        (trimCorrectedValue * 100 * tpcValue * lcfValue) /
+        lbpValue;
 
     return firstTrimCorrection.toFixed(2);
 };
@@ -367,19 +406,19 @@ export const calculateSecondTrimCorrection = (
     lbp
 ) => {
     let secondTrimCorrection = 0;
-    const trimCorrectedValue = trimCorrected;
-    const mtcPlus50Value = mtcPlus50;
-    const mtcMinus50Value = mtcMinus50;
+    const trimCorrectedValue = Number(trimCorrected);
+    const mtcPlus50Value = Number(mtcPlus50);
+    const mtcMinus50Value = Number(mtcMinus50);
 
     const mtcValue = mtcPlus50Value - mtcMinus50Value;
-    const lbpValue = lbp;
+    const lbpValue = Number(lbp);
 
     secondTrimCorrection =
-        (Number(trimCorrectedValue) *
-            Number(trimCorrectedValue) *
-            Number(mtcValue) *
+        (trimCorrectedValue *
+            trimCorrectedValue *
+            mtcValue *
             50) /
-        Number(lbpValue);
+        lbpValue;
 
     return secondTrimCorrection.toFixed(2);
 };
@@ -389,15 +428,14 @@ export const calculateDisplacementTrimCorrected = (
     firstTrimCorrection,
     secondTrimCorrection
 ) => {
-    let displacementTrimCorrected = 0;
-    const displacementValue = displacement;
-    const firstTrimCorrectionValue = firstTrimCorrection;
-    const secondTrimCorrectionValue = secondTrimCorrection;
+    const displacementValue = Number(displacement);
+    const firstTrimCorrectionValue = Number(firstTrimCorrection);
+    const secondTrimCorrectionValue = Number(secondTrimCorrection);
 
-    displacementTrimCorrected =
-        Number(displacementValue) +
-        Number(firstTrimCorrectionValue) +
-        Number(secondTrimCorrectionValue);
+    const displacementTrimCorrected =
+        displacementValue +
+        firstTrimCorrectionValue +
+        secondTrimCorrectionValue;
 
     return displacementTrimCorrected.toFixed(2);
 };
@@ -661,6 +699,51 @@ export const calculateQuarterMeanFinal = (midCorrectedFinal, meanOfMeanFinal) =>
 };
 
 
+export const getHydrostaticFinalValuesInf = (draftInfFinal, hydrostatic_table) => {
+    return getHydrostaticValues(draftInfFinal, hydrostatic_table);
+};
+
+// Ajoutez une fonction pour obtenir les valeurs pour draftInf
+export const getHydrostaticFinalValuesSup = (draftSupFinal, hydrostatic_table) => {
+    return getHydrostaticValues(draftSupFinal, hydrostatic_table);
+};
+
+
+// Extraction des Valeurs Finals hydrostatic table
+export const getHydrostaticFinalValues = (draftFinal, hydrostatic_table) => {
+    console.log("Draft Final reçu:", draftFinal); // Affiche le draft reçu
+    console.log("Tableau hydrostatique:", hydrostatic_table); // Affiche le tableau hydrostatique
+
+    // Convertir le draft en nombre
+    const draftFinalValue = parseFloat(draftFinal);
+    console.log("Draft Final converti:", draftFinalValue); // Affiche le draft converti
+
+    // Vérifiez que le tableau hydrostatique contient des valeurs numériques pour DRAFT
+    const entry = hydrostatic_table.find(item => {
+        console.log("Comparaison:", item.DRAFT, draftFinalValue); // Affiche la comparaison
+        return item.DRAFT === draftFinalValue;
+    });
+
+    console.log("Entrée trouvée:", entry); // Affiche l'entrée trouvée
+
+    if (entry) {
+        return {
+            displacementFinal: entry.DISPLACEMENT,
+            tpcFinal: entry.TPC,
+            lcfFinal: entry.LCF,
+        };
+    } else {
+        console.warn("Aucune entrée trouvée pour le draft donné :", draftFinal);
+        return {
+            displacementFinal: 0,
+            tpcFinal: 0,
+            lcfFinal: 0,
+        };
+    }
+};
+
+
+
 export const calculateDisplacementFinal = (
     draftInfFinal,
     draftSupFinal,
@@ -669,13 +752,13 @@ export const calculateDisplacementFinal = (
     displacementSupFinal
 ) => {
     // Convert inputs to numbers with error handling
-    const draftInfFinalValue = (Number(Math.round(quarterMeanFinal * 10) / 10) - 0.1).toFixed(2);
-    const draftSupFinalValue = (Number(Math.round(quarterMeanFinal * 10) / 10) + 0.1).toFixed(2);
+    const draftInfFinalValue = Number(draftInfFinal);
+    const draftSupFinalValue = Number(draftSupFinal);
     const quarterMeanFinalValue = Number(quarterMeanFinal);
     const displacementInfFinalValue = Number(displacementInfFinal);
     const displacementSupFinalValue = Number(displacementSupFinal);
 
-    console.log("draftInfFinalValue :", draftInfFinalValue); 
+    console.log("draftInfFinalValue :", draftInfFinalValue);
     console.log("draftSupFinalValue :", draftSupFinalValue);
     console.log("quarterMeanFinalValue :", quarterMeanFinalValue);
     console.log("displacementInfFinalValue :", displacementInfFinalValue);
@@ -703,13 +786,13 @@ export const calculateDisplacementFinal = (
     // Perform displacement calculation
     const displacementFinal =
         displacementInfFinalValue +
-        ((displacementSupFinalValue - displacementInfFinalValue) /
-            (draftSupFinalValue - draftInfFinalValue)) *
+        (displacementSupFinalValue - displacementInfFinalValue) /
+        (draftSupFinalValue - draftInfFinalValue) *
         (draftSupFinalValue - quarterMeanFinalValue);
     console.log("draftInfFinalValue :", draftInfFinalValue);
     console.log("draftSupFinalValue :", draftSupFinalValue);
     console.log("quarterMeanFinalValue :", quarterMeanFinalValue);
-    console.log(displacementFinal); 
+    console.log(displacementFinal);
     return displacementFinal.toFixed(2);
 };
 
@@ -721,8 +804,8 @@ export const calculateTpcFinal = (
     tpcSupFinal
 ) => {
     // Convert inputs to numbers with error handling
-     const draftInfFinalValue = (Number(Math.round(quarterMeanFinal * 10) / 10) - 0.1).toFixed(2);
-    const draftSupFinalValue = (Number(Math.round(quarterMeanFinal * 10) / 10) + 0.1).toFixed(2);
+    const draftInfFinalValue = Number(draftInfFinal);
+    const draftSupFinalValue = Number(draftSupFinal);
     const quarterMeanFinalValue = Number(quarterMeanFinal);
     const tpcInfFinalValue = Number(tpcInfFinal);
     const tpcSupFinalValue = Number(tpcSupFinal);
@@ -754,40 +837,41 @@ export const calculateTpcFinal = (
 
     // Perform TPC calculation
     const tpcFinal =
-        Number(tpcInfFinalValue) +
-        ((Number(tpcSupFinalValue) - Number(tpcInfFinalValue)) /
-            (Number(draftSupFinalValue) - Number(draftInfFinalValue))) *
-        (Number(draftSupFinalValue) - Number(quarterMeanFinalValue));
+        tpcInfFinalValue +
+        (tpcSupFinalValue - tpcInfFinalValue) /
+        (draftSupFinalValue - draftInfFinalValue) *
+        (draftSupFinalValue - quarterMeanFinalValue);
 
     console.log("tpcFinal :", tpcFinal);
     return tpcFinal.toFixed(2);
 };
 
 
-export const calculateLcfFinal = (quarterMeanFinal, lcfSupFinal, lcfInfFinal) => {
+export const calculateLcfFinal = (quarterMeanFinal, lcfSupFinal, lcfInfFinal, draftSupFinal, draftInfFinal) => {
     let lcfFinal = 0;
-    const lcfSupFinalValue = lcfSupFinal;
-    const lcfInfFinalValue = lcfInfFinal;
+    const lcfSupFinalValue = Number(lcfSupFinal);
+    const lcfInfFinalValue = Number(lcfInfFinal);
     // draft sup et draft inf
-     const draftInfFinalValue = (Number(Math.round(quarterMeanFinal * 10) / 10) - 0.1).toFixed(2);
-    const draftSupFinalValue = (Number(Math.round(quarterMeanFinal * 10) / 10) + 0.1).toFixed(2);
-    const quarterMeanFinalValue = quarterMeanFinal;
+    let draftSupFinalValue = Number(draftSupFinal);
+    let draftInfFinalValue = Number(draftInfFinal);
+
+    const quarterMeanFinalValue = Number(quarterMeanFinal);
 
     lcfFinal =
-        Number(lcfInfFinalValue) +
-        ((Number(lcfSupFinalValue) - Number(lcfInfFinalValue)) /
-            (Number(draftSupFinalValue) - Number(draftInfFinalValue))) *
-        (Number(draftSupFinalValue) - Number(quarterMeanFinalValue));
-    console.log("lcfFinal :", lcfFinal);
-    return lcfFinal;
+        lcfInfFinalValue +
+        (lcfSupFinalValue - lcfInfFinalValue) /
+        (draftSupFinalValue - draftInfFinalValue) *
+        (draftSupFinalValue - quarterMeanFinalValue);
+
+    return lcfFinal.toFixed(2);
 };
 
 export const calculateFirstTrimCorrectionFinal = (trimCorrectedFinal, tpcFinal, lcfFinal, lbp) => {
     let firstTrimCorrectionFinal = 0;
-    const trimCorrectedFinalValue = trimCorrectedFinal;
+    const trimCorrectedFinalValue = Number(trimCorrectedFinal);
 
-    const tpcFinalValue = tpcFinal;
-    const lcfFinalValue = lcfFinal;
+    const tpcFinalValue = Number(tpcFinal);
+    const lcfFinalValue = Number(lcfFinal);
     const lbpValue = lbp;
 
     firstTrimCorrectionFinal =
@@ -878,15 +962,15 @@ export const calculateTotalFinal = (
         Number(othersFinalValue);
 
     return totalFinal.toFixed(2);
-};  
+};
 
 
 export const calculateNetLoad = (totalFinal, displacementDstyCorrectedFinal) => {
     let netLoad = 0;
     const totalFinalValue = Number(totalFinal);
     const displacementDstyCorrectedFinalValue = Number(displacementDstyCorrectedFinal);
-    console.log("displacementDstyCorrectedFinalValue :" , displacementDstyCorrectedFinalValue);
-    console.log('totalFinalValue :', totalFinalValue); 
+    console.log("displacementDstyCorrectedFinalValue :", displacementDstyCorrectedFinalValue);
+    console.log('totalFinalValue :', totalFinalValue);
 
     netLoad = Number(displacementDstyCorrectedFinalValue) - Number(totalFinalValue);
     console.log('Net Load:', netLoad);

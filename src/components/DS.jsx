@@ -57,6 +57,7 @@ import {
   calculateDisplacementDstyCorrectedFinal,
   calculateTotalFinal,
   getHydrostaticValues,
+  getHydrostaticFinalValues, 
   getHydrostaticValuesInf,
   getHydrostaticValuesSup, 
   
@@ -227,10 +228,38 @@ export default function DS() {
     [trimCalculated, aftDistance, lbmCalculated, meanAftCalculated]
   );
 
-  const midCorrectedCalculated = useMemo(() =>
-    calculateMidCorrected(trimCalculated, midDistance, lbmCalculated, meanMidCalculated),
-    [trimCalculated, midDistance, lbmCalculated, meanMidCalculated]
+const midCorrectedCalculated = useMemo(() => {
+  const lbmValue = Number(lbmCalculated);
+  const meanMidValue = Number(meanMidCalculated);
+  const midDistanceValue = Number(midDistance);
+  const trimValue = Number(trimCalculated);
+
+  console.log("Valeurs pour midCorrected:", {
+    lbmValue,
+    meanMidValue,
+    midDistanceValue,
+    trimValue,
+  });
+
+  // Vérifiez que toutes les valeurs sont valides
+  if (
+    isNaN(lbmValue) ||
+    isNaN(meanMidValue) ||
+    isNaN(midDistanceValue) ||
+    isNaN(trimValue)
+  ) {
+    console.error("Invalid inputs for midCorrected calculation");
+    return null; // Ou une valeur par défaut
+  }
+
+  return calculateMidCorrected(
+    trimValue,
+    midDistanceValue,
+    lbmValue,
+    meanMidValue
   );
+}, [trimCalculated, midDistance, lbmCalculated, meanMidCalculated]);
+
 
   const trimCorrectedCalculated = useMemo(() =>
     calculateTrimCorrected(meanAftCalculated, meanForeCalculated),
@@ -264,8 +293,8 @@ export default function DS() {
 
 
   const lcfCalculated = useMemo(() =>
-    calculateLcf(quarterMeanCalculated, lcfSup, lcfInf),
-    [quarterMeanCalculated, lcfSup, lcfInf]
+    calculateLcf(quarterMeanCalculated, lcfSup, lcfInf, draftSup, draftInf),
+    [quarterMeanCalculated, lcfSup, lcfInf, draftSup, draftInf]
   );
 
   const firstTrimCorrectionCalculated = useMemo(() =>
@@ -471,7 +500,7 @@ const lcfFinalCalculated = useMemo(() =>
 
   }, [meanForeCalculated, meanAftCalculated, meanMidCalculated, trimCalculated, lbmCalculated, foreCorrectedCalculated, aftCorrectedCalculated, midCorrectedCalculated, trimCorrectedCalculated, meanForeAftCalculated, meanOfMeanCalculated, quarterMeanCalculated, displacementCalculated, tpcCalculated, lcfCalculated, firstTrimCorrectionCalculated, secondTrimCorrectionCalculated, displacementTrimCorrectedCalculated, displacementDstyCorrectionCalculated, totalCalculated, netLightCalculated, constantCalculated, netLoadCalculated, netLoad, cargoCalculated, cargo, meanForeFinalCalculated, meanAftFinalCalculated, meanMidFinalCalculated, trimFinalCalculated, lbmFinalCalculated, foreCorrectedFinalCalculated, aftCorrectedFinalCalculated, midCorrectedFinalCalculated, trimCorrectedFinalCalculated, meanForeAftFinalCalculated, meanOfMeanFinalCalculated, quarterMeanFinalCalculated, trimCorrectedFinal, meanForeAftFinal, meanOfMeanFinal, quarterMeanFinal, keelCorrectionFinal, keelCorrection, displacementFinalCalculated, tpcFinalCalculated, lcfFinalCalculated, draftSupFinal, draftInfFinal, lcfSupFinal, lcfInfFinal, firstTrimCorrectionFinalCalculated, secondTrimCorrectionFinalCalculated, freshWater, freshWaterFinal, displacementTrimCorrectedFinalCalculated, totalFinal, ballast, ballastFinal, totalFinalCalculated, displacementDstyCorrectedFinalCalculated]);
 
-  // Pour le calcul automatic
+  // Pour le calcul automatic Initial
 
   useEffect(() => {
     if (quarterMean) {
@@ -501,8 +530,43 @@ const lcfFinalCalculated = useMemo(() =>
     }
   }, [draftInf, quarterMean]); // Ajoutez draftInf ici
 
+   // Pour le calcul automatic Final
 
+   useEffect(() => {
+     if (quarterMeanFinal) {
+       const calculatedDraftSupFinal = (Number(Math.round(quarterMeanFinal * 10) / 10) + 0.1).toFixed(2);
+       const calculatedDraftInfFinal = (Number(Math.round(quarterMeanFinal * 10) / 10) - 0.1).toFixed(2);
 
+       setDraftSupFinal(calculatedDraftSupFinal);
+       setDraftInfFinal(calculatedDraftInfFinal);
+     }
+   }, [quarterMeanFinal]);
+
+   useEffect(() => {
+     if (draftSupFinal) {
+       const {
+         displacementFinal,
+         tpcFinal,
+         lcfFinal
+       } = getHydrostaticFinalValues(draftSupFinal, hydrostatic_table);
+       setDisplacementFinal(displacementFinal);
+       setTpcFinal(tpcFinal);
+       setLcfFinal(lcfFinal);
+     }
+   }, [draftSupFinal, quarterMeanFinal]);
+
+   useEffect(() => {
+     if (draftInfFinal) {
+       const {
+         displacementFinal,
+         tpcFinal,
+         lcfFinal
+       } = getHydrostaticFinalValues(draftInfFinal, hydrostatic_table);
+       setDisplacementFinal(displacementFinal);
+       setTpcFinal(tpcFinal);
+       setLcfFinal(lcfFinal);
+     }
+   }, [draftInfFinal, quarterMeanFinal]);
 
   return (
     <><Box m="20px" id="printMe">
@@ -1382,7 +1446,8 @@ const lcfFinalCalculated = useMemo(() =>
               />
               <TextField
                 fullWidth
-                variant="filled"
+                disabled
+                variant="outlined"
                 type="number"
                 label="Dis Inf"
                 onChange={(e) => setDisplacementInf(e.target.value)}
@@ -1394,7 +1459,8 @@ const lcfFinalCalculated = useMemo(() =>
               />
               <TextField
                 fullWidth
-                variant="filled"
+                disabled
+                variant="outlined"
                 type="number"
                 label="TPC Inf"
                 onChange={(e) => setTpcInf(e.target.value)}
@@ -1406,7 +1472,8 @@ const lcfFinalCalculated = useMemo(() =>
               />
               <TextField
                 fullWidth
-                variant="filled"
+                disabled
+                variant="outlined"
                 type="number"
                 label="LCF Inf"
                 onChange={(e) => setLcfInf(e.target.value)}
@@ -1588,7 +1655,8 @@ const lcfFinalCalculated = useMemo(() =>
               />
               <TextField
                 fullWidth
-                variant="filled"
+                disabled
+                variant="outlined"
                 type="number"
                 label="Dis Sup"
                 onChange={(e) => setDisplacementSup(e.target.value)}
@@ -1600,7 +1668,8 @@ const lcfFinalCalculated = useMemo(() =>
               />
               <TextField
                 fullWidth
-                variant="filled"
+                disabled
+                variant="outlined"
                 type="number"
                 label="TPC Sup"
                 onChange={(e) => setTpcSup(e.target.value)}
@@ -1612,7 +1681,8 @@ const lcfFinalCalculated = useMemo(() =>
               />
               <TextField
                 fullWidth
-                variant="filled"
+                disabled
+                variant="outlined"
                 type="number"
                 label="LCF Sup"
                 onChange={(e) => setLcfSup(e.target.value)}
@@ -1745,7 +1815,7 @@ const lcfFinalCalculated = useMemo(() =>
                 type="number"
                 placeholder="Draft Inf"
                 onChange={(e) => setDraftInfFinal(e.target.value)}
-                value={(Number(Math.round(quarterMeanFinal * 10) / 10) - 0.1).toFixed(2)}
+                value={draftInfFinal}
                 name="draftInfFinal"
                 sx={{ flexColumn: "span 1", width: "130px" }}
                 InputProps={{ style: { fontSize: '20px' } }}
@@ -1753,9 +1823,10 @@ const lcfFinalCalculated = useMemo(() =>
               />
               <TextField
                 fullWidth
-                variant="filled"
+                disabled
+                variant="outlined"
                 type="number"
-                label="Dis Inf"
+                placeholder="Dis Inf"
                 onChange={(e) => setDisplacementInfFinal(e.target.value)}
                 value={displacementInfFinal}
                 name="displacementInfFinal"
@@ -1765,11 +1836,12 @@ const lcfFinalCalculated = useMemo(() =>
               />
               <TextField
                 fullWidth
-                variant="filled"
+                disabled
+                variant="outlined"
                 type="number"
-                label="TPC Inf"
+                placeholder="TPC Inf"
                 onChange={(e) => setTpcInfFinal(e.target.value)}
-                value={Number(tpcInfFinal)}
+                value={tpcInfFinal}
                 name="tpcInfFinal"
                 sx={{ flexColumn: "span 1", width: "130px" }}
                 InputProps={{ style: { fontSize: '20px' } }}
@@ -1777,9 +1849,10 @@ const lcfFinalCalculated = useMemo(() =>
               />
               <TextField
                 fullWidth
-                variant="filled"
+                disabled
+                variant="outlined"
                 type="number"
-                label="LCF Inf"
+                placeholder="LCF Inf"
                 onChange={(e) => setLcfInfFinal(e.target.value)}
                 value={lcfInfFinal}
                 name="lcfInfFinal"
@@ -1884,7 +1957,7 @@ const lcfFinalCalculated = useMemo(() =>
                 type="number"
                 placeholder="LCF"
                 onChange={(e) => setLcfFinal(e.target.value)}
-                value={Number(lcfFinal).toFixed(2)}
+                value={lcfFinal}
                 name="lcfFinal"
                 sx={{ flexColumn: "span 1", width: "130px" }}
                 InputProps={{ style: { fontSize: '20px' } }}
@@ -1948,7 +2021,7 @@ const lcfFinalCalculated = useMemo(() =>
                 type="number"
                 placeholder="Draft SupFinal"
                 onChange={(e) => setDraftSupFinal(e.target.value)}
-                value={(Number(Math.round(quarterMeanFinal * 10) / 10) + 0.1).toFixed(2)}
+                value={draftSupFinal}
                 name="draftSupFinal"
                 sx={{ flexColumn: "span 1", width: "130px" }}
                 InputProps={{ style: { fontSize: '20px' } }}
@@ -1957,7 +2030,8 @@ const lcfFinalCalculated = useMemo(() =>
               />
               <TextField
                 fullWidth
-                variant="filled"
+                disabled
+                variant="outlined"
                 type="number"
                 label="Dis Sup"
                 onChange={(e) => setDisplacementSupFinal(e.target.value)}
@@ -1969,7 +2043,8 @@ const lcfFinalCalculated = useMemo(() =>
               />
               <TextField
                 fullWidth
-                variant="filled"
+                disabled
+                variant="outlined"
                 type="number"
                 label="TPC Sup"
                 onChange={(e) => setTpcSupFinal(e.target.value)}
@@ -1981,7 +2056,8 @@ const lcfFinalCalculated = useMemo(() =>
               />
               <TextField
                 fullWidth
-                variant="filled"
+                disabled
+                variant="outlined"
                 type="number"
                 label="LCF Sup"
                 onChange={(e) => setLcfSupFinal(e.target.value)}
